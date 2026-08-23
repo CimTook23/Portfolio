@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+  /* applied before first paint so the page never flashes the wrong
+     theme on load — the actual toggle logic lives in js/main.js */
+  if (localStorage.getItem("theme") === "light") {
+    document.documentElement.dataset.theme = "light";
+  }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ground FX — Case Study — Jaydon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<div class="nav-wrap">
+  <header class="nav">
+    <a class="nav__logo" href="../index.html" aria-label="Jaydon — home">
+      <span class="nav__logo-badge"><img src="../assets/images/nav-avatar.png" alt="" /></span>
+      <span class="nav__logo-text">Jaydon</span>
+    </a>
+
+    <ul class="nav__links" id="navLinks">
+      <li><a href="../index.html#case-studies">Case studies</a></li>
+      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="../digital-media.html">Digital Media</a></li>
+      <li><a href="../about.html">About me</a></li>
+    </ul>
+
+    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+
+    <button class="nav__theme-toggle" id="themeToggle" type="button" aria-label="Toggle light mode">
+      <svg class="nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M17.99 17.99l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M17.99 6.01l1.77-1.77" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <svg class="nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 4H17M1 9H17M1 14H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+</div>
+
+<main class="cs-container">
+
+  <!-- ================= HERO ================= -->
+  <section class="cs-hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+
+    <div class="cs-hero__top">
+      <h1 class="cs-hero__title reveal">Ground FX</h1>
+
+      <div class="cs-hero__meta reveal">
+        <div class="cs-hero__meta-item">
+          <span>Role</span>
+          <p>Project management and marketing</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Timeline</span>
+          <p>3 months</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Skills</span>
+          <p>Social media, Adobe Creative Suite, project management, event branding.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-hero__tags reveal">
+      <span class="cs-tag">Event</span>
+      <span class="cs-tag">2026</span>
+      <span class="cs-tag">Project Management</span>
+      <span class="cs-tag">Marketing</span>
+    </div>
+
+    <div class="cs-hero__actions reveal">
+      <a class="btn btn-outline" href="#team">See the team ↓</a>
+      <a class="btn btn-outline" href="#promo">See the promo ↓</a>
+      <a class="btn btn-outline" href="#branding">See the branding ↓</a>
+    </div>
+  </section>
+
+  <!-- ================= INTRODUCTION ================= -->
+  <section id="introduction">
+    <h2 class="cs-heading reveal">Introduction</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">During my third term I had the honor and privilege of directing the operations of
+          Waterloo's 30-year-old tradition, Ground FX — the biggest breakdancing competition in the city of
+          Waterloo. On March 29, our team hosted the annual breaking competition organized by UW Breakers,
+          bringing together university students, Toronto dance crews, and the broader hip-hop community for a
+          full day of competitive battles and workshops, in collaboration with 9+ artists and community
+          partners.</p>
+        <p class="cs-para">As Project Manager and Marketing Lead, I oversaw the strategic planning, outreach,
+          promotion, and execution of the event — and beyond the numbers, Ground FX strengthened cross-city
+          dance connections, elevated the club's presence, and created a space that celebrated hip-hop culture
+          on campus.</p>
+        <div class="cs-callout">Through targeted marketing, we reached over 10,000 viewers, secured ~$4,000 in
+          school funding, and generated additional revenue through merchandise sales.</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <img src="../assets/images/gfx-intro-me.jpg" alt="Jaydon at the Ground FX event, pointed out by an arrow labeled 'Me' among the crowd watching a battle" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MAIN OBJECTIVES ================= -->
+  <section id="objectives">
+    <h2 class="cs-heading reveal">Main objectives</h2>
+    <div class="cs-divider reveal"></div>
+    <p class="cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">Recently being passed the torch
+      for a 30-year tradition is a huge responsibility — to give myself clarity, I broke the event down into four
+      areas of ownership.</p>
+
+    <div class="cs-takeaways-grid reveal">
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">🤝</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Strategic planning &amp; outreach</h3>
+          <p>Secure the venue for both the battle and workshops, and reach out to artists for DJing, MCing,
+            judging, hosting workshops, vending, and dance crews.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">💸</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Funding &amp; budget</h3>
+          <p>Acquire funding from the school government and endowment funds, budget compensation for each
+            artist, and prepare organized pay on time.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">⚙️</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Operations &amp; logistics</h3>
+          <p>Oversee execution of the event — plan the itinerary, and set up the venue, sound system, judging
+            system, and registration system.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">🎶</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Marketing &amp; branding</h3>
+          <p>Build a fun brand aesthetic for the event and create excitement through merch, videos, posters,
+            and websites.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HIGHLIGHTS ================= -->
+  <section id="highlights">
+    <h2 class="cs-heading reveal">Highlights</h2>
+    <div class="cs-divider reveal"></div>
+
+    <div class="cs-guidelines-grid reveal" style="grid-template-columns: repeat(4, 1fr);">
+      <div class="cs-square">
+        <img src="../assets/images/gfx-wordmark-1.png" alt="A breaker mid-flare during a battle at Ground FX" />
+      </div>
+      <div class="cs-square">
+        <img src="../assets/images/gfx-wordmark-2.png" alt="A breaker frozen mid-air during a battle at Ground FX" />
+      </div>
+      <div class="cs-square">
+        <img src="../assets/images/gfx-wordmark-3.png" alt="A breaker performing inside a circle of dancers and judges at Ground FX" />
+      </div>
+      <div class="cs-square">
+        <img src="../assets/images/gfx-wordmark-4.png" alt="A dancer striking a freestyle pose in front of the UW Breakers banner at Ground FX" />
+      </div>
+    </div>
+    <p class="cs-caption cs-caption--italic reveal">Battles, crews, and the SLC Lower Atrium packed for a full
+      day of breaking.</p>
+  </section>
+
+  <!-- ================= THE TEAM ================= -->
+  <section id="team">
+    <h2 class="cs-heading reveal">The team</h2>
+    <div class="cs-divider reveal"></div>
+    <p class="cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">An event is nothing without its
+      key players. The elements of hip-hop — DJing, MCing, breaking, knowledge, and graffiti — outlined what
+      needed to take priority. We reached out through email, Instagram, and in-person requests to bring this
+      team together.</p>
+
+    <div class="cs-guidelines-grid reveal">
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/gfx-mc.png" alt="The Ground FX MC hosting the event" />
+        </div>
+        <p class="cs-caption"><strong>MC</strong>The master of ceremonies orchestrates the event. This year we
+          invited Switch B, who recently did sports commentary for the 2024 Summer Olympics.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/gfx-dj.png" alt="The Ground FX DJ at the decks" />
+        </div>
+        <p class="cs-caption"><strong>DJ</strong>The music man of the event, dictating the tunes and beats the
+          dancers battled to.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/gfx-judges.png" alt="The panel of judges scoring a battle" />
+        </div>
+        <p class="cs-caption"><strong>Judges</strong>Three veteran dancers who determined the winner of each
+          battle.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/gfx-workshop-hosts.png" alt="A workshop host teaching a breaking technique" />
+        </div>
+        <p class="cs-caption"><strong>Workshop hosts</strong>Before the main event we hosted an advanced
+          breaking workshop and an intro-to-breaking workshop for women and LGBTQIA2+ dancers.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/gfx-dance-crews.png" alt="A local dance crew performing an intermission set" />
+        </div>
+        <p class="cs-caption"><strong>Dance crews</strong>Local crews like UWhiphop and UWstreetdance, along
+          with other university breaking clubs, performed exhibitions between battles.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/gfx-vendors.png" alt="A vendor table selling streetwear and shoes" />
+        </div>
+        <p class="cs-caption"><strong>Vendors</strong>External and internal vendors selling shoes, street
+          fashion, and hats alongside the battles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROCESS ================= -->
+  <section id="process">
+    <h2 class="cs-heading reveal">Process</h2>
+    <div class="cs-divider reveal"></div>
+    <p class="cs-para reveal" style="max-width: none;">The majority of Ground FX takes place in the SLC Lower
+      Atrium, so securing that venue was a top priority alongside confirming our artists. Once the space and
+      talent were locked in, my team and I mapped out the floor plan, registration area, judge seating, sponsor
+      tables, and DJ setup for the best flow and audience visibility.</p>
+    <p class="cs-para reveal" style="max-width: none; margin-top: 1.5rem;">To ensure seamless execution, we ran
+      a full test-through the weekend before the event — role-playing it start to finish to catch dead ends
+      before the real day.</p>
+    <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">With the team, I built and
+      managed a detailed budget covering artist compensation, media coverage, venue reservations, prizes,
+      merchandise, and A/V — then pitched WUSA and Artist Endowment Funds to secure it.</div>
+    <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+      <img src="../assets/images/gfx-setup.png" alt="Testing the projector and lighting setup ahead of Ground FX" />
+    </div>
+  </section>
+
+  <!-- ================= PROMOTIONAL MEDIA ================= -->
+  <section id="promo">
+    <h2 class="cs-heading reveal">Promotional media</h2>
+    <div class="cs-divider reveal"></div>
+
+    <p class="cs-para reveal" style="margin-bottom: clamp(2.5rem, 7vw, 5.3125rem); max-width: none;">Alongside
+      the branding, I produced the promotional video series for Ground FX's Instagram — from a full mixed-media
+      recap shot on a rented gimbal, down to the teaser, the official announcement post, and a second logo
+      rendition used as a closer.</p>
+
+    <div class="cs-marketing-grid reveal" style="grid-template-columns: repeat(4, 1fr);">
+      <div>
+        <!-- self-hosted, not a YouTube embed — same .cs-square--portrait
+             tile shape as the other three (they're .cs-video-tile, which
+             carries this same 711:1206 ratio), just a real <video> instead
+             of a click-to-play thumbnail. object-fit: cover (from
+             .cs-square video) center-crops the 9:16 source to fill it. -->
+        <div class="cs-square cs-square--portrait">
+          <video src="../assets/videos/gfx-recap.mp4" controls preload="metadata" playsinline
+            aria-label="The Ground FX recap video"></video>
+        </div>
+        <p class="cs-caption"><strong>The recap</strong>A dynamic, mixed-media video shot on a rented gimbal,
+          showcasing Waterloo's breaking scene.</p>
+      </div>
+      <div>
+        <div class="cs-square cs-video-tile" data-yt-id="Xm_MzOONDlM">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX teaser video">
+            <img src="../assets/images/gfx-action.png" alt="Ground FX teaser video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <p class="cs-caption"><strong>The teaser</strong>A first taste of what was to come, released ahead of
+          the event.</p>
+      </div>
+      <div>
+        <div class="cs-square cs-video-tile" data-yt-id="Qx8zIcAz8n8">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX official announcement">
+            <img src="../assets/images/gfx-branding-1.png" alt="Ground FX official announcement post thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <p class="cs-caption"><strong>The announcement</strong>The official post with the full event details.</p>
+      </div>
+      <div>
+        <div class="cs-square cs-video-tile" data-yt-id="C7CwaG9Y6kw">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX logo rendition">
+            <img src="../assets/images/gfx-branding-2.png" alt="Second Ground FX logo rendition video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <p class="cs-caption"><strong>Logo rendition</strong>A second take on the GFX logo, used as a signature
+          closer across the video series.</p>
+      </div>
+    </div>
+
+    <p class="cs-caption cs-caption--italic reveal">Behind the scenes — testing the projector and lighting the
+      day before the event.</p>
+    <div style="border-radius: var(--radius-md); overflow: hidden; margin-top: 0.875rem;">
+      <video src="../assets/videos/gfx-testing-clip.mp4" poster="../assets/videos/gfx-testing-clip-poster.jpg"
+        controls preload="metadata" style="display: block; width: 100%; height: auto;"
+        aria-label="Behind-the-scenes clip testing the projector and lighting before Ground FX"></video>
+    </div>
+  </section>
+
+  <!-- ================= MERCH ================= -->
+  <section id="merch">
+    <h2 class="cs-heading reveal">Creating GFX merch</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split cs-split--reverse reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">Along with the dance battles, another tradition Waterloo alumni keep alive is the
+          swag — every year the club creates new Ground FX–themed merch. Designing and marketing that merch was
+          another piece I got to lead.</p>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-highlights-grid" style="margin-top: 0;">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-merch.png" alt="Ground FX merchandise lineup" />
+          </div>
+          <div class="cs-square">
+            <img src="../assets/images/gfx-shirt.jpg" alt="Ground FX branded t-shirt" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= BRANDING ================= -->
+  <section id="branding">
+    <h2 class="cs-heading reveal">Branding</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">From the Instagram visuals to the physical décor throughout the venue, I wanted this
+          year's Ground FX to have a distinct, memorable visual identity. I was deeply inspired by graffiti
+          culture, and wanted that raw, expressive energy to shape the event's look and feel.</p>
+        <p class="cs-para">I remember sketching logo concepts while watching passing trains, each one layered
+          in graffiti. From there the identity came together — grounded in street art, but still cohesive and
+          intentional across every touchpoint.</p>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-highlights-grid" style="margin-top: 0;">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-branding-1.png" alt="Ground FX graffiti-inspired branding exploration" />
+          </div>
+          <div class="cs-square">
+            <img src="../assets/images/gfx-branding-2.png" alt="A second Ground FX branding exploration" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MY TAKEAWAYS ================= -->
+  <section id="takeaways">
+    <h2 class="cs-heading reveal">My takeaways</h2>
+    <div class="cs-divider reveal"></div>
+
+    <p class="cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">Ground FX was more than an
+      event — it was a full-scale production that required strategic planning, strong branding, and disciplined
+      execution. Leading both project management and marketing let me bridge structure with creativity, and
+      strengthened how I manage stakeholders, budgets, and brand identity all at once.</p>
+
+    <div class="cs-takeaways-grid reveal">
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">☀️</span>
+        <div class="cs-takeaway-card__text">
+          <h3>The earlier the better</h3>
+          <p>Starting the planning five months early was the right call. Every schedule carries the hidden
+            cost of time lost to third-party hiccups — starting early prevents the last-minute panic.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">🧩</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Bite-sized pieces</h3>
+          <p>This was one of the biggest events I've held, and starting from zero was daunting — until the team
+            broke it into smaller milestones, and planning became far more manageable.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NEXT PROJECT ================= -->
+  <section id="next-project">
+    <h2 class="cs-heading reveal">Next project</h2>
+    <div class="cs-divider reveal"></div>
+
+    <a class="case-banner cs-next-project reveal" href="faculty-of-environment.html" aria-label="Next project — Faculty of Environment">
+      <img src="../assets/images/faculty-of-environment-thumb.png" alt="Faculty of Environment — Waterloo ENVoices campaign artwork" />
+    </a>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h2>Let's c*nnect!</h2>
+    <div class="footer-links">
+      <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
+      <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
+    </div>
+    <p>© 2026 Jaydon. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

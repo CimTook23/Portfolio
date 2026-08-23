@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+  /* applied before first paint so the page never flashes the wrong
+     theme on load — the actual toggle logic lives in js/main.js */
+  if (localStorage.getItem("theme") === "light") {
+    document.documentElement.dataset.theme = "light";
+  }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Jaydon — Portfolio</title>
+<meta name="description" content="Jaydon's portfolio — product design, marketing, and motion graphics case studies." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- lives at the body level (not inside .hero) so it can extend all the
+     way to the true top of the page, behind the nav — .hero itself clips
+     to its own box (overflow: hidden), and starts below the nav-wrap's
+     layout space, so a grid nested inside it can never reach past there.
+     Sized/positioned in JS (see main.js) since its height needs to span
+     from the page top through the bottom of .hero. -->
+<div class="hero__grid hero__grid--homepage" aria-hidden="true"></div>
+
+<div class="nav-wrap">
+  <header class="nav" id="top">
+    <a class="nav__logo" href="index.html" aria-label="Jaydon — home">
+      <span class="nav__logo-badge"><img src="assets/images/nav-avatar.png" alt="" /></span>
+      <span class="nav__logo-text">Jaydon</span>
+    </a>
+
+    <ul class="nav__links" id="navLinks">
+      <li><a href="#case-studies">Case studies</a></li>
+      <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="digital-media.html">Digital Media</a></li>
+      <li><a href="about.html">About me</a></li>
+    </ul>
+
+    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+
+    <button class="nav__theme-toggle" id="themeToggle" type="button" aria-label="Toggle light mode">
+      <svg class="nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M17.99 17.99l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M17.99 6.01l1.77-1.77" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <svg class="nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 4H17M1 9H17M1 14H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+</div>
+
+<main>
+
+  <section class="hero">
+    <div class="hero__intro container container--wide">
+      <div class="hero__faces reveal">
+        <video class="hero__computer" data-src="assets/videos/hero-computer.webm"
+          poster="assets/videos/hero-computer-poster.png" muted loop preload="none" playsinline
+          aria-label="Looping animation of a laptop screen glitching between video static and Jaydon's cartoon avatar"></video>
+      </div>
+
+      <h1 class="hero__title reveal" data-scramble>JAYDON WANG</h1>
+
+      <p class="hero__desc reveal">
+        Enjoys working in product, visual and brand design. Outside of side quests and
+        breakdancing, he often finds himself:
+      </p>
+
+      <a class="btn btn-outline hero__btn-single reveal" href="#case-studies">Building experiences ↓</a>
+    </div>
+  </section>
+
+  <section id="case-studies" class="container container--wide">
+    <div class="section-head reveal">
+      <div>
+        <h2>Projects &amp; Case Studies</h2>
+      </div>
+    </div>
+
+    <div class="case-studies__layout">
+      <div class="project-grid">
+
+        <a class="project-card reveal" href="case-studies/aira.html" data-category="product-design">
+          <div class="project-card__media">
+            <img src="assets/images/aira-thumb.gif" alt="Aira app — screens showing appointment tracker, air quality index, and health tracker" loading="lazy" />
+          </div>
+          <div class="project-card__body">
+            <div class="tag-row">
+              <span class="tag">Product Design</span>
+              <span class="tag">2026</span>
+            </div>
+            <h3>Aira</h3>
+            <p>A health companion app built for a Sun Life design jam, helping teen asthma patients track appointments, medical history, and air-quality triggers.</p>
+          </div>
+        </a>
+
+        <a class="project-card reveal" href="case-studies/faculty-of-environment.html" data-category="marketing">
+          <div class="project-card__media">
+            <img src="assets/images/faculty-of-environment-thumb.png" alt="Waterloo Faculty of Environment — ENVoices campaign artwork" loading="lazy" />
+          </div>
+          <div class="project-card__body">
+            <div class="tag-row">
+              <span class="tag">Marketing</span>
+              <span class="tag">2026</span>
+            </div>
+            <h3>Faculty of Environment</h3>
+            <p>Campaign artwork and storytelling for Waterloo's Faculty of Environment ENVoices initiative.</p>
+          </div>
+        </a>
+
+        <a class="project-card reveal" href="case-studies/ground-fx.html" data-category="marketing,event-coordination">
+          <div class="project-card__media">
+            <img src="assets/images/ground-fx-thumb.png" alt="Ground FX — breakdancing event branding and motion graphics" loading="lazy" />
+          </div>
+          <div class="project-card__body">
+            <div class="tag-row">
+              <span class="tag">Marketing</span>
+              <span class="tag">2026</span>
+            </div>
+            <h3>Ground FX</h3>
+            <p>Bold event branding and motion graphics for a Waterloo breakdancing showcase.</p>
+          </div>
+        </a>
+
+      </div>
+
+      <div class="filters reveal">
+        <button class="filter-pill filter-pill--all is-active" data-filter="all">All</button>
+        <div class="filters__group">
+          <button class="filter-pill" data-filter="product-design">Product Design</button>
+          <button class="filter-pill" data-filter="marketing">Marketing</button>
+          <button class="filter-pill" data-filter="event-coordination">Event coordination</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container container--wide">
+    <div class="section-head reveal">
+      <div>
+        <h2>Bit's and pieces</h2>
+        <p class="section-head__sub">Ideas and concept works.</p>
+      </div>
+    </div>
+    <div class="placeholder-note reveal">
+      More coming soon — this section will hold smaller ideas, sketches, and concept work.
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="split-panel glass reveal">
+      <div>
+        <span class="eyebrow">Get in touch</span>
+        <h2>Let's build something whimsical &amp; futuristic together.</h2>
+        <p>Have a project in mind, or just want to talk motion graphics and breakdancing? Reach out — always happy to connect.</p>
+        <a class="btn btn-gradient" href="mailto:wang.jaydon1@gmail.com">Say hello →</a>
+      </div>
+
+      <div class="contact-card glass">
+        <div class="contact-card__row">
+          <span class="contact-card__icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6L12 13L21 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/></svg>
+          </span>
+          <div>
+            <strong>Email</strong>
+            <span>wang.jaydon1@gmail.com</span>
+          </div>
+        </div>
+        <div class="contact-card__row">
+          <span class="contact-card__icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 20 15 20 9.5C20 6 17 3.5 14 3.5C12.5 3.5 12 4.5 12 4.5C12 4.5 11.5 3.5 10 3.5C7 3.5 4 6 4 9.5C4 15 12 21 12 21Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </span>
+          <div>
+            <strong>Based in</strong>
+            <span>Waterloo, ON, CA</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h2>Let's c*nnect!</h2>
+    <div class="footer-links">
+      <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
+      <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
+    </div>
+    <p>© 2026 Jaydon. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/scramble-text.js"></script>
+</body>
+</html>

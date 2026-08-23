@@ -1,0 +1,2424 @@
+/* =========================================================
+   Jaydon — Portfolio
+   Restrained glassmorphism, matched to the reference layout
+   ========================================================= */
+
+/* Sinteca — the big hero-style titles' font (see --font-hero below).
+   Not on Google Fonts, so it's a local file (assets/fonts/, license in
+   the accompanying .txt there) rather than a <link> in <head>. */
+@font-face {
+  font-family: "Sinteca";
+  src: url("../assets/fonts/Sinteca-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sinteca";
+  src: url("../assets/fonts/Sinteca-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* base */
+  --bg-top: #121327;
+  --bg-bottom: #000000;
+  --text-primary: #f4f5fb;
+  --text-secondary: #a9aec7;
+  --text-muted: #6d7291;
+
+  /* nav / surfaces */
+  --nav-bg: #262739;
+  --surface-bg: rgba(255, 255, 255, 0.035);
+  --surface-border: rgba(255, 255, 255, 0.09);
+  --surface-blur: blur(14px) saturate(140%);
+
+  /* accent — used sparingly: primary CTA + small hover/active touches */
+  --accent: #a855f7;
+  --accent-strong: #9333ea;
+
+  /* light pill (Contact button, active filter) */
+  --light: #eef0fb;
+  --light-ink: #0d0f1e;
+
+  --font-display: "Inter", sans-serif;
+  --font-body: "Inter", sans-serif;
+  /* the big hero-style titles (homepage name, case-study hero titles,
+     footer heading) — was the pixel font "Jersey 15", now Sinteca */
+  --font-hero: "Sinteca", sans-serif;
+
+  --radius-lg: 28px;
+  --radius-md: 20px;
+  --radius-sm: 14px;
+  --radius-pill: 999px;
+
+  --container: 1320px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* ---------- light mode ----------
+   A toggle-able true color inversion rather than a hand-tuned light
+   palette — every dark background becomes white, every white/light
+   piece of text becomes black, site-wide, in one shot, instead of
+   redesigning each component's colors individually. Photographic /
+   video / embedded content (img, video, iframe, canvas, model-viewer)
+   gets the exact same filter applied a SECOND time so the two cancel
+   out and it keeps looking normal — otherwise every photo would
+   render as a photo negative along with the rest of the page.
+   Toggled + persisted via the [data-theme] attribute on <html> (see
+   main.js); the tiny inline script in each page's <head> applies the
+   saved preference before first paint to avoid a flash of the wrong
+   theme on load. */
+html[data-theme="light"] {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="light"] img,
+html[data-theme="light"] video,
+html[data-theme="light"] iframe,
+html[data-theme="light"] canvas,
+html[data-theme="light"] model-viewer {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+body {
+  position: relative;
+  font-family: var(--font-body);
+  font-size: 17px;
+  /* #121327 fades to black right around where the circle buttons begin.
+     NOT `fixed` attachment — that pins the gradient to the viewport, so
+     it recomputes for whatever's currently on screen and effectively
+     "follows" you as you scroll. Default (scroll) attachment anchors it
+     to the page instead: purple only at the very top, solid black for
+     the rest of the page as you scroll down. */
+  background: linear-gradient(180deg, var(--bg-top) 0px, var(--bg-bottom) 1396px);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ---------- restrained "glass" surface (secondary panels only) ---------- */
+
+.glass {
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  backdrop-filter: var(--surface-blur);
+  -webkit-backdrop-filter: var(--surface-blur);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- layout helpers ---------- */
+
+.container {
+  width: min(100% - 48px, var(--container));
+  margin-inline: auto;
+}
+
+.container--wide {
+  width: min(100% - 110px, 2600px);
+}
+
+section {
+  padding-block: 64px;
+}
+
+.eyebrow {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-size: clamp(11px, calc(10.515px + 0.129vw), 13px);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+/* ---------- nav ---------- */
+
+.nav-wrap {
+  position: sticky;
+  top: 20px;
+  z-index: 50;
+  width: min(90%, 1080px);
+  margin-inline: auto;
+  padding-top: 20px;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 26px;
+  padding: 16px 20px 16px 22px;
+  border-radius: var(--radius-pill);
+}
+
+/* shared "liquid glass" surface — nav bar, Case studies button */
+.nav,
+.btn-glass {
+  position: relative;
+  isolation: isolate;
+  /* drop shadow: 50% #000, blur 17, y 4 + inner shadow: 25% #fff, blur 10, y 4 */
+  box-shadow:
+    0 4px 17px rgba(0, 0, 0, 0.5),
+    inset 0 4px 10px rgba(255, 255, 255, 0.25);
+  /* glass effect approximation (refraction 58 / depth 20 / dispersion 50) */
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Case studies button keeps a solid-ish glass fill */
+.btn-glass {
+  background: var(--nav-bg);
+}
+
+/* nav bar itself is truly transparent — page content blurs/distorts through it on scroll */
+.nav {
+  background: rgba(38, 39, 57, 0.38);
+  backdrop-filter: blur(26px) saturate(190%);
+  -webkit-backdrop-filter: blur(26px) saturate(190%);
+}
+
+.nav::after,
+.btn-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.35),
+    rgba(168, 85, 247, 0.18) 35%,
+    rgba(103, 232, 249, 0.14) 65%,
+    rgba(255, 255, 255, 0.05)
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.nav__logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.nav__logo-badge {
+  width: clamp(80px, calc(72.233px + 2.071vw), 112px);
+  height: clamp(37px, calc(33.359px + 0.971vw), 52px);
+  border-radius: 16px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: var(--nav-bg);
+  box-shadow:
+    0 3px 12px rgba(0, 0, 0, 0.45),
+    inset 0 3px 6px rgba(255, 255, 255, 0.2);
+}
+
+.nav__logo-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.nav__logo-text {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.01em;
+  display: none;
+}
+
+.nav__links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: nowrap;
+}
+
+.nav__links a {
+  display: inline-block;
+  padding: 12px 18px;
+  border-radius: var(--radius-pill);
+  font-size: clamp(14px, calc(13.515px + 0.129vw), 16px);
+  font-weight: 400;
+  color: var(--text-primary);
+  transition: color 0.2s ease, background 0.2s ease;
+  white-space: nowrap;
+}
+
+.nav__links a:hover,
+.nav__links a:focus-visible {
+  color: var(--text-primary);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav__cta {
+  flex-shrink: 0;
+}
+
+/* light/dark mode switch — always visible (unlike .nav__toggle, which
+   only shows up once the mobile hamburger breakpoint kicks in) */
+.nav__theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.nav__theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nav__theme-toggle:active {
+  transform: scale(0.92);
+}
+
+/* dark mode (default): sun shown, click to switch TO light.
+   light mode: moon shown, click to switch back to dark. */
+.nav__theme-toggle .nav__theme-icon--moon {
+  display: none;
+}
+
+html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--sun {
+  display: none;
+}
+
+html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
+  display: block;
+}
+
+.nav__toggle {
+  display: none;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: clamp(16px, calc(15.029px + 0.259vw), 20px);
+  padding: clamp(14px, calc(12.544px + 0.388vw), 20px) clamp(24px, calc(21.087px + 0.777vw), 36px);
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* glass pill — "Case studies", mobile nav toggle */
+.btn-glass {
+  color: var(--text-primary);
+}
+
+.btn-glass:hover {
+  filter: brightness(1.15);
+}
+
+/* solid light pill — "Contact" */
+.btn-light {
+  background: var(--light);
+  color: var(--light-ink);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.btn-light:hover {
+  background: #fff;
+}
+
+/* the one accent-colored button on the site */
+.btn-gradient {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.35);
+}
+
+.btn-gradient:hover {
+  background: var(--accent-strong);
+  box-shadow: 0 10px 28px rgba(168, 85, 247, 0.45);
+}
+
+/* no-fill glass — hero "Building experiences" button, hero circles, filter
+   pills, tags, case-study tag chips, and (below) the callout / CTA pills
+   and takeaway cards — every white-stroke component on the site shares
+   this one glass formula now: stroke ~90%-opacity white, low 10px blur
+   (kept low on purpose — see .cs-callout, "The creative content..." —
+   rather than the heavier 20px blur this group used to carry), drop
+   shadow, and a soft-blurred inner glow standing in for the Figma
+   refraction/depth/dispersion glass effect. */
+.btn-outline,
+.hero__circle,
+.filter-pill,
+.tag,
+.cs-tag,
+.cs-callout,
+.cs-cta,
+.cs-takeaway-card,
+.cs-quote {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border: 0.5px solid rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  box-shadow:
+    0 0 23px rgba(0, 0, 0, 0.25),
+    inset 0 4px 16px rgba(255, 255, 255, 0.25);
+  color: #fff;
+}
+
+.btn-outline:hover,
+.hero__circle:hover,
+.filter-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.btn-sm {
+  padding: 12px 22px;
+  font-size: clamp(13px, calc(12.636px + 0.097vw), 14.5px);
+}
+
+/* ---------- hero ---------- */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  /* these override the generic section{padding-block} rule (higher
+     specificity), so without their own fluid range the hero would
+     hold onto a fixed 180px of bottom padding even on a phone —
+     clamp() gives it the same continuous shrink as everything else */
+  padding-top: clamp(48px, calc(40.718px + 1.942vw), 78px);
+  /* same responsive curve as before, shifted up by a flat 150px at every
+     viewport width — extends the section itself without moving the
+     title/image/paragraph/button, which stay anchored to the top */
+  padding-bottom: clamp(214px, calc(185.845px + 7.508vw), 330px);
+  text-align: center;
+}
+
+.hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.4) 0px,
+      rgba(255, 255, 255, 0.4) 1px,
+      transparent 1px,
+      transparent 220px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.4) 0px,
+      rgba(255, 255, 255, 0.4) 1px,
+      transparent 1px,
+      transparent 220px
+    );
+  /* fades out toward the bottom of the hero as it hands off to the section below */
+  mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 95%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 55%, transparent 95%);
+}
+
+/* homepage-only variant — lives at the body level instead of inside
+   .hero (see the HTML comment above its markup for why), so it needs
+   its own positioning against body's box instead of .hero's inset: 0.
+   height is set inline by main.js, since it has to reach from the true
+   page top through the bottom of .hero — a distance CSS alone can't
+   express once the element isn't nested inside .hero anymore. Negative
+   z-index keeps it behind body's normal-flow content (nav, hero text)
+   while still painting above body's own background. */
+.hero__grid.hero__grid--homepage {
+  top: 0;
+  right: 0;
+  bottom: auto;
+  left: 0;
+  z-index: -1;
+  /* fainter, bigger squares than the shared .hero__grid default — full
+     background-image override since its two comma-separated gradient
+     layers (horizontal lines, vertical lines) can't be partially
+     overridden. background-position shifts just the vertical-line layer
+     half a square over, so the line that would otherwise sit flush
+     against the page's left edge (reading like an unwanted border)
+     lands in the middle of a gap instead. */
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.18) 0px,
+      rgba(255, 255, 255, 0.18) 1px,
+      transparent 1px,
+      transparent 320px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.18) 0px,
+      rgba(255, 255, 255, 0.18) 1px,
+      transparent 1px,
+      transparent 320px
+    );
+  background-position: 0 0, 160px 0;
+}
+
+.hero__intro {
+  position: relative;
+  z-index: 1;
+}
+
+.hero__title {
+  font-family: var(--font-hero);
+  font-weight: 700;
+  font-size: clamp(64px, calc(30.99px + 8.803vw), 200px);
+  line-height: 1.2;
+  color: #fff;
+}
+
+.hero__desc {
+  max-width: 1100px;
+  /* fluid to match the fluid title above it — a fixed px gap here would
+     look cramped next to a 200px headline on a wide screen and loose
+     next to a 64px one on a narrow phone */
+  margin: clamp(10px, calc(7.573px + 0.647vw), 20px) auto 0;
+  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.hero__desc strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* ---------- hero faces ---------- */
+
+.hero__faces {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  /* nudges the laptop down a bit from the top of the hero */
+  margin-top: clamp(16px, calc(10.175px + 1.553vw), 40px);
+  /* fluid for the same reason as .hero__desc's margin below — keeps the
+     gap proportionate to the (also fluid) laptop and title next to it
+     instead of reading as too tight on a big screen or too loose on a
+     small one */
+  margin-bottom: clamp(28px, calc(19.262px + 2.330vw), 64px);
+}
+
+/* replaces the old two-headshot pairing (a photo + a cartoon face) with
+   a single looping clip — a laptop screen glitching between video static
+   and the same cartoon avatar, rendered with real alpha transparency
+   (WebM/VP9) so only the laptop shape shows, no background box. Sized up
+   from the old two-headshot footprint — as a single, more detailed
+   focal element it needs more visual weight to hold its own against the
+   headline below; width follows the laptop's own ~1.8:1 aspect ratio. */
+.hero__computer {
+  height: clamp(190px, calc(148.738px + 11.003vw), 360px);
+  width: auto;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
+}
+
+.hero__btn-single {
+  display: inline-flex;
+  /* fluid for the same reason as the other hero spacing above — and a
+     touch more generous than the title→description gap, so the CTA
+     reads as its own distinct, clickable beat rather than crowding the
+     paragraph above it */
+  margin-top: clamp(28px, calc(21.204px + 1.812vw), 56px);
+}
+
+/* ---------- hero stage: character art + surrounding buttons ---------- */
+
+.hero__stage {
+  position: relative;
+  width: clamp(320px, calc(-68.35px + 103.56vw), 1920px);
+  margin: 64px auto 0;
+}
+
+.hero__character {
+  width: clamp(220px, calc(3.01px + 57.864vw), 1114px);
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.5));
+}
+
+.hero__btn {
+  position: absolute;
+  top: 11%;
+  z-index: 2;
+  font-size: clamp(16px, calc(13.087px + 0.777vw), 28px);
+  padding: clamp(14px, calc(8.66px + 1.424vw), 36px) clamp(24px, calc(20.117px + 1.036vw), 40px);
+}
+
+.hero__btn--left {
+  left: 0;
+  animation: wiggle 9s ease-in-out infinite;
+  animation-delay: 0s;
+}
+
+.hero__btn--right {
+  right: 0;
+  animation: wiggle 10.4s ease-in-out infinite;
+  animation-delay: 0.6s;
+}
+
+.hero__circle {
+  position: absolute;
+  top: 48%;
+  width: clamp(64px, calc(13.272px + 13.528vw), 273px);
+  height: clamp(64px, calc(13.272px + 13.528vw), 273px);
+  border-radius: 50%;
+  z-index: 2;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hero__circle--left {
+  left: 12%;
+  animation: wiggle 7.6s ease-in-out infinite;
+  animation-delay: 1.1s;
+}
+
+.hero__circle--right {
+  right: 12%;
+  animation: wiggle 9.8s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+/* irregular After-Effects-style wiggle — x/y drift only, no rotation */
+@keyframes wiggle {
+  0% { transform: translate(0, 0); }
+  8% { transform: translate(4px, -4px); }
+  16% { transform: translate(-4px, 4px); }
+  25% { transform: translate(6px, 4px); }
+  35% { transform: translate(-4px, -6px); }
+  45% { transform: translate(4px, 2px); }
+  55% { transform: translate(-6px, -2px); }
+  65% { transform: translate(2px, 6px); }
+  75% { transform: translate(-3px, -4px); }
+  85% { transform: translate(5px, 3px); }
+  95% { transform: translate(-2px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__btn--left,
+  .hero__btn--right,
+  .hero__circle--left,
+  .hero__circle--right {
+    animation: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .hero__stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .hero__btn,
+  .hero__circle {
+    position: static;
+  }
+
+  .hero__character {
+    order: 1;
+    width: min(70%, 300px);
+  }
+
+  .hero__btn--left {
+    order: 2;
+  }
+
+  .hero__btn--right {
+    order: 3;
+  }
+
+  .hero__circle--left {
+    order: 4;
+  }
+
+  .hero__circle--right {
+    order: 5;
+  }
+}
+
+/* ---------- section heading ---------- */
+
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.section-head h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(48px, calc(35.379px + 3.366vw), 100px);
+  letter-spacing: -0.01em;
+}
+
+.section-head__sub {
+  color: var(--text-secondary);
+  font-size: clamp(14px, calc(13.515px + 0.129vw), 16px);
+  margin-top: 8px;
+}
+
+/* ---------- case studies layout: list + sticky filter sidebar ---------- */
+
+.case-studies__layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 64px;
+  margin-top: 40px;
+}
+
+/* ---------- filters (sticky sidebar) ---------- */
+
+.filters {
+  flex: 0 0 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  /* same gap as .filters__group below, so "All" sits exactly as far from
+     the first pill as the pills sit from each other */
+  gap: 20px;
+  position: sticky;
+  /* sticks centered in the viewport (not pinned near the top) while the
+     project list scrolls past — see .filters.reveal below, which also
+     accounts for this in its travel distance */
+  top: 50vh;
+}
+
+.filter-pill {
+  padding: 12px 24px;
+  border-radius: var(--radius-pill);
+  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* the index page's project filters are the primary way to browse the
+   whole list, so they get a bigger, more confident size than the generic
+   .filter-pill default used elsewhere (case-study option toggles,
+   digital-media filters) */
+.filters .filter-pill {
+  padding: 18px 34px;
+  font-size: clamp(16px, calc(14.5px + 0.55vw), 19px);
+}
+
+.filter-pill.is-active {
+  color: var(--light-ink);
+  background: var(--light);
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.filters__group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+/* decorative rail — spans the whole .filters column (top: 0 to bottom: 0
+   of .filters itself, not just .filters__group), so it reaches all the
+   way up to "All" instead of starting below it. Sits outside the box
+   (negative offset) so it doesn't push the pills out of alignment.
+   .filters is already position: sticky above, which — like any non-static
+   position — is a valid positioning context for this, so no extra
+   position: relative is needed (and adding one here would silently win
+   the cascade over the sticky declared earlier and break it). */
+.filters::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -26px;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ---------- project list ---------- */
+
+.project-grid {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+}
+
+.project-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 40px;
+  transition: transform 0.35s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+}
+
+.project-card__media {
+  flex: 0 0 38%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 16px;
+  background: #0d1024;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+  transition: box-shadow 0.35s ease;
+}
+
+.project-card:hover .project-card__media {
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
+}
+
+.project-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.project-card:hover .project-card__media img {
+  transform: scale(1.05);
+}
+
+.project-card__body {
+  padding-top: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+}
+
+.tag-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tag {
+  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  font-weight: 600;
+  padding: 12px 24px;
+  border-radius: 12px;
+  color: #fff;
+}
+
+.project-card__body h3 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, calc(1.5146rem + 2.071vw), 4rem);
+  font-weight: 400;
+}
+
+.project-card__body p {
+  color: #ffffff;
+  /* same size as .cs-para (Faculty of Environment's body copy class) */
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-weight: 300;
+  line-height: 1.5;
+  max-width: 60ch;
+}
+
+/* ---------- about / contact strip ---------- */
+
+.split-panel {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 32px;
+  border-radius: var(--radius-lg);
+  padding: 64px;
+}
+
+.split-panel h2 {
+  font-family: var(--font-display);
+  font-size: clamp(32px, calc(28.602px + 0.906vw), 46px);
+  margin-bottom: 20px;
+}
+
+.split-panel p {
+  color: var(--text-secondary);
+  font-size: clamp(15px, calc(14.515px + 0.129vw), 17px);
+  line-height: 1.7;
+  margin-bottom: 32px;
+  max-width: 500px;
+}
+
+.contact-card {
+  border-radius: var(--radius-md);
+  padding: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  justify-content: center;
+}
+
+.contact-card__row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.contact-card__icon {
+  width: clamp(34px, calc(31.087px + 0.777vw), 46px);
+  height: clamp(34px, calc(31.087px + 0.777vw), 46px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  flex-shrink: 0;
+}
+
+.contact-card__row span {
+  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  color: var(--text-secondary);
+}
+
+.contact-card__row strong {
+  display: block;
+  font-size: clamp(14px, calc(13.515px + 0.129vw), 16px);
+  color: var(--text-primary);
+}
+
+/* ---------- footer ---------- */
+
+/* ---------- site footer ("Let's c*nnect!") ----------
+   Full-bleed light section, deliberately breaking from the dark theme
+   the rest of the site uses — the one bright, high-contrast close on
+   every page. A plain <footer> with no ancestor width constraint
+   already spans the full viewport on its own, so no breakout trick
+   is needed the way .cs-hero's grid needs one. */
+footer {
+  background: #fff;
+  /* text-to-edge distance top and bottom — 320px (20rem) floor,
+     never less regardless of viewport, growing a bit further on very
+     large screens. Left/right keep the previous, smaller clamp. */
+  padding-block: clamp(20rem, calc(18.5437rem + 6.214vw), 26rem);
+  padding-inline: clamp(3rem, calc(2.3932rem + 2.589vw), 5.5rem);
+}
+
+.footer-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
+  text-align: center;
+}
+
+/* same hero font + size as the case-study hero titles (e.g. "Faculty
+   of environment") */
+.footer-inner h2 {
+  font-family: var(--font-hero);
+  font-weight: 700;
+  font-size: clamp(3rem, calc(0.6942rem + 9.838vw), 12.5rem);
+  line-height: 1.05;
+  color: var(--light-ink);
+}
+
+.footer-links {
+  display: flex;
+  gap: clamp(0.75rem, calc(0.6286rem + 0.518vw), 1.25rem);
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* same pill shape/padding/weight as every other .btn on the site —
+   just recolored for a light section, since the sitewide glass
+   formula (white stroke, blur) is tuned for a dark background and
+   would be nearly invisible here. Dark border + soft shadow stand in
+   for that same "defined pill on its surface" read. */
+.footer-links .btn {
+  background: #fff;
+  color: var(--light-ink);
+  border-color: rgba(13, 15, 30, 0.15);
+  box-shadow: 0 4px 14px rgba(13, 15, 30, 0.08);
+}
+
+.footer-links .btn:hover {
+  background: var(--light);
+}
+
+.footer-inner p {
+  color: rgba(13, 15, 30, 0.55);
+  font-size: clamp(13px, calc(12.636px + 0.097vw), 14.5px);
+  margin: 0;
+}
+
+/* ---------- digital media hero ---------- */
+
+.dm-hero {
+  position: relative;
+  overflow: hidden;
+  /* the section's own box is just a proportional frame — every actual
+     pixel value lives on .dm-hero__stage below, fixed at the original
+     design's real size (2540×1266 — this was a live 1:1 measurement of
+     the actual browser window the original min-height: 100vh design
+     rendered well in) and scaled down to fit here. container-type turns
+     "cqw" inside the stage's scale() into "1% of THIS element's width"
+     specifically, rather than the viewport's, so the math is correct
+     even if something upstream (a scrollbar, a future wrapper) ever
+     makes this narrower than the viewport. */
+  container-type: inline-size;
+  aspect-ratio: 2540 / 1266;
+}
+
+.dm-hero__stage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 2540px;
+  height: 1266px;
+  /* was .dm-hero's own padding before the stage existed — kept here (not
+     dropped) since absolutely positioned children (.dm-hero__media,
+     inset: 0) are positioned against THIS box's padding edge, so this is
+     what pushes the title below the nav and gives the character's canvas
+     the same vertical room the original design had */
+  padding: 170px 0 80px;
+  box-sizing: border-box;
+  transform: scale(calc(100cqw / 2540px));
+  transform-origin: top left;
+}
+
+.dm-hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      20deg,
+      rgba(255, 255, 255, 0.07) 0px,
+      rgba(255, 255, 255, 0.07) 1px,
+      transparent 1px,
+      transparent 200px
+    ),
+    repeating-linear-gradient(
+      -20deg,
+      rgba(255, 255, 255, 0.07) 0px,
+      rgba(255, 255, 255, 0.07) 1px,
+      transparent 1px,
+      transparent 200px
+    );
+}
+
+.dm-hero__row {
+  position: relative;
+  z-index: 2;
+}
+
+.dm-hero__content {
+  max-width: 1500px;
+  margin-top: -110px;
+  margin-left: 200px;
+  text-align: left;
+}
+
+/* fixed px, overriding .hero__title's own shared clamp() (used as-is on
+   the homepage/about hero, where IT is the thing scaling the section) —
+   in here .dm-hero__stage's transform: scale() is the only thing that
+   should ever shrink this, so its own font-size stays pinned at the
+   original design's value */
+.dm-hero__content .hero__title {
+  font-size: 200px;
+  line-height: 0.85;
+}
+
+.dm-hero__desc {
+  margin: 24px 0 0;
+  font-size: 25.6px;
+  text-align: left;
+}
+
+/* Full-bleed layer, same trick as .dm-hero__grid — the model sits underneath
+   the title/paragraph instead of being boxed into a flex column, so it's
+   free to occupy the whole section width instead of getting cropped by a
+   narrow column edge. */
+.dm-hero__media {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Invisible reference box matching where the character actually sits on
+   screen — used only so head-track.js can normalize cursor position against
+   his visual footprint instead of the full-bleed canvas behind him. */
+.dm-hero__track-zone {
+  position: absolute;
+  inset: 0;
+  left: 58%;
+  pointer-events: none;
+}
+
+.dm-hero__model {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: translateX(560px);
+  --poster-color: transparent;
+  background-color: transparent;
+  /* fades the shoulders/torso out into the page background below */
+  mask-image: linear-gradient(to bottom, #000 55%, transparent 88%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 88%);
+}
+
+.dm-hero__actions {
+  position: absolute;
+  z-index: 2;
+  right: 98px;
+  bottom: 195px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.dm-btn {
+  min-width: 578px;
+  justify-content: space-between;
+  font-size: 28px;
+  padding: 36px 44px;
+}
+
+/* No @media breakpoints for anything inside .dm-hero__stage — that's the
+   point of it. Every element in there keeps one fixed pixel value (the
+   1920px-wide look) and .dm-hero__stage's transform: scale() is the only
+   thing that ever changes, so the whole composition — text, character,
+   buttons — stays proportionally identical at every viewport width
+   instead of each piece reflowing on its own and drifting apart. */
+
+/* ---------- digital media: content sections (Motion design, Jaydon MP4,
+   Inventory) ----------
+   Reuses the case-study system's spacing scale — same gap clamp(), same
+   .cs-square media-tile treatment (radius, overflow, 1:1 default) — so
+   this page reads as the same design language as the rest of the site,
+   rather than a one-off layout. */
+/* gap between the "Motion design" heading and its filter pills — was
+   flush (0, via the sitewide * { margin: 0 } reset) before this */
+.dm-filter-row {
+  margin-top: clamp(16px, calc(13.087px + 0.7767vw), 28px);
+}
+
+.dm-media-grid {
+  display: grid;
+  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+/* title + tag row under each video tile in the Motion design grid — same
+   tag-chip language as the homepage's project cards (.tag-row .tag),
+   just scaled down to fit under a grid tile instead of a full card. */
+.dm-video-meta {
+  margin-top: 1rem;
+}
+
+.dm-video-meta .tag-row {
+  margin-bottom: 0.75rem;
+}
+
+.dm-video-meta__title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.1rem, calc(0.877rem + 0.85vw), 1.75rem);
+  color: #fff;
+}
+
+/* the one grid column layout for both sections — every tile (wide or
+   portrait) sits in the same 2-column grid, so a portrait tile's
+   rendered width always matches a horizontal tile's width exactly,
+   rather than being divided across a separate 3- or 4-column grid */
+.dm-media-grid--two {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* horizontal/widescreen tile ratio — 1129:711. Compound selector (not
+   just .cs-square--wide alone) so it reliably beats .cs-square's own
+   1:1 aspect-ratio regardless of which rule is declared later in the
+   file — same fix as .dm-media-tile--empty needed above. */
+.cs-square.cs-square--wide {
+  aspect-ratio: 1129 / 711;
+}
+
+/* portrait variant of .cs-square (matches .cs-video-tile's 711:1206
+   ratio) for the Shorts/Reels-style clips in these two galleries */
+.cs-square.cs-square--portrait {
+  aspect-ratio: 711 / 1206;
+}
+
+/* honest "space reserved" tile — no fake play button or borrowed
+   screenshot pretending to be finished work, just the same dashed-border
+   treatment already used by .placeholder-note elsewhere on this page.
+   Compound selector (not just .dm-media-tile--empty alone) so it beats
+   .cs-square's own #d9d9d9 placeholder-image background regardless of
+   which rule happens to be declared later in the file. */
+.cs-square.dm-media-tile--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  text-align: center;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.02);
+  color: var(--text-muted);
+  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+}
+
+/* Inventory — empty item-slot grid standing in for a future real
+   screenshot/demo of the system, rather than a fabricated one */
+.dm-inventory-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(44px, 1fr));
+  gap: 10px;
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.dm-inventory-slot {
+  aspect-ratio: 1 / 1;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+@media (max-width: 560px) {
+  .dm-media-grid--two {
+    grid-template-columns: 1fr;
+  }
+
+  .dm-inventory-grid {
+    grid-template-columns: repeat(auto-fill, minmax(32px, 1fr));
+    gap: 6px;
+  }
+}
+
+/* ---------- inner pages (about / digital media / case studies) ---------- */
+
+.page-hero {
+  padding-top: 110px;
+  padding-bottom: 48px;
+}
+
+.page-hero h1 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(44px, calc(37.204px + 1.812vw), 72px);
+  letter-spacing: -0.01em;
+  margin-bottom: 20px;
+}
+
+.page-hero p {
+  max-width: 680px;
+  color: var(--text-secondary);
+  font-size: clamp(15px, calc(14.272px + 0.194vw), 18px);
+  line-height: 1.7;
+}
+
+/* the moved homepage hero content (title/paragraph/character/buttons) —
+   overrides the generic .page-hero h1/p styling above with the original
+   hero typography, and centers it the way it was on the homepage */
+.about-hero-content {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.page-hero .hero__title {
+  font-family: var(--font-hero);
+  font-weight: 700;
+  font-size: clamp(64px, calc(30.99px + 8.803vw), 200px);
+  line-height: 1.2;
+  margin-bottom: 0;
+  letter-spacing: normal;
+}
+
+.page-hero .hero__desc {
+  max-width: 1100px;
+  margin: 30px auto 0;
+  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
+  line-height: 1.15;
+  color: #ffffff;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(13px, calc(12.636px + 0.097vw), 14.5px);
+  color: var(--text-muted);
+  margin-bottom: 28px;
+}
+
+.breadcrumb a {
+  color: var(--accent);
+}
+
+.case-banner {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+  margin-bottom: 56px;
+}
+
+.case-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* "Next project" banner — reuses .case-banner's shape/proportions, but
+   it's a link (not a static image), so it gets its own hover feedback:
+   a slight zoom on the thumbnail inside the already-clipped rounded
+   corners. */
+.cs-next-project {
+  display: block;
+}
+
+.cs-next-project img {
+  transition: transform 0.4s ease;
+}
+
+.cs-next-project:hover img {
+  transform: scale(1.04);
+}
+
+.case-meta {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  padding: 36px;
+  border-radius: var(--radius-md);
+  margin-bottom: 64px;
+}
+
+.case-meta div span {
+  display: block;
+  font-size: clamp(11px, calc(10.515px + 0.129vw), 13px);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.case-meta div strong {
+  font-family: var(--font-display);
+  font-size: clamp(14px, calc(13.272px + 0.194vw), 17px);
+  font-weight: 600;
+}
+
+.case-body {
+  display: grid;
+  gap: 52px;
+  max-width: 820px;
+  margin-bottom: 64px;
+}
+
+.case-body h2 {
+  font-family: var(--font-display);
+  font-size: clamp(20px, calc(18.544px + 0.388vw), 26px);
+  margin-bottom: 14px;
+}
+
+.case-body p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  font-size: clamp(15px, calc(14.636px + 0.097vw), 16.5px);
+}
+
+.placeholder-note {
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  color: var(--text-muted);
+  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  line-height: 1.6;
+  border: 1px dashed rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+
+.tile {
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  font-size: clamp(13px, calc(12.636px + 0.097vw), 14.5px);
+  text-align: center;
+  padding: 20px;
+}
+
+/* ---------- reveal-on-scroll ---------- */
+
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- scramble-in title effect ---------- */
+
+/* Plain inline, not inline-block: the animation only ever changes color and
+   text-shadow (see .scramble-char--lock below), neither of which needs a
+   box of its own. inline-block would let the browser treat the gap between
+   any two letters as a valid line-break point, which is what was splitting
+   words like "Museum" mid-word on narrower viewports. */
+.scramble-char {
+  display: inline;
+}
+
+.scramble-char--lock {
+  animation: scramble-flash 380ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+@keyframes scramble-flash {
+  0% {
+    color: var(--accent, #a855f7);
+    text-shadow: 0 0 18px rgba(168, 85, 247, 0.6);
+  }
+  100% {
+    color: inherit;
+    text-shadow: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scramble-char--lock {
+    animation: none;
+  }
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 900px) {
+  .case-studies__layout {
+    flex-direction: column-reverse;
+    gap: 32px;
+  }
+
+  .filters {
+    position: static;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .filters__group {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    padding-right: 0;
+  }
+
+  .filters__group::after {
+    display: none;
+  }
+
+  /* .filters is position: static here (not sticky), so the desktop
+     centering math in .filters.reveal above (built around translateY(-50%))
+     no longer applies — fall back to the site's plain rise-and-fade */
+  .filters.reveal {
+    transform: translateY(24px);
+  }
+
+  .filters.reveal.is-visible {
+    transform: translateY(0);
+  }
+
+  .project-card {
+    flex-direction: column;
+  }
+
+  .project-card__media {
+    flex-basis: auto;
+    width: 100%;
+  }
+
+  .split-panel {
+    grid-template-columns: 1fr;
+    padding: 40px 30px;
+  }
+
+  .case-meta {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tile-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .nav-wrap {
+    top: 14px;
+    padding-top: 14px;
+  }
+
+  .nav {
+    flex-wrap: nowrap;
+  }
+
+  .nav__links {
+    position: fixed;
+    top: 96px;
+    left: 16px;
+    right: 16px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 14px;
+    border-radius: var(--radius-md);
+    background: var(--nav-bg);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+    transform: translateY(-12px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.25s ease;
+  }
+
+  .nav__links.is-open {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .nav__links a {
+    padding: 12px 14px;
+  }
+
+  .nav__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: var(--text-primary);
+    cursor: pointer;
+  }
+
+  .nav__cta {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  section {
+    padding-block: 48px;
+  }
+
+  .case-meta {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .tile-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   Case study v2 — richer editorial layout (Faculty of Environment)
+   Namespaced under .cs- so the older placeholder case-study
+   pages (aira, ground-fx) are untouched — this pass is scoped to
+   this page only.
+
+   Unit strategy (rem + fluid clamp()), inspired by how
+   aileens-beautiful-site.webflow.io/roblox holds its proportions
+   across viewport sizes:
+     - All sizing here is in rem (1rem = 16px root), not px, so it
+       respects the reader's browser text-size/zoom setting.
+     - Anything that should visibly shrink on a narrow screen — outer
+       padding, section gaps, hero/heading type — uses clamp(min,
+       preferred-vw, max) instead of a fixed value, so it scales
+       continuously between breakpoints rather than staying desktop-
+       sized until a media query suddenly snaps it smaller.
+     - Media query breakpoints are in em, the conventional unit for
+       breakpoints specifically (avoids a legacy Safari zoom bug that
+       px/rem breakpoints have).
+     - Exceptions, left in px on purpose because they're rendering
+       effects rather than layout/typography: hairline borders
+       (0.5px/1px — sub-pixel values only rasterize predictably in
+       px), and blur/shadow radii (backdrop-filter, box-shadow) —
+       scaling a blur amount with viewport width has no visual
+       benefit and just adds rounding noise.
+   ========================================================= */
+
+/* wider page container for this case study — fluid side margins
+   (up to 9.6875rem / 155px) instead of the site-wide capped 1320px
+   .container, so content runs edge-to-edge the way the reference
+   does, shrinking smoothly down to a small fixed gutter on mobile. */
+.cs-container {
+  width: 100%;
+  padding-inline: clamp(1.25rem, calc(-0.7979rem + 8.738vw), 9.6875rem);
+  padding-bottom: clamp(3rem, calc(2.2718rem + 3.107vw), 6rem);
+  margin-inline: auto;
+  box-sizing: border-box;
+}
+
+.cs-hero {
+  position: relative;
+  /* pulled up close to the nav, matching the digital-media page's
+     title position */
+  padding-top: clamp(1rem, calc(0.7573rem + 1.036vw), 2rem);
+  padding-bottom: clamp(4rem, calc(3.2718rem + 3.107vw), 7rem);
+  /* NOT overflow:hidden — the grid below breaks out to full viewport
+     width via a negative-margin technique; overflow:hidden here would
+     clip that breakout back down to the padded content width. Page-
+     level horizontal scroll is still guarded by body{overflow-x:hidden}. */
+}
+
+/* every case-study section sits flush against its neighbour by default
+   (sibling <section> boxes touch — each section's own padding-block
+   only adds room *inside* itself). Add real breathing room at each
+   section boundary, including hero → introduction, without touching
+   any individual section's own padding. */
+.cs-container section + section {
+  margin-top: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+}
+
+/* subtle hairline grid, matching the reference exactly: much fainter
+   than the shared .hero__grid's default (rgba(255,255,255,0.4) reads
+   as a bold line; the reference is closer to 0.1), and stays visible
+   almost all the way down instead of fading out at 55–95% — the
+   shared version fades out quickly because the homepage hero is
+   short; this one is tall enough that the grid needs to read as
+   filling the whole section, right down to where the CTA buttons sit.
+
+   It's also broken out to full VIEWPORT width (not just the padded
+   .cs-container content width) using the standard left:50%/-50vw
+   full-bleed trick — .cs-container's side padding would otherwise cut
+   the grid off well before the actual edge of the page. */
+.cs-hero .hero__grid {
+  left: 50%;
+  right: auto;
+  width: 100vw;
+  margin-left: -50vw;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px,
+      transparent 20vw
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 0px,
+      rgba(255, 255, 255, 0.1) 1px,
+      transparent 1px,
+      transparent 20vw
+    );
+  mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+}
+
+.cs-hero__top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  flex-wrap: wrap;
+  margin-top: clamp(0.5rem, calc(0.3786rem + 0.518vw), 1rem);
+}
+
+/* same hero font as the "Jaydon Wang" homepage hero title */
+.cs-hero__title {
+  font-family: var(--font-hero);
+  font-weight: 700;
+  font-size: clamp(3rem, calc(0.6942rem + 9.838vw), 12.5rem);
+  line-height: 1.05;
+  letter-spacing: normal;
+  max-width: 14ch;
+}
+
+.cs-hero__tags {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  gap: clamp(0.5rem, calc(0.4393rem + 0.259vw), 0.75rem);
+  flex-wrap: wrap;
+  margin-top: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+}
+
+.cs-tag {
+  padding: clamp(0.5rem, calc(0.4697rem + 0.129vw), 0.625rem) clamp(1rem, calc(0.909rem + 0.388vw), 1.375rem);
+  border-radius: 0.625rem;
+  font-size: clamp(0.8125rem, calc(0.7822rem + 0.129vw), 0.9375rem);
+  font-weight: 500;
+}
+
+.cs-hero__meta {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem);
+  flex: 0 0 auto;
+  min-width: clamp(11rem, calc(10.3325rem + 2.848vw), 13.75rem);
+}
+
+.cs-hero__meta-item span {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.25rem, calc(1.068rem + 0.777vw), 2rem);
+  letter-spacing: -0.01em;
+  margin-bottom: 0.5rem;
+}
+
+.cs-hero__meta-item p {
+  color: #fff;
+  font-size: clamp(0.875rem, calc(0.8447rem + 0.129vw), 1rem);
+  line-height: 1.5;
+  max-width: 32ch;
+}
+
+.cs-hero__actions {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  flex-wrap: wrap;
+  /* generous open grid space between the tags and the buttons,
+     matching the reference layout instead of a tight stack — pushed
+     down further so the pair reads as centered lower in the hero */
+  margin-top: clamp(10rem, calc(7.3301rem + 11.392vw), 21rem);
+}
+
+.cs-heading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(2.5rem, calc(1.4381rem + 4.531vw), 6.875rem);
+  letter-spacing: -0.01em;
+  /* tighter than before — a divider reads as "attached" to its heading
+     when the gap is a small fraction of the heading's size, not a
+     fixed distance that stays huge even as the heading text shrinks */
+  margin-bottom: clamp(1rem, calc(0.6359rem + 1.553vw), 2.5rem);
+}
+
+/* "rise" scroll-in, matching the section headings on
+   aileens-beautiful-site.webflow.io/roblox — a pure upward slide with
+   no fade (unlike the site's generic .reveal, which fades + rises
+   1.5rem), using a bigger travel distance so it reads as the heading
+   rising into place rather than a subtle nudge — clamped so that
+   distance shrinks on short/narrow viewports instead of overshooting.
+   Reuses the same .reveal/.is-visible IntersectionObserver hook
+   already wired up in main.js — no JS changes needed, just an
+   override for this class. */
+.cs-heading.reveal {
+  opacity: 1;
+  transform: translateY(clamp(2.5rem, calc(1.5898rem + 3.883vw), 6.25rem));
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cs-heading.reveal.is-visible {
+  transform: translateY(0);
+}
+
+/* index page's project filters — same "rise" idea as .cs-heading above,
+   but starting from much further down (near the bottom of the viewport)
+   since this sidebar is sticky and settles centered on screen rather than
+   pinned near the top, so the travel reads as it rising all the way up
+   into that centered resting spot instead of a small nudge. The -50%
+   keeps it centered throughout — it's the extra clamp() added on top
+   that provides the "further down to start" travel distance. */
+.filters.reveal {
+  opacity: 0;
+  transform: translateY(calc(-50% + clamp(4rem, calc(2rem + 8vw), 14rem)));
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.filters.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(-50%);
+}
+
+/* hairline divider under every section title */
+.cs-divider {
+  height: 1px;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.4);
+  margin-bottom: clamp(2.5rem, calc(1.8174rem + 2.913vw), 5.3125rem);
+}
+
+.cs-para {
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  line-height: 1.6;
+  color: #fff;
+  max-width: 62ch;
+}
+
+/* callout / long-copy CTA pills — "The creative content...", "Visit the
+   website here.", "Feel free to scroll through", "Visit the instagram
+   page here" — glass formula lives in the shared rule above now; this
+   is just this component's own bigger padding and ~70px radius. Text
+   size matches .cs-para so callout copy reads the same as body copy. */
+.cs-callout,
+.cs-cta {
+  border-radius: 3.125rem;
+  padding: clamp(2rem, calc(1.4994rem + 2.136vw), 4.0625rem) clamp(1.5rem, calc(0.1044rem + 5.955vw), 7.25rem);
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  line-height: 1.55;
+}
+
+/* .cs-cta also carries .btn-outline, whose :hover state adds a faint
+   fill — override it so these stay fully transparent in every state */
+.cs-callout:hover,
+.cs-cta:hover {
+  background: transparent;
+}
+
+.cs-caption {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #fff;
+  margin-top: 0.875rem;
+  max-width: 60ch;
+}
+
+.cs-caption--italic {
+  font-style: italic;
+}
+
+.cs-caption strong {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.375rem;
+}
+
+/* guideline captions sit noticeably below their image, not flush */
+.cs-guideline-item .cs-caption,
+.cs-marketing-grid .cs-caption {
+  margin-top: 2rem;
+  /* match the size of the other paragraph text (.cs-para) instead of
+     the smaller default caption size */
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+}
+
+/* square image placeholders — Introduction (~1000px), Highlights
+   (~1094px), Guidelines (~711px) are all authored as 1:1 source
+   images, so one aspect-ratio utility covers all three; each
+   instance is sized by its grid column instead of a fixed width so
+   it never overflows the (much narrower) page container */
+.cs-square {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  background: #d9d9d9;
+  overflow: hidden;
+}
+
+.cs-square img,
+.cs-square video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* full-width media block for source images that don't crop well to
+   .cs-square's fixed 1:1 (or --wide's fixed 1129:711) ratios — a wide
+   document scan, a site-map diagram, a sketch sheet. No aspect-ratio is
+   forced here; the image keeps its own natural proportions and the box
+   just follows, so nothing gets stretched or cropped into place. */
+.cs-wide-media {
+  width: 100%;
+  border-radius: var(--radius-md);
+  background: #d9d9d9;
+  overflow: hidden;
+}
+
+.cs-wide-media img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* small heading inside a .cs-split__body (e.g. "Clarity", "Understanding")
+   labeling which part of a multi-part section a block belongs to — real
+   type hierarchy instead of a small pill/tag component, since a tag reads
+   as metadata (like the hero's role/timeline chips) rather than a section
+   label sitting right above a full callout. Spacing from the content
+   below comes for free from .cs-split__body's own flex gap. */
+.cs-subheading {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(1.375rem, calc(1.0679rem + 1.553vw), 2.25rem);
+  letter-spacing: -0.01em;
+}
+
+/* Marketing's 3 video tiles — a thumbnail with a play-button overlay
+   that swaps itself for a real YouTube iframe on click (see main.js).
+   Nothing loads until it's actually clicked, so it stays as light as
+   a plain thumbnail image until then, but playback happens inline —
+   no new tab, no leaving the page. */
+.cs-video-tile {
+  position: relative;
+  /* portrait, not the shared 1:1 .cs-square ratio — aspect-ratio takes
+     a unitless ratio, not a length, so "711 x 1206" needs no px/rem
+     conversion at all; it's already the "responsive unit" here, same
+     as every other image ratio on this page */
+  aspect-ratio: 711 / 1206;
+}
+
+/* the clickable thumbnail button — reset to a plain, full-size block
+   so it looks identical to the old linked-thumbnail version */
+.cs-video-tile__trigger {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+/* the embed swapped in on click — fills the tile exactly like the
+   thumbnail image did */
+.cs-video-tile iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* YouTube auto-generates thumbnails for vertical/Shorts-style videos
+   on a 16:9 canvas with a blurred, zoomed duplicate of the frame
+   filling the left/right margins around the real (portrait) content.
+   object-fit: cover already crops most of that away, but a sliver of
+   the blurred fill still peeks in at the edges — this nudges the crop
+   in further so only the real content shows. */
+.cs-video-tile img {
+  transform: scale(1.22);
+  transform-origin: center;
+}
+
+.cs-video-tile__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.cs-video-tile:hover .cs-video-tile__play {
+  background: rgba(0, 0, 0, 0.75);
+  transform: translate(-50%, -50%) scale(1.08);
+}
+
+/* Process's Final prototype / Rough draft box — same footprint as a
+   .cs-square (fixed, doesn't grow to fit the image), but the full,
+   much-taller screenshot scrolls inside it instead of being cropped.
+   Two stacked panels (not a single swapped <img src>) so each one
+   keeps its own scroll position when you switch back and forth. */
+.cs-scroll-frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.cs-scroll-panel {
+  position: absolute;
+  inset: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.cs-scroll-panel.is-active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.cs-scroll-panel img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.cs-banner {
+  width: 100%;
+  aspect-ratio: 21 / 6;
+  border-radius: var(--radius-md);
+  background: #d9d9d9;
+  overflow: hidden;
+}
+
+.cs-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Highlights' first content block — a screen-recording of the live
+   ENVoices site. Sized to the video's own 16:9 native aspect ratio
+   (not the banner's 21:6) so the full frame is always visible with
+   no cropping and no letterbox bars. */
+.cs-video {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #000;
+}
+
+.cs-video video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+/* full-width pill CTAs — "Visit the website here.", "Visit the
+   instagram page here" — bigger than the standard .btn-sm */
+.cs-cta {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 1.75rem;
+}
+
+/* text + image split — Introduction, The mission, Process */
+.cs-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  align-items: start;
+}
+
+/* when several .cs-split blocks are stacked back-to-back in the same
+   section (e.g. Aira's "The solution", one block per feature) they'd
+   otherwise sit flush against each other — the previous block's media
+   touching the next block's subheading — since .cs-split itself carries
+   no vertical margin. Only fires between siblings, so a single .cs-split
+   used on its own (Introduction, Ideation, etc.) is unaffected. */
+.cs-split + .cs-split {
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+.cs-split--reverse .cs-split__media {
+  order: -1;
+}
+
+.cs-split__media {
+  /* explicit width (not just max-width) — a shrink-to-fit box with
+     only percentage-width children (.cs-square) has zero intrinsic
+     size, which collapses this to 0px when combined with the
+     auto-margin right-alignment below */
+  width: 100%;
+  max-width: 62.5rem;
+  margin-left: auto;
+}
+
+.cs-split--reverse .cs-split__media {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.cs-split__body {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, calc(1.8174rem + 2.913vw), 5.3125rem);
+  align-items: flex-start;
+}
+
+/* Highlights: banner + two-up squares */
+.cs-highlights-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  margin-top: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+}
+
+/* Guidelines: three-up */
+.cs-guidelines-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+}
+
+.cs-guideline-item .cs-square {
+  aspect-ratio: 1 / 1;
+}
+
+/* Marketing: three-up (same shape as guidelines, own class so
+   copy/spacing can diverge later without fighting specificity) */
+.cs-marketing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+}
+
+/* Design validation */
+.cs-validation-copy {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  margin-bottom: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
+}
+
+.cs-validation-shot {
+  /* same size as the Mission section's image — same 1:1 aspect ratio,
+     sitting in the same .cs-split__media wrapper (max-width 62.5rem) */
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius-md);
+  background: #d9d9d9;
+  overflow: hidden;
+}
+
+.cs-validation-shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top;
+}
+
+.cs-validation-toggle {
+  display: flex;
+  gap: 0.625rem;
+  margin-bottom: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
+}
+
+/* toggle pills (Process: Final prototype/Rough draft, Design validation:
+   Option A/Option B) — text matches .cs-para/.cs-callout's size instead
+   of the smaller sitewide .filter-pill default, with padding scaling up
+   alongside it (via the same clamp curve) so the pill grows with its
+   text rather than the text just getting cramped inside a fixed box. */
+.cs-validation-toggle .filter-pill {
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  padding: clamp(0.75rem, calc(0.659rem + 0.388vw), 1.125rem) clamp(1.25rem, calc(1.068rem + 0.777vw), 2rem);
+}
+
+/* named-area grid instead of two stacked flex columns — this is what
+   actually locks "Opinions from my advisor..." to the same row as
+   the Option A/B image (the card), not the toggle pills above it.
+   Row 1 = toggle only. Row 2 = card + (label, stacked above quotes). */
+.cs-validation-lower {
+  display: grid;
+  grid-template-columns: 0.8fr 1fr;
+  grid-template-areas:
+    "toggle ."
+    "card   list";
+  column-gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  row-gap: 1.25rem;
+  align-items: start;
+}
+
+.cs-validation-toggle {
+  grid-area: toggle;
+}
+
+.cs-validation-card {
+  grid-area: card;
+  border-radius: var(--radius-md);
+  background: #d9d9d9;
+  aspect-ratio: 3 / 4;
+}
+
+/* wraps the label + quotes together so both start at the same top
+   edge as .cs-validation-card in the grid row above */
+.cs-validation-list {
+  grid-area: list;
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+}
+
+/* holds both quote sets stacked on top of each other in normal flow —
+   only one (.cs-quote-set.is-active) is ever displayed at a time, so
+   no extra positioning is needed here. */
+.cs-validation-quotes {
+  display: block;
+}
+
+/* one 3-quote set per option, swapped by the Option A/B toggle — see
+   main.js's [data-cs-toggle-panel] handling. Spaced out more than a
+   default .cs-validation-quotes gap would be, per design request. */
+.cs-quote-set {
+  display: none;
+  flex-direction: column;
+  gap: clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem);
+}
+
+.cs-quote-set.is-active {
+  display: flex;
+}
+
+.cs-validation-list__row {
+  border-radius: var(--radius-pill);
+  padding: 1.25rem 1.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.cs-validation-list__row span:first-child {
+  font-weight: 600;
+  font-size: 0.9375rem;
+}
+
+.cs-validation-list__row span:last-child {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.cs-validation-list__label {
+  font-weight: 600;
+  /* same size as the paragraph text */
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  color: #fff;
+  margin: 0;
+}
+
+/* quote / testimonial cards — feedback from advisor / students. Same
+   dark glass formula as every other white-stroke component now (was
+   previously a flat light-lavender pill that broke from the page's
+   dark theme entirely). A thin accent bar on the left plus a distinct
+   quote/attribution split reads as a proper testimonial card instead
+   of a single run-on bolded line. Padding is sized for these short
+   quotes specifically, not inherited from the long-copy .cs-callout
+   padding, which left a lot of dead space next to a right-aligned
+   short line. */
+.cs-quote {
+  position: relative;
+  border-radius: var(--radius-lg);
+  padding: clamp(2rem, calc(1.818rem + 0.777vw), 2.75rem) clamp(1.75rem, calc(1.6286rem + 0.518vw), 2.25rem) clamp(2rem, calc(1.818rem + 0.777vw), 2.75rem) clamp(2.25rem, calc(2.1286rem + 0.518vw), 2.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.cs-quote::before {
+  content: "";
+  position: absolute;
+  top: 1.75rem;
+  bottom: 1.75rem;
+  left: clamp(0.875rem, calc(0.8143rem + 0.259vw), 1.125rem);
+  width: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+}
+
+.cs-quote__text {
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-weight: 700;
+  line-height: 1.4;
+  color: #fff;
+}
+
+.cs-quote__attribution {
+  font-size: clamp(0.875rem, calc(0.8447rem + 0.129vw), 1rem);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* My takeaways */
+.cs-takeaways-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(1rem, calc(0.8786rem + 0.518vw), 1.5rem);
+  margin-top: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
+}
+
+/* same glass treatment as .cs-callout ("The creative content...") —
+   just a tighter 21px corner radius. min-height is fluid too, so
+   cards don't hold onto a fixed 11.25rem of empty space once they're
+   down to one column on a phone. Extra padding all around gives each
+   card more breathing room than the plain .cs-callout treatment. */
+.cs-takeaway-card {
+  border-radius: 1.3125rem;
+  padding: clamp(1.75rem, calc(1.6286rem + 0.518vw), 2.25rem);
+  min-height: clamp(9rem, calc(8.4539rem + 2.33vw), 11.25rem);
+  display: flex;
+  flex-direction: column;
+  /* emoji pinned to the top, text block hugging the bottom — the
+     fixed emoji line is what keeps every card's top edge reading
+     level across a row, not the (now bottom-anchored) text. */
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* icon "badge" instead of a bare glyph — a bare emoji sitting flush
+   against the card's edge reads cramped; containing it in its own
+   softly-tinted, rounded box (the same restrained .glass surface used
+   for secondary panels elsewhere) gives it padding on every side, a
+   clear boundary, and a fixed footprint so the gap to the heading
+   below stays consistent no matter how much the emoji glyph itself
+   varies in visual weight. */
+.cs-takeaway-card__emoji {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(3.25rem, calc(3.1286rem + 0.518vw), 3.75rem);
+  height: clamp(3.25rem, calc(3.1286rem + 0.518vw), 3.75rem);
+  margin-bottom: clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem);
+  border-radius: var(--radius-sm);
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border);
+  font-size: clamp(1.5rem, calc(1.4393rem + 0.259vw), 1.75rem);
+  line-height: 1;
+}
+
+.cs-takeaway-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.cs-takeaway-card h3 {
+  font-family: var(--font-body);
+  /* same size as the other paragraph text (.cs-para) */
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-weight: 700;
+}
+
+.cs-takeaway-card p {
+  /* same size as the other paragraph text (.cs-para) */
+  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  line-height: 1.55;
+  color: #fff;
+}
+
+@media (max-width: 56.25em) {
+  .cs-split,
+  .cs-highlights-grid,
+  .cs-validation-copy,
+  .cs-takeaways-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cs-validation-lower {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "toggle"
+      "card"
+      "list";
+  }
+
+  .cs-split__media,
+  .cs-split--reverse .cs-split__media {
+    max-width: 100%;
+    margin-inline: 0;
+  }
+
+  .cs-guidelines-grid,
+  .cs-marketing-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .cs-hero__meta {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+@media (max-width: 35em) {
+  .cs-guidelines-grid,
+  .cs-marketing-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+  /* applied before first paint so the page never flashes the wrong
+     theme on load — the actual toggle logic lives in js/main.js */
+  if (localStorage.getItem("theme") === "light") {
+    document.documentElement.dataset.theme = "light";
+  }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Digital Media — Jaydon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="css/style.css?v=2" />
+<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+</head>
+<body>
+
+<div class="nav-wrap">
+  <header class="nav">
+    <a class="nav__logo" href="index.html" aria-label="Jaydon — home">
+      <span class="nav__logo-badge"><img src="assets/images/nav-avatar.png" alt="" /></span>
+      <span class="nav__logo-text">Jaydon</span>
+    </a>
+
+    <ul class="nav__links" id="navLinks">
+      <li><a href="index.html#case-studies">Case studies</a></li>
+      <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="digital-media.html">Digital Media</a></li>
+      <li><a href="about.html">About me</a></li>
+    </ul>
+
+    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+
+    <button class="nav__theme-toggle" id="themeToggle" type="button" aria-label="Toggle light mode">
+      <svg class="nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M17.99 17.99l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M17.99 6.01l1.77-1.77" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <svg class="nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 4H17M1 9H17M1 14H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+</div>
+
+<main>
+
+  <section class="dm-hero">
+    <!-- Fixed 1920×950 "canvas" — every element inside is styled with a
+         single fixed pixel value (no clamp()/vw of its own), and this
+         whole stage is scaled down as ONE rigid unit via .dm-hero's
+         aspect-ratio + this element's transform: scale(). That's the
+         difference from the previous approach (each property — font-size,
+         margin, transform — carrying its own separately-tuned clamp()):
+         those inevitably drifted out of sync with each other at
+         in-between widths, so the composition (text vs. character vs.
+         buttons) didn't match between breakpoints. Scaling one fixed
+         layout as a unit means every width is a proportional zoom of the
+         exact same composition — including the 1920px+ desktop look, at
+         100% scale — instead of an independent reflow. -->
+    <div class="dm-hero__stage">
+      <div class="dm-hero__grid" aria-hidden="true"></div>
+
+      <div class="dm-hero__media">
+        <model-viewer
+          id="dmModel"
+          class="dm-hero__model"
+          src="assets/models/me-head.glb"
+          alt="A 3D scanned model of Jaydon's head and shoulders"
+          camera-controls
+          disable-tap
+          disable-zoom
+          interaction-prompt="none"
+          shadow-intensity="0"
+          exposure="0.95"
+          camera-orbit="21deg 75deg 32%"
+          camera-target="0.4m 6.15m -0.07m"
+          field-of-view="30deg"
+          min-camera-orbit="21deg 75deg 32%"
+          max-camera-orbit="21deg 75deg 32%"
+          min-field-of-view="30deg"
+          max-field-of-view="30deg"
+        ></model-viewer>
+        <div class="dm-hero__track-zone" aria-hidden="true"></div>
+      </div>
+
+      <div class="container container--wide dm-hero__row">
+        <div class="dm-hero__content">
+          <h1 class="hero__title reveal" data-scramble>Jaydon's Digital Museum</h1>
+          <p class="hero__desc dm-hero__desc reveal">
+            Refusing to put all his eggs in one basket, Jaydon strives to learn the industry
+            standard of all forms of design and so that he may use it to enhance his
+            storytelling. His favorite? After effects.
+          </p>
+        </div>
+      </div>
+
+      <div class="dm-hero__actions reveal">
+        <a class="btn btn-outline dm-btn" href="#motion-design"><span>Motion design</span><span>↓</span></a>
+        <a class="btn btn-outline dm-btn" href="#jaydon-mp4"><span>Jaydon MP4</span><span>↓</span></a>
+        <a class="btn btn-outline dm-btn" href="#inventory"><span>Inventory</span><span>↓</span></a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MOTION DESIGN ================= -->
+  <section id="motion-design" class="container container--wide">
+    <div class="section-head reveal">
+      <div>
+        <h2>Motion design</h2>
+        <!-- same interaction as the homepage's case-study filter pills, but a
+             tile can carry more than one tag (data-tags on each .cs-square
+             below) since one video can show off several skills at once —
+             see the "digital media: motion design tag filter" block in
+             main.js for the click handling. -->
+        <div class="tag-row dm-filter-row" data-media-filter-group>
+          <button type="button" class="filter-pill filter-pill--all is-active" data-media-filter="all">All</button>
+          <button type="button" class="filter-pill" data-media-filter="videography">Videography</button>
+          <button type="button" class="filter-pill" data-media-filter="vfx">VFX</button>
+          <button type="button" class="filter-pill" data-media-filter="after-effects">After effects</button>
+          <button type="button" class="filter-pill" data-media-filter="3d-modeling">3D modeling</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- one shared 2-column grid for every tile in the section, wide and
+         portrait alike — each tile keeps its own aspect-ratio, but the
+         COLUMN width (and so every tile's rendered width) is identical
+         throughout, per design: verticals honor the horizontal tile's width.
+         The two video tiles are wrapped in .dm-media-item so a title + tag
+         row can sit underneath (same tag-chip language as the homepage
+         project cards) without disturbing the plain placeholder tiles. -->
+    <div class="dm-media-grid dm-media-grid--two reveal">
+      <div class="dm-media-item">
+        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="CmHm0k9JKVo" data-tags="after-effects,3d-modeling">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play Reese x Across the Spiderverse">
+            <img src="https://img.youtube.com/vi/CmHm0k9JKVo/maxresdefault.jpg" alt="Reese x Across the Spiderverse video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <div class="dm-video-meta">
+          <div class="tag-row">
+            <span class="tag">After effects</span>
+            <span class="tag">3D modeling</span>
+          </div>
+          <h3 class="dm-video-meta__title">Reese x Across the Spiderverse</h3>
+        </div>
+      </div>
+      <div class="dm-media-item">
+        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="MnodlnBwL7M" data-tags="videography,3d-modeling,after-effects,vfx">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play 10 years of design">
+            <img src="https://img.youtube.com/vi/MnodlnBwL7M/maxresdefault.jpg" alt="10 years of design video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <div class="dm-video-meta">
+          <div class="tag-row">
+            <span class="tag">Videography</span>
+            <span class="tag">VFX</span>
+            <span class="tag">After effects</span>
+            <span class="tag">3D modeling</span>
+          </div>
+          <h3 class="dm-video-meta__title">10 years of design</h3>
+        </div>
+      </div>
+      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+    </div>
+  </section>
+
+  <!-- ================= JAYDON MP4 ================= -->
+  <section id="jaydon-mp4" class="container container--wide">
+    <div class="section-head reveal">
+      <div>
+        <h2>Jaydon MP4</h2>
+        <p class="section-head__sub">Placeholder — description of this project coming soon.</p>
+      </div>
+    </div>
+
+    <!-- TODO: point at the real Instagram URL once it's confirmed —
+         currently a harmless self-link so it doesn't jump anywhere unexpected -->
+    <a class="btn btn-outline reveal" href="#jaydon-mp4">View instagram</a>
+
+    <!-- same 2-column grid as Motion design, so these portrait tiles are
+         exactly as wide as that section's horizontal ones too -->
+    <div class="dm-media-grid dm-media-grid--two reveal">
+      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+    </div>
+  </section>
+
+  <!-- ================= INVENTORY ================= -->
+  <section id="inventory" class="container container--wide">
+    <div class="section-head reveal">
+      <div>
+        <h2>Inventory</h2>
+        <p class="section-head__sub">Placeholder — description of this project coming soon.</p>
+      </div>
+    </div>
+
+    <div class="dm-inventory-grid reveal" aria-label="Inventory system preview — placeholder slots, real screenshot coming soon">
+      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
+      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
+      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
+      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h2>Let's c*nnect!</h2>
+    <div class="footer-links">
+      <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
+      <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
+    </div>
+    <p>© 2026 Jaydon. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script src="js/scramble-text.js"></script>
+<script src="js/head-track.js"></script>
+</body>
+</html>

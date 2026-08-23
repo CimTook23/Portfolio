@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+  /* applied before first paint so the page never flashes the wrong
+     theme on load — the actual toggle logic lives in js/main.js */
+  if (localStorage.getItem("theme") === "light") {
+    document.documentElement.dataset.theme = "light";
+  }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Faculty of Environment — Case Study — Jaydon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<div class="nav-wrap">
+  <header class="nav">
+    <a class="nav__logo" href="../index.html" aria-label="Jaydon — home">
+      <span class="nav__logo-badge"><img src="../assets/images/nav-avatar.png" alt="" /></span>
+      <span class="nav__logo-text">Jaydon</span>
+    </a>
+
+    <ul class="nav__links" id="navLinks">
+      <li><a href="../index.html#case-studies">Case studies</a></li>
+      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="../digital-media.html">Digital Media</a></li>
+      <li><a href="../about.html">About me</a></li>
+    </ul>
+
+    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+
+    <button class="nav__theme-toggle" id="themeToggle" type="button" aria-label="Toggle light mode">
+      <svg class="nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M17.99 17.99l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M17.99 6.01l1.77-1.77" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <svg class="nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 4H17M1 9H17M1 14H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+</div>
+
+<main class="cs-container">
+
+  <!-- ================= HERO ================= -->
+  <section class="cs-hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+
+    <div class="cs-hero__top">
+      <h1 class="cs-hero__title reveal">Faculty of environment</h1>
+
+      <div class="cs-hero__meta reveal">
+        <div class="cs-hero__meta-item">
+          <span>Role</span>
+          <p>Marketing and recruitment coordinator</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Timeline</span>
+          <p>4 months</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Skills</span>
+          <p>Website building (WCMIS), content creation, Premiere Pro, outreach, and illustrations.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-hero__tags reveal">
+      <span class="cs-tag">Internship</span>
+      <span class="cs-tag">2026</span>
+      <span class="cs-tag">Marketing</span>
+      <span class="cs-tag">UX/UI</span>
+    </div>
+
+    <div class="cs-hero__actions reveal">
+      <a class="btn btn-outline" href="#marketing">See the marketing ↓</a>
+      <a class="btn btn-outline" href="#introduction">See the web design ↓</a>
+    </div>
+  </section>
+
+  <!-- ================= INTRODUCTION ================= -->
+  <section id="introduction">
+    <h2 class="cs-heading reveal">Introduction</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">Over my 4-month co-op term, I worked with the Faculty of Environment to create
+          engaging content and diverse media to promote content related to sustainability and the environment
+          to prospective students. This role was ideal for me, as it allowed me to explore various disciplines
+          and forms of media.</p>
+        <div class="cs-callout">The creative content of my work was split into 2 categories: website design and
+          promotional content.</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <img src="../assets/images/foe-intro-waders.png" alt="Jaydon suited up in waders and a life vest for a field research day with the Faculty of Environment" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= HIGHLIGHTS ================= -->
+  <section id="highlights">
+    <h2 class="cs-heading reveal">Highlights</h2>
+    <div class="cs-divider reveal"></div>
+
+    <a class="btn btn-outline cs-cta reveal" href="https://uwaterloo.ca/environment/" target="_blank" rel="noopener">Visit the website here.</a>
+
+    <div class="cs-video reveal">
+      <video data-src="../assets/videos/envoices-highlight.mp4" poster="../assets/videos/envoices-highlight-poster.jpg"
+        controls muted loop preload="none" playsinline
+        aria-label="Screen recording walkthrough of the ENVoices site"></video>
+    </div>
+
+    <div class="cs-highlights-grid reveal">
+      <div class="cs-square">
+        <img src="../assets/images/foe-highlight-envoices.gif" alt="Animated ENVoices logo reveal" />
+      </div>
+      <div class="cs-square">
+        <img src="../assets/images/foe-highlight-mockup.png" alt="Laptop mockup of the redesigned Faculty of Environment homepage" />
+      </div>
+    </div>
+    <p class="cs-caption cs-caption--italic reveal">Some motion graphics I made for the social media series. I took
+      every opportunity to be original and I made the most of it XD.</p>
+  </section>
+
+  <!-- ================= THE MISSION ================= -->
+  <section id="mission">
+    <h2 class="cs-heading reveal">The mission</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">The redesign was driven by a need to increase user retention and better engage
+          prospective students. The existing website was heavily text-based, making it difficult for users to
+          quickly navigate and connect with the content. My role was to create a stronger balance between visual
+          communication and information by using the university's existing resources to refresh the current
+          websites and develop new pages that aligned with the university's mission and visual identity. The
+          goal was to create a more engaging, accessible, and visually cohesive experience that could attract
+          and retain prospective students.</p>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <img src="../assets/images/foe-mission-enlighten.png" alt="Illustrated character meditating peacefully with a halo, representing the calmer, more focused feel the redesign aimed for" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= GUIDELINES ================= -->
+  <section id="guidelines">
+    <h2 class="cs-heading reveal">Guidelines</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-guidelines-grid reveal">
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/foe-guideline-brand.png" alt="University of Waterloo Faculty of Environment brand guidelines — typography and primary green color palette" />
+        </div>
+        <p class="cs-caption"><strong>Brand guidelines</strong>The environment faculty's brand guidelines also
+          called for consistent use of a variety of greens. Cause you know...it's the environment faculty.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/foe-guideline-wcmis.jpg" alt="Collage of University of Waterloo web pages built on the WCMIS content management system" />
+        </div>
+        <p class="cs-caption"><strong>WCMIS</strong>All Waterloo pages run on WCMIS (Waterloo Content Management
+          System). Which is the university's own version of WordPress which limits layout to a set of
+          pre-approved templates and components in order to achieve consistency among Waterloo websites no
+          matter which intern is building it.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/foe-guideline-students.png" alt="Two students reviewing feedback together on a laptop" />
+        </div>
+        <p class="cs-caption"><strong>Student and advisor approval</strong>For the website redesign to be
+          considered a successful improvement, each iteration needed to be validated through feedback from both
+          my advisors and fellow students. Using feedback from these stakeholders to evaluate the clarity,
+          visual hierarchy, usability, and overall effectiveness of each concept.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROCESS ================= -->
+  <section id="process">
+    <h2 class="cs-heading reveal">Process</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">Each design iteration followed the same process. I started in Figma, sketching several rough prototypes, then brought them to the student body for feedback. 
+          Once I settled on a direction, I built the final website in WCMIS.</p>
+        <div class="cs-callout" style="width:100%; text-align:center;">Feel free to scroll through →</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-validation-toggle" data-cs-toggle style="margin-bottom: 1.25rem;">
+          <button type="button" class="filter-pill is-active" data-cs-toggle-target="final">Final prototype</button>
+          <button type="button" class="filter-pill" data-cs-toggle-target="rough">Rough draft</button>
+        </div>
+        <div class="cs-scroll-frame glass">
+          <div class="cs-scroll-panel is-active" data-cs-toggle-panel="final">
+            <img src="../assets/images/foe-process-final-prototype.png" alt="Final prototype — full page of the redesigned Faculty of Environment homepage, scrollable" />
+          </div>
+          <div class="cs-scroll-panel" data-cs-toggle-panel="rough">
+            <img src="../assets/images/foe-process-rough-draft.png" alt="Rough draft wireframe of the homepage redesign, scrollable" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= DESIGN VALIDATION ================= -->
+  <section id="validation">
+    <h2 class="cs-heading reveal">Design validation</h2>
+    <div class="cs-divider reveal"></div>
+
+    <div class="cs-split reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">
+      <div class="cs-split__body">
+        <p class="cs-para">A majority of the redesigning involved replacing text heavy sections with more visually engaging elements.</p>
+        <div class="cs-callout">The circled area needed to change as it was very easy to miss, which contributed to the sites lower user retention.</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-validation-shot glass">
+          <img src="../assets/images/foe-validation-shot.png" alt="Future undergraduate students page — video embed, 'Have a question? Ask us!' banner, and Your Future in Environment program list" />
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-validation-lower reveal">
+      <div class="cs-validation-toggle" data-cs-toggle>
+        <button type="button" class="filter-pill is-active" data-cs-toggle-target="a">Option A</button>
+        <button type="button" class="filter-pill" data-cs-toggle-target="b">Option B</button>
+      </div>
+      <div class="cs-scroll-frame cs-validation-card">
+        <div class="cs-scroll-panel is-active" data-cs-toggle-panel="a">
+          <img src="../assets/images/foe-validation-option-a.png" alt="Option A — 'Your Future in Environment' redesign, single-column program list, scrollable" />
+        </div>
+        <div class="cs-scroll-panel" data-cs-toggle-panel="b">
+          <img src="../assets/images/foe-validation-option-b.png" alt="Option B — 'Your Future in Environment' redesign, grid layout, scrollable" />
+        </div>
+      </div>
+      <div class="cs-validation-list">
+        <p class="cs-validation-list__label">Opinions from my advisor and other students:</p>
+        <div class="cs-validation-quotes">
+          <div class="cs-quote-set is-active" data-cs-toggle-panel="a">
+            <div class="cs-quote">
+              <p class="cs-quote__text">“This takes longer to scroll through which could affect user focus”</p>
+              <p class="cs-quote__attribution">— advisor</p>
+            </div>
+            <div class="cs-quote">
+              <p class="cs-quote__text">“I prefer this one because there's more breathing room”</p>
+              <p class="cs-quote__attribution">— a student</p>
+            </div>
+            <div class="cs-quote">
+              <p class="cs-quote__text">“Looks nice”</p>
+              <p class="cs-quote__attribution">— my mom</p>
+            </div>
+          </div>
+          <div class="cs-quote-set" data-cs-toggle-panel="b">
+            <div class="cs-quote">
+              <p class="cs-quote__text">“I like this one because it takes up less space”</p>
+              <p class="cs-quote__attribution">— my advisor</p>
+            </div>
+            <div class="cs-quote">
+              <p class="cs-quote__text">“I feel very overwhelmed looking at all the options”</p>
+              <p class="cs-quote__attribution">— a student</p>
+            </div>
+            <div class="cs-quote">
+              <p class="cs-quote__text">“Looks nice”</p>
+              <p class="cs-quote__attribution">— my mom</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MARKETING ================= -->
+  <section id="marketing">
+    <h2 class="cs-heading reveal">Marketing: Social media campaigns</h2>
+    <div class="cs-divider reveal"></div>
+
+    <p class="cs-para reveal" style="margin-bottom: clamp(2.5rem, 7vw, 5.3125rem); max-width: none;">Alongside building websites, I
+      produced a series of social media posts for the Faculty of Environment's Instagram to promote student life in the faculty of environment.</p>
+
+    <a class="btn btn-outline cs-cta reveal" href="https://www.instagram.com/envwaterloo/" target="_blank" rel="noopener">Visit the instagram page here</a>
+
+    <div class="cs-marketing-grid reveal">
+      <div>
+        <div class="cs-square cs-video-tile" data-yt-id="UHPE8LDu1u4">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play ENVoices">
+            <img src="https://img.youtube.com/vi/UHPE8LDu1u4/maxresdefault.jpg" alt="ENVoices video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <p class="cs-caption"><strong>ENVoices</strong>The ENVoices series amplifies the voices of the Faculty of
+          Environment's student body, showcasing their perspectives on their respective programs. Each interview
+          features a student from a different program within the Faculty of Environment, exploring questions such
+          as: what inspired you to choose your program? What are the courses like? What career opportunities do
+          you envision after graduation?</p>
+      </div>
+      <div>
+        <div class="cs-square cs-video-tile" data-yt-id="1hHiUV123EU">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play What Goes On In A Lab">
+            <img src="https://img.youtube.com/vi/1hHiUV123EU/maxresdefault.jpg" alt="What Goes On In A Lab video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <p class="cs-caption"><strong>What Goes On In A Lab</strong>The most exciting and engaging series I've
+          created! In collaboration with my co-workers, we embarked on mini field trips to film the inner
+          workings of a lab. This series offers prospective students a glimpse into the lab environment,
+          showcasing what coursework might look like through engaging visuals and thoughtful insights.</p>
+      </div>
+      <div>
+        <div class="cs-square cs-video-tile" data-yt-id="QULIlnhCnjc">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play Enviews / The Scoop">
+            <img src="https://img.youtube.com/vi/QULIlnhCnjc/maxresdefault.jpg" alt="Enviews / The Scoop video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <p class="cs-caption"><strong>Enviews / The Scoop</strong>What better way to learn about the student body
+          than by connecting with them in person! The Scoop / Enviews was another ongoing series where my
+          communications assistant and I interviewed students to create more community-focused content. This
+          ambitious project pushed the boundaries of our ideas and helped me step out of my comfort zone.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= MY TAKEAWAYS ================= -->
+  <section id="takeaways">
+    <h2 class="cs-heading reveal">My takeaways</h2>
+    <div class="cs-divider reveal"></div>
+
+    <div class="cs-takeaways-grid reveal">
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">💬</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Communicate EVERYTHING</h3>
+          <p>Collaborating with others has helped me realize how much I value having detailed information on
+            changes, as it enables me to begin making updates much more efficiently.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">❓</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Ask The Right Questions</h3>
+          <p>While I interviewed students for ENVoices, I realized that content was very important. Being
+            proactive and writing down what you want to say and even what you want to HEAR is quite important.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">🔑</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Consistency is key</h3>
+          <p>A company's brand is very important in determining its visibility and helps users remember you. One
+            thing's for sure — I remember the 3 shades of green this faculty uses.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">🔄</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Always be ready to adapt</h3>
+          <p>At work, I often encounter situations where I need to scrap existing ideas and content and start over
+            from scratch.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NEXT PROJECT ================= -->
+  <section id="next-project">
+    <h2 class="cs-heading reveal">Next project</h2>
+    <div class="cs-divider reveal"></div>
+
+    <a class="case-banner cs-next-project reveal" href="aira.html" aria-label="Next project — Aira">
+      <img src="../assets/images/aira-thumb.gif" alt="Aira app — screens showing appointment tracker, air quality index, and health tracker" />
+    </a>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h2>Let's c*nnect!</h2>
+    <div class="footer-links">
+      <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
+      <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
+    </div>
+    <p>© 2026 Jaydon. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>

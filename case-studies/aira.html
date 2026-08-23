@@ -1,0 +1,412 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+  /* applied before first paint so the page never flashes the wrong
+     theme on load — the actual toggle logic lives in js/main.js */
+  if (localStorage.getItem("theme") === "light") {
+    document.documentElement.dataset.theme = "light";
+  }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aira — Case Study — Jaydon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/style.css" />
+</head>
+<body>
+
+<div class="nav-wrap">
+  <header class="nav">
+    <a class="nav__logo" href="../index.html" aria-label="Jaydon — home">
+      <span class="nav__logo-badge"><img src="../assets/images/nav-avatar.png" alt="" /></span>
+      <span class="nav__logo-text">Jaydon</span>
+    </a>
+
+    <ul class="nav__links" id="navLinks">
+      <li><a href="../index.html#case-studies">Case studies</a></li>
+      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="../digital-media.html">Digital Media</a></li>
+      <li><a href="../about.html">About me</a></li>
+    </ul>
+
+    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+
+    <button class="nav__theme-toggle" id="themeToggle" type="button" aria-label="Toggle light mode">
+      <svg class="nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12 2v2.5M12 19.5V22M4.22 4.22l1.77 1.77M17.99 17.99l1.77 1.77M2 12h2.5M19.5 12H22M4.22 19.78l1.77-1.77M17.99 6.01l1.77-1.77" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <svg class="nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20.5 14.2A8.5 8.5 0 1 1 9.8 3.5a7 7 0 0 0 10.7 10.7Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      </svg>
+    </button>
+
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 4H17M1 9H17M1 14H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+</div>
+
+<main class="cs-container">
+
+  <!-- ================= HERO ================= -->
+  <section class="cs-hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+
+    <div class="cs-hero__top">
+      <h1 class="cs-hero__title reveal">Aira</h1>
+
+      <div class="cs-hero__meta reveal">
+        <div class="cs-hero__meta-item">
+          <span>Role</span>
+          <p>Project member</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Timeline</span>
+          <p>4 weeks</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Skills</span>
+          <p>User research, Figma, ideation.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-hero__tags reveal">
+      <span class="cs-tag">Design jam</span>
+      <span class="cs-tag">2026</span>
+      <span class="cs-tag">UX/UI</span>
+      <span class="cs-tag">Healthcare</span>
+    </div>
+
+    <div class="cs-hero__actions reveal">
+      <a class="btn btn-outline" href="#pain-points">See the problem ↓</a>
+      <a class="btn btn-outline" href="#solutions">See the solution ↓</a>
+    </div>
+  </section>
+
+  <!-- ================= INTRODUCTION ================= -->
+  <section id="introduction">
+    <h2 class="cs-heading reveal">Introduction</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">Every term in my program, GBDA, Sun Life sets up shop at Waterloo's Stratford campus
+          and runs a design jam — student teams get a real-world healthcare challenge and a few weeks to solve
+          it. My team's challenge was chronic illness management, and since I live with a chronic illness myself,
+          it wasn't a hard pick. Aira is what we built: an app that helps patients with asthma make sense of a
+          healthcare system that usually leaves them more confused than when they walked in.</p>
+        <div class="cs-callout">I pulled directly from my own experience navigating diagnoses, appointments, and
+          insurance paperwork — this one got personal fast.</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <video data-src="../assets/videos/aira-hero-demo.mp4" poster="../assets/videos/aira-hero-demo-poster.jpg" muted loop preload="none" playsinline
+            aria-label="Screen recording of the Aira app's mascot companion and home dashboard"></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROBLEM ================= -->
+  <section id="problem">
+    <h2 class="cs-heading reveal">Problem</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">Patients who are newly diagnosed with a chronic illness are handed a lot at once:
+          a fragmented healthcare system, insurance benefits that read like legal fine print, and a set of
+          lifestyle changes they're expected to just figure out. Before Aira could be useful, it had to help
+          people actually understand their benefits, find their way through care pathways, and feel like someone
+          had their back while they adjusted to living with the condition long-term.</p>
+        <div class="cs-callout">As someone with a chronic illness, I didn't have to imagine this — I've lived
+          most of it.</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <img src="../assets/images/aira-problem.png" alt="Illustration of a kid wearing a face mask, feeling under the weather" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHO WE'RE BUILDING FOR ================= -->
+  <section id="persona">
+    <h2 class="cs-heading reveal">Who we're building for</h2>
+    <div class="cs-divider reveal"></div>
+    <p class="cs-para reveal" style="max-width: none;">Meet Alex — a 16-year-old student living with asthma
+      that's poorly managed because of inconsistent care, limited health literacy at home, and a healthcare
+      system that doesn't make things easy. Alex's family are newcomers to Canada, and both Alex and her parent
+      struggle to make sense of medical information, find the right services, and catch early warning signs
+      before they become emergencies. Those gaps aren't just inconvenient — they're what send preventable cases
+      to the ER.</p>
+    <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+      <img src="../assets/images/aira-persona.png" alt="Alex persona research document — a 16-year-old newcomer student with asthma, her challenges, goals, risks, and applicable paramedical benefits" />
+    </div>
+  </section>
+
+  <!-- ================= PAIN POINTS ================= -->
+  <section id="pain-points">
+    <h2 class="cs-heading reveal">What are the pain points?</h2>
+    <div class="cs-divider reveal"></div>
+    <p class="cs-para reveal" style="max-width: none; margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">Between Alex
+      and the real participants we interviewed, three challenges kept coming up.</p>
+
+    <div class="cs-guidelines-grid reveal">
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/aira-pain-clarity.png" alt="Illustration of a confused girl with three blank documents floating over her head, representing scattered medical records" />
+        </div>
+        <p class="cs-caption"><strong>Clarity</strong>Medical information is scattered across different
+          documents, making it hard for Alex to see her own history in one clear picture — which chips away at
+          her confidence in managing her asthma over time.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/aira-pain-understanding.png" alt="Illustration of a girl using an inhaler, unsure what her symptoms mean" />
+        </div>
+        <p class="cs-caption"><strong>Understanding</strong>Alex struggles to read her own asthma reactions and
+          decide what to actually do about them, which leads to delayed care or trips to the ER that didn't need
+          to happen.</p>
+      </div>
+      <div class="cs-guideline-item">
+        <div class="cs-square">
+          <img src="../assets/images/aira-pain-support.png" alt="Illustration of a girl staring in confusion at a sticky note dosage reminder and a page of test results" />
+        </div>
+        <p class="cs-caption"><strong>Support</strong>Newcomer families run into real barriers to health
+          literacy and care access — dense medical language and an unfamiliar system make it hard for families
+          like Alex's to confidently use the resources already available to them.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= IDEATION ================= -->
+  <section id="ideation">
+    <h2 class="cs-heading reveal">Ideation</h2>
+    <div class="cs-divider reveal"></div>
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <p class="cs-para">We kicked things off with a Crazy Eights sprint — eight fast, rough sketches each,
+          all aimed at Alex's challenges. Once the timer stopped, we walked each other through our ideas,
+          explaining which pain point each concept was actually solving. That process surfaced a lot of overlap
+          between our individual sketches, which made it easy to align on shared priorities and confirm we were
+          headed in the same direction.</p>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <img src="../assets/images/aira-rough-prototypes.png" alt="Hand-drawn workshop and app sketches from the Crazy Eights ideation sprint" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= INFORMATION ARCHITECTURE ================= -->
+  <section id="architecture">
+    <h2 class="cs-heading reveal">Information architecture</h2>
+    <div class="cs-divider reveal"></div>
+    <p class="cs-para reveal" style="max-width: none;">Once we had our feature ideas, we made sure every single
+      one mapped back to a specific challenge Alex was facing — some features tackled more than one at once,
+      which was a welcome bit of efficiency. For each proposed feature, we could point to exactly which problem
+      it solved before it earned a place in the app. That discipline is what let us organize everything into
+      three clear tabs in our site map.</p>
+    <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+      <img src="../assets/images/aira-framework.png" alt="Aira site map — Home, Medical history, and Support tabs branching from onboarding, with their respective sub-features" />
+    </div>
+    <p class="cs-caption cs-caption--italic reveal">Every feature on this map was matched to a challenge before
+      it made the cut — no orphaned ideas.</p>
+  </section>
+
+  <!-- ================= SOLUTIONS ================= -->
+  <section id="solutions">
+    <h2 class="cs-heading reveal">The solution</h2>
+    <div class="cs-divider reveal"></div>
+
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <h3 class="cs-subheading">Clarity</h3>
+        <div class="cs-callout">How might we help Alex better manage her asthma and her medical history, so she
+          feels confident instead of overwhelmed?</div>
+        <p class="cs-para">One thing Alex and our real interviewees had in common: appointments were scattered
+          and disconnected, so every visit felt like starting from zero. Aira lets users upload their medical
+          history to one place they can actually view. On top of that, an AI summarization feature turns a
+          doctor's notes into something digestible, so health literacy stops being the bottleneck. Keeping
+          everything on file means Alex never has to reconstruct her own history from memory again.</p>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <video data-src="../assets/videos/aira-clarity-demo.mp4" poster="../assets/videos/aira-clarity-demo-poster.jpg" muted loop preload="none" playsinline
+            aria-label="Screen recording of uploading and viewing medical history in Aira"></video>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-split cs-split--reverse reveal">
+      <div class="cs-split__body">
+        <h3 class="cs-subheading">Organization tools</h3>
+        <p class="cs-para">Confidence starts with knowing what needs to happen next. On the Home page, Alex can
+          view and add upcoming appointments and daily habits in one place, so managing her asthma stops feeling
+          like a scavenger hunt.</p>
+        <div class="cs-callout">When Alex sets up her daily habits, Aira reads her uploaded doctor's notes and
+          suggests actions automatically — one less thing she has to figure out on her own.</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <video data-src="../assets/videos/aira-organization-demo.mp4" poster="../assets/videos/aira-organization-demo-poster.jpg" muted loop preload="none" playsinline
+            aria-label="Screen recording of the Home page's appointment and daily habit organization tools"></video>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <h3 class="cs-subheading">Understanding</h3>
+        <div class="cs-callout">How might we help Alex and her parents understand her asthma symptoms clearly
+          enough to actually act on them?</div>
+        <p class="cs-para">Right from the Home page, Aira has a quick-help companion on standby for whatever
+          symptoms Alex is dealing with in the moment. Built on our research, it walks through a short
+          questionnaire and returns suggestions and information based on the answers.</p>
+        <div class="cs-callout">Important: this feature doesn't diagnose anything. If the situation calls for
+          it, it points Alex toward real professional support instead.</div>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <video data-src="../assets/videos/aira-understanding-demo.mp4" poster="../assets/videos/aira-understanding-demo-poster.jpg" muted loop preload="none" playsinline
+            aria-label="Screen recording of the quick-help companion questionnaire"></video>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-split cs-split--reverse reveal">
+      <div class="cs-split__body">
+        <h3 class="cs-subheading">Support</h3>
+        <div class="cs-callout">How might we build a system that improves health literacy and care access for
+          newcomer families specifically?</div>
+        <p class="cs-para">Sun Life's own research pointed out that a lot of patients simply don't know what
+          care resources are available to them — which sends unnecessary traffic to doctors and strains a
+          system that's already stretched thin. To close that gap, we built simple, accessible guides that help
+          people understand and actually use the care plans they already have.</p>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <video data-src="../assets/videos/aira-support-demo.mp4" poster="../assets/videos/aira-support-demo-poster.jpg" muted loop preload="none" playsinline
+            aria-label="Screen recording of the care access and benefits guides"></video>
+        </div>
+      </div>
+    </div>
+
+    <div class="cs-split reveal">
+      <div class="cs-split__body">
+        <h3 class="cs-subheading">Better integration</h3>
+        <p class="cs-para">Aira also lets users link their affiliated institution directly to their account, so
+          benefits and coverage information flows in automatically instead of being something families have to
+          go dig up themselves.</p>
+      </div>
+      <div class="cs-split__media">
+        <div class="cs-square">
+          <video data-src="../assets/videos/aira-integration-demo.mp4" poster="../assets/videos/aira-integration-demo-poster.jpg" muted loop preload="none" playsinline
+            aria-label="Screen recording of linking an affiliated institution to an Aira account"></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= THE NEXT STEPS ================= -->
+  <section id="next-steps">
+    <h2 class="cs-heading reveal">The next steps</h2>
+    <div class="cs-divider reveal"></div>
+    <p class="cs-para reveal">As the design jam wound down, my team started talking about what we'd tackle next
+      if Aira were actually built out for real.</p>
+
+    <div class="cs-takeaways-grid reveal">
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">⚙️</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Usability testing</h3>
+          <p>Test Aira with people like Alex and her parent to check whether the medical summaries actually
+            land, how much the organization tools help day-to-day, and whether the AI companion holds up.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">📝</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Expand on support</h3>
+          <p>Keep researching the chronic-health benefits that different institutions actually offer, so the
+            guides stay accurate and useful.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">🤝</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Personalization</h3>
+          <p>Let Aira recognize patterns in a user's symptoms over time, so it can adapt as their condition
+            changes instead of treating every check-in the same.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT I LEARNED ================= -->
+  <section id="takeaways">
+    <h2 class="cs-heading reveal">What I learned</h2>
+    <div class="cs-divider reveal"></div>
+
+    <div class="cs-takeaways-grid reveal">
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">🦾</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Every feature serves a purpose</h3>
+          <p>Partway through ideation, we noticed a few features that didn't actually tie back to the app's
+            core goal. From then on, we wrote down exactly how each feature served that goal before it stayed
+            on the list.</p>
+        </div>
+      </div>
+      <div class="cs-takeaway-card">
+        <span class="cs-takeaway-card__emoji" aria-hidden="true">💯</span>
+        <div class="cs-takeaway-card__text">
+          <h3>Organization is clarity</h3>
+          <p>How we organized each feature mattered as much as the feature itself. If Alex was going to manage
+            her asthma better, her tools needed to be organized and easy to reach — not just present.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top: clamp(2rem, 4vw, 3rem);">
+      <p class="cs-caption cs-caption--italic" style="margin-top: 0; margin-bottom: clamp(1rem, 2vw, 1.5rem); max-width: none;">We
+        also had to pick a mascot. I campaigned hard for a dragon. We ended up with a balloon.</p>
+      <div class="cs-wide-media">
+        <img src="../assets/images/aira-sketches.png" alt="Rough mascot sketches — clouds, a balloon character, lungs, and a toothbrush, exploring Aira's visual identity" />
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= NEXT PROJECT ================= -->
+  <section id="next-project">
+    <h2 class="cs-heading reveal">Next project</h2>
+    <div class="cs-divider reveal"></div>
+
+    <a class="case-banner cs-next-project reveal" href="ground-fx.html" aria-label="Next project — Ground FX">
+      <img src="../assets/images/ground-fx-thumb.png" alt="Ground FX — breakdancing event branding and motion graphics" />
+    </a>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h2>Let's c*nnect!</h2>
+    <div class="footer-links">
+      <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
+      <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
+    </div>
+    <p>© 2026 Jaydon. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
