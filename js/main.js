@@ -34,26 +34,47 @@
     });
   }
 
-  /* ---------- homepage hero grid — extend to the true page top ----------
+  /* ---------- homepage hero: fit the viewport, never crop ----------
+     .hero's CSS (container-type: size + the --hero-fit custom property)
+     shrinks everything inside it — video, title, description, button,
+     padding — together as one unit once the available height gets
+     tight, using cqh (the container's own height) as the budget. That
+     budget has to be the space ACTUALLY left below the nav, not the raw
+     viewport (100vh alone would ignore the nav's own footprint and
+     still crop the hero by however tall the nav is) — measured here,
+     since nav-wrap sits in normal flow right above .hero, .hero's own
+     offsetTop already IS the nav's rendered height, no separate lookup
+     needed.
+
      .hero__grid--homepage lives at the body level (see index.html) so it
      isn't clipped by .hero's own overflow: hidden or pushed down by the
      nav-wrap's layout space. Its top/left/right are pinned via CSS, but
      its height has to reach from the true page top through the bottom
-     of .hero — a distance that depends on the nav's height (varies by
-     breakpoint) and .hero's own height (varies with content), so it's
-     computed here rather than in CSS. */
-  const homepageHeroGrid = document.querySelector(".hero__grid--homepage");
+     of .hero — computed here too, and after the height above since it
+     reads .hero's rendered bottom edge. */
   const hero = document.querySelector(".hero");
+  const homepageHeroGrid = document.querySelector(".hero__grid--homepage");
 
-  if (homepageHeroGrid && hero) {
+  if (hero) {
+    const sizeHero = () => {
+      const available = window.innerHeight - hero.offsetTop;
+      hero.style.height = `${Math.max(available, 0)}px`;
+    };
+
     const sizeHomepageHeroGrid = () => {
+      if (!homepageHeroGrid) return;
       const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
       homepageHeroGrid.style.height = `${heroBottom}px`;
     };
 
-    sizeHomepageHeroGrid();
-    window.addEventListener("resize", sizeHomepageHeroGrid);
-    window.addEventListener("load", sizeHomepageHeroGrid);
+    const sizeHomepage = () => {
+      sizeHero();
+      sizeHomepageHeroGrid();
+    };
+
+    sizeHomepage();
+    window.addEventListener("resize", sizeHomepage);
+    window.addEventListener("load", sizeHomepage);
   }
 
   /* ---------- mobile nav toggle ---------- */

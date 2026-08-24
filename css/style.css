@@ -446,19 +446,53 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 /* ---------- hero ---------- */
 
+/* Fit-the-viewport hero — nothing in here ever needs a scrollbar to see,
+   at any window size, including a wide-but-short desktop window (the old
+   version only shrank with WIDTH via vw units, so a short window just
+   cropped the bottom of the hero instead of shrinking to fit it).
+
+   Every fluid property below is `min(<its old vw-based clamp>, <a height
+   budget>)`. The vw-clamp arm is completely unchanged from before, so
+   width-driven behavior (phones, tablets) looks exactly like it did —
+   the height arm only ever pulls things SMALLER than that, and only once
+   the window gets short enough for it to matter.
+
+   The height budget is --hero-fit: a 0–1 ratio of "how much of the hero's
+   natural, unshrunk size actually fits" — 911px is that natural size (the
+   sum of every element's own old vw-clamp MAX value: padding, gaps, the
+   laptop video, one line of title, two lines of description, the
+   button). cqh (not vh) is what container-type: size below turns on,
+   so the ratio is against the space .hero ACTUALLY has, not the raw
+   viewport — main.js sets .hero's real height to the viewport height
+   minus whatever the nav above it is actually taking up. Unlike the old
+   clamp()s, this arm has no floor: a short enough window keeps shrinking
+   the hero for as long as it takes to fit, by design. */
 .hero {
   position: relative;
   overflow: hidden;
+  container-type: size;
+  /* JS (main.js) overwrites this with the exact space left below the
+     nav; 100vh is just the pre-JS fallback so nothing flashes at 0
+     height for the instant before that runs */
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  --hero-fit: min(1, calc(100cqh / 911px));
   /* these override the generic section{padding-block} rule (higher
      specificity), so without their own fluid range the hero would
-     hold onto a fixed 180px of bottom padding even on a phone —
-     clamp() gives it the same continuous shrink as everything else */
-  padding-top: clamp(48px, calc(40.718px + 1.942vw), 78px);
-  /* same responsive curve as before, shifted up by a flat 150px at every
-     viewport width — extends the section itself without moving the
-     title/image/paragraph/button, which stay anchored to the top */
-  padding-bottom: clamp(214px, calc(185.845px + 7.508vw), 330px);
-  text-align: center;
+     hold onto a fixed padding even on a phone — clamp() gives it the
+     same continuous shrink as everything else, and min() with the
+     --hero-fit arm gives it a further shrink once height is tight */
+  padding-top: min(clamp(48px, calc(40.718px + 1.942vw), 78px), calc(78px * var(--hero-fit)));
+  /* was a flat 150px taller than padding-top at every viewport width
+     (214–330px) — that was headroom for a decorative background that no
+     longer needs it, and was the single biggest reason the hero didn't
+     fit on an ordinary laptop window in the first place, so it's been
+     brought back down near padding-top's own range instead */
+  padding-bottom: min(clamp(24px, calc(14.29px + 2.589vw), 64px), calc(64px * var(--hero-fit)));
 }
 
 .hero__grid {
@@ -536,8 +570,10 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   /* scaled down from the old 64–200px range: a name-as-headline should
      still read as the hero, but 200px was fighting the rest of the
      hierarchy (nav, body copy) rather than anchoring it — 40–88px keeps
-     it the biggest thing on the page without overpowering it */
-  font-size: clamp(40px, calc(28.35px + 3.107vw), 88px);
+     it the biggest thing on the page without overpowering it. min()'d
+     against --hero-fit (see .hero) so a short window shrinks it further
+     still, rather than cropping it */
+  font-size: min(clamp(40px, calc(28.35px + 3.107vw), 88px), calc(88px * var(--hero-fit)));
   line-height: 1.2;
   color: #fff;
 }
@@ -545,10 +581,13 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 .hero__desc {
   max-width: 1100px;
   /* fluid to match the fluid title above it — a fixed px gap here would
-     look cramped next to a 200px headline on a wide screen and loose
-     next to a 64px one on a narrow phone */
-  margin: clamp(10px, calc(7.573px + 0.647vw), 20px) auto 0;
-  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
+     look cramped next to a big headline on a wide screen and loose next
+     to a small one on a narrow phone. min()'d against --hero-fit like
+     everything else in the hero (see .hero) */
+  margin-top: min(clamp(10px, calc(7.573px + 0.647vw), 20px), calc(20px * var(--hero-fit)));
+  margin-inline: auto;
+  margin-bottom: 0;
+  font-size: min(clamp(14px, calc(11.184px + 0.751vw), 25.6px), calc(25.6px * var(--hero-fit)));
   line-height: 1.15;
   color: #ffffff;
 }
@@ -565,13 +604,14 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  /* nudges the laptop down a bit from the top of the hero */
-  margin-top: clamp(16px, calc(10.175px + 1.553vw), 40px);
+  /* nudges the laptop down a bit from the top of the hero. min()'d
+     against --hero-fit like everything else in the hero (see .hero) */
+  margin-top: min(clamp(16px, calc(10.175px + 1.553vw), 40px), calc(40px * var(--hero-fit)));
   /* fluid for the same reason as .hero__desc's margin below — keeps the
      gap proportionate to the (also fluid) laptop and title next to it
      instead of reading as too tight on a big screen or too loose on a
      small one */
-  margin-bottom: clamp(28px, calc(19.262px + 2.330vw), 64px);
+  margin-bottom: min(clamp(28px, calc(19.262px + 2.330vw), 64px), calc(64px * var(--hero-fit)));
 }
 
 /* replaces the old two-headshot pairing (a photo + a cartoon face) with
@@ -582,7 +622,10 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    focal element it needs more visual weight to hold its own against the
    headline below; width follows the laptop's own ~1.8:1 aspect ratio. */
 .hero__computer {
-  height: clamp(190px, calc(148.738px + 11.003vw), 360px);
+  /* min()'d against --hero-fit like everything else in the hero (see
+     .hero), so it shrinks along with the rest on a short window instead
+     of forcing the hero taller than the space actually available */
+  height: min(clamp(190px, calc(148.738px + 11.003vw), 360px), calc(360px * var(--hero-fit)));
   width: auto;
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
 }
@@ -592,8 +635,17 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   /* fluid for the same reason as the other hero spacing above — and a
      touch more generous than the title→description gap, so the CTA
      reads as its own distinct, clickable beat rather than crowding the
-     paragraph above it */
-  margin-top: clamp(28px, calc(21.204px + 1.812vw), 56px);
+     paragraph above it. min()'d against --hero-fit like everything else
+     in the hero (see .hero) */
+  margin-top: min(clamp(28px, calc(21.204px + 1.812vw), 56px), calc(56px * var(--hero-fit)));
+  /* .btn's own font-size/padding are already fluid by width — these add
+     the same height-based ceiling as the rest of the hero (see .hero)
+     so the button keeps shrinking with everything else on a short
+     window instead of becoming the tallest, most-cropped element */
+  font-size: min(clamp(16px, calc(15.029px + 0.259vw), 20px), calc(20px * var(--hero-fit)));
+  padding:
+    min(clamp(14px, calc(12.544px + 0.388vw), 20px), calc(20px * var(--hero-fit)))
+    min(clamp(24px, calc(21.087px + 0.777vw), 36px), calc(36px * var(--hero-fit)));
 }
 
 /* ---------- hero stage: character art + surrounding buttons ---------- */
