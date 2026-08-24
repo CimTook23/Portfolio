@@ -182,19 +182,30 @@ section {
 
 .nav-wrap {
   position: sticky;
-  top: 20px;
+  /* was a single breakpoint snap (20px down to 14px at 920px) — fluid
+     now, so the sticky gap shrinks continuously with the viewport
+     instead of jumping */
+  top: clamp(14px, calc(12.544px + 0.388vw), 20px);
   z-index: 50;
   width: min(90%, 1080px);
   margin-inline: auto;
-  padding-top: 20px;
+  padding-top: clamp(14px, calc(12.544px + 0.388vw), 20px);
 }
 
 .nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 26px;
-  padding: 16px 20px 16px 22px;
+  /* the pill's own gap/padding were fixed px — everything INSIDE it
+     (logo badge, link text, the Contact button) was already fluid, but
+     the container around them wasn't, so the bar stopped shrinking
+     once those inner pieces hit their own floors. --nav-pad-h keeps
+     the left side 2px more padded than the right at every size (an
+     optical balance thing around the round logo badge/rounded pill
+     ends), same as the old fixed 22px/20px pair. */
+  --nav-pad-h: clamp(14px, calc(12.544px + 0.388vw), 20px);
+  gap: clamp(14px, calc(11.087px + 0.777vw), 26px);
+  padding: clamp(10px, calc(8.544px + 0.388vw), 16px) var(--nav-pad-h) clamp(10px, calc(8.544px + 0.388vw), 16px) calc(var(--nav-pad-h) + 2px);
   border-radius: var(--radius-pill);
 }
 
@@ -290,7 +301,7 @@ section {
 
 .nav__links a {
   display: inline-block;
-  padding: 12px 18px;
+  padding: 12px clamp(14px, calc(12.544px + 0.388vw), 18px);
   border-radius: var(--radius-pill);
   font-size: clamp(14px, calc(13.515px + 0.129vw), 16px);
   font-weight: 400;
@@ -478,7 +489,14 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  /* anchored to the top (padding-top is what controls the gap below the
+     nav) rather than vertically centered — centering left a big empty
+     gap above the laptop/title/paragraph/button on anything taller than
+     the hero's natural content height, which read as the whole block
+     sitting too low. overflow: hidden above is still the safety net if
+     --hero-fit's estimate ever runs a few px short on a very tight
+     window, same as before. */
+  justify-content: flex-start;
   text-align: center;
   --hero-fit: min(1, calc(100cqh / 911px));
   /* these override the generic section{padding-block} rule (higher
@@ -1608,11 +1626,6 @@ footer {
    clipping its right edge well before 760px, so the hamburger has to
    take over earlier than you'd guess from eyeballing the content alone */
 @media (max-width: 920px) {
-  .nav-wrap {
-    top: 14px;
-    padding-top: 14px;
-  }
-
   .nav {
     flex-wrap: nowrap;
   }
@@ -1642,16 +1655,15 @@ footer {
     pointer-events: auto;
   }
 
-  .nav__links a {
-    padding: 12px 14px;
-  }
-
   .nav__toggle {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 46px;
-    height: 46px;
+    /* fluid across this media query's own range (375–920px) rather than
+       a flat 46px all the way down to a phone — it's the one nav piece
+       that was still a hard-coded size regardless of viewport */
+    width: clamp(38px, calc(32.5px + 1.468vw), 46px);
+    height: clamp(38px, calc(32.5px + 1.468vw), 46px);
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.14);
