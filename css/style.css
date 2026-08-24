@@ -1153,10 +1153,19 @@ footer {
    the homepage/about hero, where IT is the thing scaling the section) —
    in here .dm-hero__stage's transform: scale() is the only thing that
    should ever shrink this, so its own font-size stays pinned at the
-   original design's value */
+   original design's value. Same reason line-height is a fixed 1.05, not
+   a separate clamp()/vw value of its own: this whole title is already
+   "responsive" via .dm-hero__stage's uniform scale(), which keeps it
+   looking identical — this line-height included — at every viewport
+   width; giving it its own independently-fluid line-height would just
+   fight that and drift out of sync with the rest of the stage instead.
+   Was 0.85 — tight enough that "Jaydon's / Digital / Museum" (this
+   wraps to one word per line at the stage's fixed width) collided
+   between lines, the descender on "Jaydon's" cutting into "Digital"
+   and "Digital"'s into "Museum". 1.05 clears both. */
 .dm-hero__content .hero__title {
   font-size: 200px;
-  line-height: 0.85;
+  line-height: 1.05;
 }
 
 .dm-hero__desc {
