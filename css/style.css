@@ -154,7 +154,14 @@ ul {
 }
 
 .container--wide {
-  width: min(100% - 110px, 2600px);
+  /* the 110px side gutter was a flat subtraction regardless of viewport —
+     fine at desktop widths, but on a small phone (~320px) it eats a
+     disproportionate chunk of the screen (110/320 = ~34% just for
+     padding) and was tight enough to wrap the hero CTA button onto two
+     lines. Fluid between the same floor .container itself uses (48px)
+     and the original 110px ceiling, so it shrinks in step with the
+     viewport instead of staying desktop-sized until it doesn't fit. */
+  width: min(100% - clamp(48px, 6vw, 110px), 2600px);
 }
 
 section {
@@ -526,7 +533,11 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 .hero__title {
   font-family: var(--font-hero);
   font-weight: 700;
-  font-size: clamp(64px, calc(30.99px + 8.803vw), 200px);
+  /* scaled down from the old 64–200px range: a name-as-headline should
+     still read as the hero, but 200px was fighting the rest of the
+     hierarchy (nav, body copy) rather than anchoring it — 40–88px keeps
+     it the biggest thing on the page without overpowering it */
+  font-size: clamp(40px, calc(28.35px + 3.107vw), 88px);
   line-height: 1.2;
   color: #fff;
 }
@@ -1530,7 +1541,12 @@ footer {
   }
 }
 
-@media (max-width: 760px) {
+/* 920px, not 760px — below ~920px the full desktop nav (logo + 4 links +
+   Contact + theme toggle, all with their own gaps/padding) no longer
+   fits inside .nav-wrap's own width (min(90%, 1080px)) and starts
+   clipping its right edge well before 760px, so the hamburger has to
+   take over earlier than you'd guess from eyeballing the content alone */
+@media (max-width: 920px) {
   .nav-wrap {
     top: 14px;
     padding-top: 14px;
