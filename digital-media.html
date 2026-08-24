@@ -30,7 +30,6 @@
       <li><a href="index.html#case-studies">Case studies</a></li>
       <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="digital-media.html">Digital Media</a></li>
-      <li><a href="about.html">About me</a></li>
     </ul>
 
     <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
@@ -98,7 +97,6 @@
       <div class="dm-hero__actions reveal">
         <a class="btn btn-outline dm-btn" href="#motion-design"><span>Motion design</span><span>↓</span></a>
         <a class="btn btn-outline dm-btn" href="#jaydon-mp4"><span>Jaydon MP4</span><span>↓</span></a>
-        <a class="btn btn-outline dm-btn" href="#inventory"><span>Inventory</span><span>↓</span></a>
       </div>
     </div>
   </section>
@@ -167,9 +165,47 @@
           <h3 class="dm-video-meta__title">10 years of design</h3>
         </div>
       </div>
-      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
-      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
-      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
+      <div class="dm-media-item">
+        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="LpOAWPr6fKE" data-tags="videography,after-effects">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play Chlorine Stabilizing Mini Pucks">
+            <img src="https://img.youtube.com/vi/LpOAWPr6fKE/maxresdefault.jpg" alt="Chlorine Stabilizing Mini Pucks video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <div class="dm-video-meta">
+          <div class="tag-row">
+            <span class="tag">Videography</span>
+            <span class="tag">After effects</span>
+          </div>
+          <h3 class="dm-video-meta__title">Chlorine Stabilizing Mini Pucks</h3>
+        </div>
+      </div>
+      <div class="dm-media-item">
+        <!-- self-hosted, not a YouTube embed — same portrait tile shape as
+             the other three, just a real <video> instead of a click-to-play
+             thumbnail. Unlike the Ground FX case study's version of this
+             same clip, .cs-square--contain swaps the usual object-fit:
+             cover for contain: the source is 1080×1920 (9:16, ~0.5625)
+             against this tile's 711:1206 (~0.5895) ratio, so cover would
+             crop a sliver off the top and bottom — contain shows the
+             entire frame, just a couple of px narrower on each side.
+             .cs-square--fit-viewport caps its height (not just width, like
+             every other tile here) so the whole video fits on screen
+             without scrolling past it. -->
+        <div class="cs-square cs-square--portrait cs-square--contain cs-square--fit-viewport" data-tags="videography,after-effects">
+          <video src="assets/videos/gfx-recap.mp4" controls preload="metadata" playsinline
+            aria-label="The Ground FX recap video"></video>
+        </div>
+        <div class="dm-video-meta">
+          <div class="tag-row">
+            <span class="tag">Videography</span>
+            <span class="tag">After effects</span>
+          </div>
+          <h3 class="dm-video-meta__title">Ground FX recap</h3>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -178,38 +214,27 @@
     <div class="section-head reveal">
       <div>
         <h2>Jaydon MP4</h2>
-        <p class="section-head__sub">Placeholder — description of this project coming soon.</p>
+        <p class="section-head__sub">A personal Instagram for quick motion graphics remixes, meme edits, and after
+          effects experiments.</p>
       </div>
     </div>
 
-    <!-- TODO: point at the real Instagram URL once it's confirmed —
-         currently a harmless self-link so it doesn't jump anywhere unexpected -->
-    <a class="btn btn-outline reveal" href="#jaydon-mp4">View instagram</a>
+    <a class="btn btn-outline cs-cta reveal" href="https://www.instagram.com/jayd0n.mp4/" target="_blank" rel="noopener">View instagram</a>
 
-    <!-- same 2-column grid as Motion design, so these portrait tiles are
-         exactly as wide as that section's horizontal ones too -->
-    <div class="dm-media-grid dm-media-grid--two reveal">
-      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
-      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
-      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
-      <div class="cs-square cs-square--portrait dm-media-tile--empty">Coming soon</div>
-    </div>
-  </section>
-
-  <!-- ================= INVENTORY ================= -->
-  <section id="inventory" class="container container--wide">
-    <div class="section-head reveal">
-      <div>
-        <h2>Inventory</h2>
-        <p class="section-head__sub">Placeholder — description of this project coming soon.</p>
-      </div>
-    </div>
-
-    <div class="dm-inventory-grid reveal" aria-label="Inventory system preview — placeholder slots, real screenshot coming soon">
-      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
-      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
-      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
-      <div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div><div class="dm-inventory-slot"></div>
+    <!-- Instagram's own official oEmbed widget (blockquote + embed.js, see
+         the script tag at the bottom of the page) instead of a custom
+         thumbnail/click-to-play tile — this is what actually renders the
+         real header (avatar, "View profile"), the real play button, and
+         the real like/comment row exactly as Instagram serves it, so it's
+         watchable in one click with no extra loading step of our own.
+         embed.js finds every .instagram-media blockquote on the page and
+         swaps it for a properly-sized iframe; the permalink is the only
+         thing each one needs. The three highest-view reels on the
+         account, most-viewed first. -->
+    <div class="ig-embed-grid reveal">
+      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Da3i90PtVnW/" data-instgrm-version="14"></blockquote>
+      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbJjgZuhtTP/" data-instgrm-version="14"></blockquote>
+      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbrG8luhNQY/" data-instgrm-version="14"></blockquote>
     </div>
   </section>
 
@@ -229,5 +254,9 @@
 <script src="js/main.js"></script>
 <script src="js/scramble-text.js"></script>
 <script src="js/head-track.js"></script>
+<!-- powers the Jaydon MP4 .instagram-media blockquotes above — Instagram's
+     own script, not ours; it finds every blockquote with that class and
+     replaces it with the real embedded player. -->
+<script async src="https://www.instagram.com/embed.js"></script>
 </body>
 </html>

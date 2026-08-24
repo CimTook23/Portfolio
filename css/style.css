@@ -1308,6 +1308,36 @@ footer {
   aspect-ratio: 711 / 1206;
 }
 
+/* opt-out of .cs-square img/video's default object-fit: cover — for a
+   source whose own aspect ratio doesn't closely match the tile's (e.g.
+   Motion design's Ground FX recap, 9:16 against this tile's 711:1206),
+   cover crops a sliver off the edges to fill the box exactly; contain
+   scales it down just enough that the whole frame stays visible, letter-
+   boxed by a few px instead. Background goes black so that letterboxing
+   reads as intentional, matching the source's own black slate instead of
+   .cs-square's light placeholder-image gray showing through. */
+.cs-square.cs-square--contain {
+  background: #000;
+}
+
+.cs-square.cs-square--contain img,
+.cs-square.cs-square--contain video {
+  object-fit: contain;
+}
+
+/* Ground FX recap — at this grid's normal "fill the column" width, a
+   711:1206 tile can end up taller than the viewport itself, so seeing
+   the whole thing means scrolling past it. Cap by height instead of
+   width: aspect-ratio then works out a narrower width to match, so the
+   full video fits on screen at once. Centered since it no longer fills
+   its column like every other tile here. */
+.cs-square.cs-square--fit-viewport {
+  width: auto;
+  max-width: 100%;
+  max-height: 65vh;
+  margin-inline: auto;
+}
+
 /* honest "space reserved" tile — no fake play button or borrowed
    screenshot pretending to be finished work, just the same dashed-border
    treatment already used by .placeholder-note elsewhere on this page.
@@ -2239,6 +2269,27 @@ footer {
   gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
 }
 
+/* Jaydon MP4 — holds the three real Instagram oEmbed widgets
+   (.instagram-media blockquotes, processed by embed.js into iframes) side
+   by side. Unlike .cs-marketing-grid's .cs-square tiles, nothing here
+   forces an aspect-ratio: the widget calculates and sets its own height
+   once processed, so the row just needs to size to whatever it decides —
+   forcing a ratio would either crop its chrome or leave dead space. */
+.ig-embed-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  align-items: start;
+}
+
+/* the widget's own default width is a fixed px value (max 658px) meant for
+   a single-column blog post, not a grid cell — stretch it to fill its
+   column instead, same as every other tile on this page. */
+.ig-embed-grid iframe {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
 /* Design validation */
 .cs-validation-copy {
   display: grid;
@@ -2495,7 +2546,8 @@ footer {
   }
 
   .cs-guidelines-grid,
-  .cs-marketing-grid {
+  .cs-marketing-grid,
+  .ig-embed-grid {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -2507,7 +2559,8 @@ footer {
 
 @media (max-width: 35em) {
   .cs-guidelines-grid,
-  .cs-marketing-grid {
+  .cs-marketing-grid,
+  .ig-embed-grid {
     grid-template-columns: 1fr;
   }
 }
