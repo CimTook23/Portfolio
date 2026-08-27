@@ -805,7 +805,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .section-head__sub {
   color: var(--text-secondary);
-  font-size: clamp(14px, calc(13.515px + 0.129vw), 16px);
+  /* matches .hero__desc's paragraph style (size, line-height) */
+  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
+  line-height: 1.15;
   margin-top: 8px;
 }
 
@@ -965,10 +967,12 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .project-card__body p {
   color: #ffffff;
-  /* same size as .cs-para (Faculty of Environment's body copy class) */
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
-  font-weight: 300;
-  line-height: 1.5;
+  /* matches the hero paragraph's style (.hero__desc) — same clamp curve
+     and line-height, just without the *var(--hero-fit) multiplier, since
+     that custom property is scoped to .hero's own container-query
+     shrink-to-fit and isn't defined out here */
+  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
+  line-height: 1.15;
   max-width: 60ch;
 }
 
@@ -1948,8 +1952,13 @@ footer {
 }
 
 .cs-para {
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
-  line-height: 1.6;
+  /* matches .hero__desc's paragraph style (size, line-height) — other
+     case-study elements sized "same as .cs-para" (callouts, captions,
+     takeaway cards, etc.) keep their own original clamp() value rather
+     than following this one, since those are buttons/captions/headings,
+     not body paragraphs */
+  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
+  line-height: 1.15;
   color: #fff;
   max-width: 62ch;
 }
