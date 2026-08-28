@@ -3,8 +3,8 @@
    Restrained glassmorphism, matched to the reference layout
    ========================================================= */
 
-/* Sinteca — no longer referenced by --font-hero (see below, now PP
-   Mondwest), but the files/@font-face stay: nothing currently uses them,
+/* Sinteca — no longer referenced by --font-hero (see below, now Medival
+   Pixel), but the files/@font-face stay: nothing currently uses them,
    removing a working @font-face isn't part of this task, and it's a
    one-line revert if a future design ever wants this face back. */
 @font-face {
@@ -23,13 +23,12 @@
   font-display: swap;
 }
 
-/* PP Mondwest — the pixel/glitch display face (see --font-hero below).
-   Pangram Pangram's commercial original; redistribution/self-hosting
-   rights on this specific file haven't been separately confirmed, but
-   this is the requested font. Regular only — ships in a single weight. */
+/* Medival Pixel — the display face (see --font-hero below). A custom
+   font, made by Jaydon — no licensing questions here, it's his own
+   work. Regular only — ships in a single weight. */
 @font-face {
-  font-family: "PP Mondwest";
-  src: url("../assets/fonts/PPMondwest-Regular.otf") format("opentype");
+  font-family: "Medival Pixel";
+  src: url("../assets/fonts/MedivalPixel-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -60,9 +59,10 @@
   --font-display: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   /* the big hero-style titles (homepage name, case-study hero titles,
-     footer heading) plus the PP Mondwest section headings — was Jersey
-     15, then Sinteca, then FS Mondwest, now back to PP Mondwest */
-  --font-hero: "PP Mondwest", serif;
+     footer heading) plus the Medival Pixel section headings — was
+     Jersey 15, then Sinteca, then PP Mondwest, then FS Mondwest, now
+     Medival Pixel (Jaydon's own font) */
+  --font-hero: "Medival Pixel", serif;
 
   --radius-lg: 28px;
   --radius-md: 20px;
@@ -72,7 +72,7 @@
   --container: 1320px;
 
   /* ---------- type scale — 7 styles, nothing else ----------
-     PP Mondwest (--font-hero) + Inter (--font-body/--font-display),
+     Medival Pixel (--font-hero) + Inter (--font-body/--font-display),
      base 16 / scale 1.392, sized for a 1440px-wide screen. Every size
      reaches its ceiling exactly at 1440px viewport width and holds
      flat beyond it — a bigger monitor sits further away, so type
@@ -111,7 +111,7 @@
      extreme ultra-wide monitor (doesn't engage until ~3600px wide) —
      neither changes the ratio anywhere in the range real viewports
      actually use, unlike the old clamp()'s floor/ceiling. */
-  --text-title: clamp(48px, 8.333vw, 300px);   /* 120px @1440 — titles (PP Mondwest, scramble) */
+  --text-title: clamp(48px, 8.333vw, 300px);   /* 120px @1440 — titles (Medival Pixel, scramble) */
   --text-h1: clamp(2rem, calc(1.296rem + 3.005vw), 4rem);          /* 64px @1440 — section headings (both fonts) */
   --text-h2: clamp(1.75rem, calc(1.42rem + 1.408vw), 2.688rem);    /* 43px @1440 — card titles, meta labels, subheads */
   --text-h3: 1.375rem;                                              /* 22px — homepage hero paragraph ("Enjoys working in product...") */
@@ -825,7 +825,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .hero__title {
   font-family: var(--font-hero);
-  /* 400, not 700 — PP Mondwest only ships one weight; a "bold" request
+  /* 400, not 700 — Medival Pixel only ships one weight; a "bold" request
      against it would just be browser-synthesized faux bold, which
      distorts a pixel-grid face like this one */
   font-weight: 400;
