@@ -23,21 +23,13 @@
   font-display: swap;
 }
 
-/* FS Mondwest — the pixel/glitch display face (see --font-hero below).
-   Was PP Mondwest (Pangram Pangram's commercial original) — that file
-   was never actually licensed for self-hosting on a public site, so it
-   never got committed to this repo and the deployed site was silently
-   falling back to serif for every title. FS Mondwest is a from-scratch
-   recreation of the same look by NZWStudios2024, released under the
-   SIL Open Font License 1.1 (assets/fonts/fs-mondwest-license.txt),
-   which explicitly permits embedding/redistributing it on a site like
-   this — that's why this file ships with its license + readme
-   alongside it in assets/fonts/, per the OFL's own requirement to keep
-   those attached to any copy. Regular only — ships in a single weight,
-   same as the original it's based on. */
+/* PP Mondwest — the pixel/glitch display face (see --font-hero below).
+   Pangram Pangram's commercial original; redistribution/self-hosting
+   rights on this specific file haven't been separately confirmed, but
+   this is the requested font. Regular only — ships in a single weight. */
 @font-face {
-  font-family: "FS Mondwest";
-  src: url("../assets/fonts/fs-mondwest-regular.otf") format("opentype");
+  font-family: "PP Mondwest";
+  src: url("../assets/fonts/PPMondwest-Regular.otf") format("opentype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -68,10 +60,9 @@
   --font-display: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   /* the big hero-style titles (homepage name, case-study hero titles,
-     footer heading) plus the FS Mondwest section headings — was Jersey
-     15, then Sinteca, then PP Mondwest, now FS Mondwest (see its own
-     @font-face comment above for why) */
-  --font-hero: "FS Mondwest", serif;
+     footer heading) plus the PP Mondwest section headings — was Jersey
+     15, then Sinteca, then FS Mondwest, now back to PP Mondwest */
+  --font-hero: "PP Mondwest", serif;
 
   --radius-lg: 28px;
   --radius-md: 20px;
@@ -81,7 +72,7 @@
   --container: 1320px;
 
   /* ---------- type scale — 7 styles, nothing else ----------
-     FS Mondwest (--font-hero) + Inter (--font-body/--font-display),
+     PP Mondwest (--font-hero) + Inter (--font-body/--font-display),
      base 16 / scale 1.392, sized for a 1440px-wide screen. Every size
      reaches its ceiling exactly at 1440px viewport width and holds
      flat beyond it — a bigger monitor sits further away, so type
@@ -120,7 +111,7 @@
      extreme ultra-wide monitor (doesn't engage until ~3600px wide) —
      neither changes the ratio anywhere in the range real viewports
      actually use, unlike the old clamp()'s floor/ceiling. */
-  --text-title: clamp(48px, 8.333vw, 300px);   /* 120px @1440 — titles (FS Mondwest, scramble) */
+  --text-title: clamp(48px, 8.333vw, 300px);   /* 120px @1440 — titles (PP Mondwest, scramble) */
   --text-h1: clamp(2rem, calc(1.296rem + 3.005vw), 4rem);          /* 64px @1440 — section headings (both fonts) */
   --text-h2: clamp(1.75rem, calc(1.42rem + 1.408vw), 2.688rem);    /* 43px @1440 — card titles, meta labels, subheads */
   --text-h3: 1.375rem;                                              /* 22px — homepage hero paragraph ("Enjoys working in product...") */
@@ -834,18 +825,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .hero__title {
   font-family: var(--font-hero);
-  /* FS Mondwest's own space glyph is essentially broken — measured it
-     directly off the font file: 0.024em advance width, against
-     0.12–0.54em for actual letters (roughly a lowercase "i" would be
-     the narrowest normal glyph). Words run together with no visible
-     gap without this. word-spacing ADDS to whatever the glyph's own
-     advance already is, so 0.28em here lands the total around 0.3em —
-     a normal-reading gap sized to match this font's own letterforms,
-     not a token "add some space" guess. Repeated on every other rule
-     that sets font-family: var(--font-hero) (this is a font-level bug,
-     not specific to this one title). */
-  word-spacing: 0.28em;
-  /* 400, not 700 — FS Mondwest only ships one weight; a "bold" request
+  /* 400, not 700 — PP Mondwest only ships one weight; a "bold" request
      against it would just be browser-synthesized faux bold, which
      distorts a pixel-grid face like this one */
   font-weight: 400;
@@ -1120,9 +1100,6 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .section-head h2 {
   font-family: var(--font-hero);
-  /* see .hero__title for why — FS Mondwest's own space glyph is
-     essentially zero-width */
-  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-h1);
   letter-spacing: -0.01em;
@@ -1361,9 +1338,6 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .split-panel h2 {
   font-family: var(--font-hero);
-  /* see .hero__title for why — FS Mondwest's own space glyph is
-     essentially zero-width */
-  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-h1);
   margin-bottom: 20px;
@@ -1444,9 +1418,6 @@ footer {
    of environment") */
 .footer-inner h2 {
   font-family: var(--font-hero);
-  /* see .hero__title for why — FS Mondwest's own space glyph is
-     essentially zero-width */
-  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-title);
   line-height: 1.05;
@@ -1981,9 +1952,6 @@ footer {
 
 .page-hero .hero__title {
   font-family: var(--font-hero);
-  /* see .hero__title for why — FS Mondwest's own space glyph is
-     essentially zero-width */
-  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-title);
   line-height: 1.2;
@@ -2428,9 +2396,6 @@ footer {
 /* same hero font as the "Jaydon Wang" homepage hero title */
 .cs-hero__title {
   font-family: var(--font-hero);
-  /* see .hero__title for why — FS Mondwest's own space glyph is
-     essentially zero-width */
-  word-spacing: 0.28em;
   font-weight: 400;
   /* plain --text-title, same as every other member of this style
      (JAYDON WANG, Digital Museum, About me, the footer) — the title
