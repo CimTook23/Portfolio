@@ -1951,12 +1951,28 @@ footer {
   margin-bottom: clamp(2.5rem, calc(1.8174rem + 2.913vw), 5.3125rem);
 }
 
+/* case-study body paragraphs now carry .hero__desc in the markup
+   (class="hero__desc cs-para") so they're literally the same class as
+   the homepage's "Enjoys working in product..." paragraph, not just a
+   numeric match — this rule is that context's override, same pattern as
+   .page-hero .hero__desc and .dm-hero__desc elsewhere in this file:
+   - font-size/line-height are re-declared flat because .hero__desc's own
+     value is min()'d against --hero-fit, a custom property that only
+     exists inside .hero's container-query scope — outside it the var()
+     is invalid, which invalidates the whole property at computed-value
+     time, so leaving it to cascade from .hero__desc alone would silently
+     drop back to font-size:inherit.
+   - margin:0 cancels .hero__desc's own margin-top and margin-inline:auto.
+     The auto margins matter most: these paragraphs are flex items inside
+     .cs-split__body (align-items:flex-start), and an auto margin on a
+     flex item's cross axis wins over align-items, so left uncancelled it
+     would re-center every paragraph instead of leaving it flush left.
+   Other case-study elements sized "same as .cs-para" (callouts, captions,
+   takeaway cards, etc.) keep their own original clamp() value rather than
+   following this one, since those are buttons/captions/headings, not
+   body paragraphs. */
 .cs-para {
-  /* matches .hero__desc's paragraph style (size, line-height) — other
-     case-study elements sized "same as .cs-para" (callouts, captions,
-     takeaway cards, etc.) keep their own original clamp() value rather
-     than following this one, since those are buttons/captions/headings,
-     not body paragraphs */
+  margin: 0;
   font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
   line-height: 1.15;
   color: #fff;
