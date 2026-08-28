@@ -433,10 +433,17 @@ section {
 }
 
 .nav__switch-opt {
-  /* same flat spec as .btn (was its own fluid clamp()) — the actual
-     Work/Play options inside the toggle, not the outer track (see
-     .nav__switch for that) */
-  padding: 0.938rem 1.875rem;
+  /* NOT the flat sitewide .btn spec (0.938rem/1.875rem) anymore — that
+     read fine at desktop widths but stayed completely fixed all the way
+     down to 420px (where a separate, abrupt media-query override used
+     to cut it down to 8px/12px in one jump), making the nav bar's own
+     Work/Play switch eat a disproportionate, non-shrinking chunk of a
+     shrinking nav on tablet/small-laptop widths. Fluid instead — full
+     0.938rem/1.875rem size at 900px+ (unchanged from before there),
+     continuously shrinking to a compact 8px/12px by 375px, so there's
+     no breakpoint jump and no "stuck at full size" range in between.
+     The old 420px-only override is gone; this clamp already covers it. */
+  padding: clamp(8px, calc(3px + 1.333vw), 15.008px) clamp(12px, calc(-0.857px + 3.429vw), 30px);
   border-radius: var(--radius-pill);
   font-size: var(--text-body);
   font-weight: 500;
@@ -827,6 +834,17 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .hero__title {
   font-family: var(--font-hero);
+  /* FS Mondwest's own space glyph is essentially broken — measured it
+     directly off the font file: 0.024em advance width, against
+     0.12–0.54em for actual letters (roughly a lowercase "i" would be
+     the narrowest normal glyph). Words run together with no visible
+     gap without this. word-spacing ADDS to whatever the glyph's own
+     advance already is, so 0.28em here lands the total around 0.3em —
+     a normal-reading gap sized to match this font's own letterforms,
+     not a token "add some space" guess. Repeated on every other rule
+     that sets font-family: var(--font-hero) (this is a font-level bug,
+     not specific to this one title). */
+  word-spacing: 0.28em;
   /* 400, not 700 — FS Mondwest only ships one weight; a "bold" request
      against it would just be browser-synthesized faux bold, which
      distorts a pixel-grid face like this one */
@@ -1102,6 +1120,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .section-head h2 {
   font-family: var(--font-hero);
+  /* see .hero__title for why — FS Mondwest's own space glyph is
+     essentially zero-width */
+  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-h1);
   letter-spacing: -0.01em;
@@ -1340,6 +1361,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .split-panel h2 {
   font-family: var(--font-hero);
+  /* see .hero__title for why — FS Mondwest's own space glyph is
+     essentially zero-width */
+  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-h1);
   margin-bottom: 20px;
@@ -1420,6 +1444,9 @@ footer {
    of environment") */
 .footer-inner h2 {
   font-family: var(--font-hero);
+  /* see .hero__title for why — FS Mondwest's own space glyph is
+     essentially zero-width */
+  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-title);
   line-height: 1.05;
@@ -1954,6 +1981,9 @@ footer {
 
 .page-hero .hero__title {
   font-family: var(--font-hero);
+  /* see .hero__title for why — FS Mondwest's own space glyph is
+     essentially zero-width */
+  word-spacing: 0.28em;
   font-weight: 400;
   font-size: var(--text-title);
   line-height: 1.2;
@@ -2258,9 +2288,9 @@ footer {
     gap: 8px;
   }
 
-  .nav__switch-opt {
-    padding: 8px 12px;
-  }
+  /* .nav__switch-opt's own padding no longer needs an override here —
+     its fluid clamp() already floors at this exact 8px/12px by the time
+     the viewport is this narrow (see its own rule for why) */
 }
 
 @media (max-width: 560px) {
@@ -2398,6 +2428,9 @@ footer {
 /* same hero font as the "Jaydon Wang" homepage hero title */
 .cs-hero__title {
   font-family: var(--font-hero);
+  /* see .hero__title for why — FS Mondwest's own space glyph is
+     essentially zero-width */
+  word-spacing: 0.28em;
   font-weight: 400;
   /* plain --text-title, same as every other member of this style
      (JAYDON WANG, Digital Museum, About me, the footer) — the title
