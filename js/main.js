@@ -34,6 +34,95 @@
     });
   }
 
+  /* ---------- smooth (eased) wheel scrolling, sitewide ----------
+     CSS's `scroll-behavior: smooth` (see style.css) only smooths
+     scrolling that's already programmatic — anchor links, .scrollTo()
+     calls — it does nothing for ordinary mouse-wheel/trackpad scrolling,
+     which still jumps in the browser's normal stepped increments. This
+     is what actually smooths THAT: on every wheel tick, instead of
+     letting the browser move the page immediately, it nudges a target
+     scroll position and then eases the real scroll position toward that
+     target a little more each animation frame (lerp — linear
+     interpolation) — the classic "buttery"/momentum scroll feel used by
+     libraries like Lenis (confirmed on kynejang.com, the reference site
+     asked for here, via its `lenis-*` class names) rather than an
+     off-the-shelf library, both to avoid a new dependency and because
+     the effect itself is a short, well-known technique, not something
+     that needs a library for a single global listener.
+
+     Deliberately still uses the real window.scrollTo (not a transformed
+     wrapper element, the OTHER common way to build this) — the whole
+     site leans on position: sticky (.hero, .case-studies__side), which
+     only tracks the page's ACTUAL scroll position; a transform-based
+     version would decouple the two and break every sticky element
+     that's been tuned so far. { behavior: "instant" } on each frame's
+     scrollTo is required, not just a style choice — without it, the
+     page's own scroll-behavior: smooth would try to additionally
+     animate every one of these already-animated per-frame calls,
+     compounding into visible lag instead of one smooth motion. */
+  const prefersReducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  ).matches;
+
+  if (!prefersReducedMotion) {
+    const EASE = 0.09; // lower = smoother/slower catch-up, higher = snappier
+    const LINE_HEIGHT = 40; // px per "line" — normalizes deltaMode: 1 wheel events (Firefox, some mice)
+
+    let targetY = window.scrollY;
+    let currentY = window.scrollY;
+    let animating = false;
+
+    const maxScrollY = () =>
+      document.documentElement.scrollHeight - window.innerHeight;
+
+    const tick = () => {
+      currentY += (targetY - currentY) * EASE;
+      const settled = Math.abs(targetY - currentY) < 0.5;
+      if (settled) currentY = targetY;
+
+      window.scrollTo({ top: currentY, left: 0, behavior: "instant" });
+
+      if (settled) {
+        animating = false;
+      } else {
+        requestAnimationFrame(tick);
+      }
+    };
+
+    window.addEventListener(
+      "wheel",
+      (e) => {
+        let delta = e.deltaY;
+        if (e.deltaMode === 1) delta *= LINE_HEIGHT;
+        else if (e.deltaMode === 2) delta *= window.innerHeight;
+
+        // taking over the page's own scroll only — an element with its
+        // own overflow (a scrollable code block, a modal) should still
+        // wheel-scroll natively instead of fighting this
+        if (e.target.closest("[data-native-scroll]")) return;
+
+        e.preventDefault();
+        targetY = Math.min(Math.max(targetY + delta, 0), maxScrollY());
+
+        if (!animating) {
+          animating = true;
+          requestAnimationFrame(tick);
+        }
+      },
+      { passive: false }
+    );
+
+    // keeps targetY in sync with scrolling this listener didn't cause
+    // itself (keyboard, scrollbar drag, an anchor-link jump) — otherwise
+    // the next wheel tick would yank the page back to a stale target
+    window.addEventListener("scroll", () => {
+      if (!animating) {
+        targetY = window.scrollY;
+        currentY = window.scrollY;
+      }
+    });
+  }
+
   /* ---------- homepage hero: fit the viewport, never crop ----------
      .hero's CSS (container-type: size + the --hero-fit custom property)
      shrinks everything inside it — video, title, description, button,
@@ -75,6 +164,43 @@
     sizeHomepage();
     window.addEventListener("resize", sizeHomepage);
     window.addEventListener("load", sizeHomepage);
+  }
+
+  /* ---------- homepage case studies: sticky sidebar, centered in the
+     viewport ----------
+     .case-studies__side is CSS position: sticky + height: 100vh with its
+     content flex-centered inside, so once pinned it sits at the
+     viewport's vertical middle instead of hugging the top edge (see
+     .case-studies__side). --side-max-h caps that 100vh box at
+     .project-grid's real rendered height — measured here since pure CSS
+     can't know it — so a short card list / tall viewport can't stretch
+     the sidebar (and the row around it) taller than the list itself.
+
+     The sidebar's own CSS margin-top (a small fixed value) is what keeps
+     it near the top of the section — it needs to already be visible the
+     moment you scroll into the section, not pushed down out of view
+     while waiting to pin, so this only measures the height cap and
+     leaves that margin alone. */
+  const projectGrid = document.querySelector(".project-grid");
+  const caseStudiesSide = document.querySelector(".case-studies__side");
+  const desktopLayout = window.matchMedia("(min-width: 901px)");
+
+  if (projectGrid && caseStudiesSide) {
+    const syncCaseStudiesSticky = () => {
+      if (!desktopLayout.matches) {
+        // mobile stacks this column statically — let its own CSS
+        // (height: auto) take over instead
+        caseStudiesSide.style.removeProperty("--side-max-h");
+        return;
+      }
+
+      const gridHeight = projectGrid.getBoundingClientRect().height;
+      caseStudiesSide.style.setProperty("--side-max-h", `${gridHeight}px`);
+    };
+
+    syncCaseStudiesSticky();
+    window.addEventListener("resize", syncCaseStudiesSticky);
+    window.addEventListener("load", syncCaseStudiesSticky);
   }
 
   /* ---------- mobile nav toggle ---------- */

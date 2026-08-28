@@ -23,19 +23,21 @@
 <body>
 
 <div class="nav-wrap">
-  <header class="nav">
+  <header class="nav container container--wide">
     <a class="nav__logo" href="../index.html" aria-label="Jaydon — home">
       <span class="nav__logo-badge"><img src="../assets/images/nav-avatar.png" alt="" /></span>
-      <span class="nav__logo-text">Jaydon</span>
     </a>
 
-    <ul class="nav__links" id="navLinks">
-      <li><a href="../index.html#case-studies">Case studies</a></li>
-      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
-      <li><a href="../digital-media.html">Digital Media</a></li>
-    </ul>
+    <div class="nav__switch">
+      <a class="nav__switch-opt is-active" href="../index.html" aria-current="page">Work</a>
+      <a class="nav__switch-opt" href="../digital-media.html">Play</a>
+    </div>
 
-    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="../about.html">About me</a></li>
+      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
+    </ul>
 
     <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +54,19 @@
     <div class="hero__grid" aria-hidden="true"></div>
 
     <div class="cs-hero__top">
-      <h1 class="cs-hero__title reveal">Faculty of environment</h1>
+      <!-- tags moved in here, right under the title, instead of sitting
+           after the whole title+meta row — see aira.html's copy of this
+           comment for why. -->
+      <div class="cs-hero__title-col">
+        <h1 class="cs-hero__title reveal" data-scramble>Faculty of environment</h1>
+
+        <div class="cs-hero__tags reveal">
+          <span class="cs-tag">Internship</span>
+          <span class="cs-tag">2026</span>
+          <span class="cs-tag">Marketing</span>
+          <span class="cs-tag">UX/UI</span>
+        </div>
+      </div>
 
       <div class="cs-hero__meta reveal">
         <div class="cs-hero__meta-item">
@@ -68,13 +82,6 @@
           <p>Website building (WCMIS), content creation, Premiere Pro, outreach, and illustrations.</p>
         </div>
       </div>
-    </div>
-
-    <div class="cs-hero__tags reveal">
-      <span class="cs-tag">Internship</span>
-      <span class="cs-tag">2026</span>
-      <span class="cs-tag">Marketing</span>
-      <span class="cs-tag">UX/UI</span>
     </div>
 
     <div class="cs-hero__actions reveal">
@@ -195,15 +202,15 @@
         <div class="cs-callout" style="width:100%; text-align:center;">Feel free to scroll through →</div>
       </div>
       <div class="cs-split__media">
-        <div class="cs-validation-toggle" data-cs-toggle style="margin-bottom: 1.25rem;">
+        <div class="cs-validation-toggle" data-cs-toggle>
           <button type="button" class="filter-pill is-active" data-cs-toggle-target="final">Final prototype</button>
           <button type="button" class="filter-pill" data-cs-toggle-target="rough">Rough draft</button>
         </div>
         <div class="cs-scroll-frame glass">
-          <div class="cs-scroll-panel is-active" data-cs-toggle-panel="final">
+          <div class="cs-scroll-panel is-active" data-cs-toggle-panel="final" data-native-scroll>
             <img src="../assets/images/foe-process-final-prototype.png" alt="Final prototype — full page of the redesigned Faculty of Environment homepage, scrollable" />
           </div>
-          <div class="cs-scroll-panel" data-cs-toggle-panel="rough">
+          <div class="cs-scroll-panel" data-cs-toggle-panel="rough" data-native-scroll>
             <img src="../assets/images/foe-process-rough-draft.png" alt="Rough draft wireframe of the homepage redesign, scrollable" />
           </div>
         </div>
@@ -234,10 +241,10 @@
         <button type="button" class="filter-pill" data-cs-toggle-target="b">Option B</button>
       </div>
       <div class="cs-scroll-frame cs-validation-card">
-        <div class="cs-scroll-panel is-active" data-cs-toggle-panel="a">
+        <div class="cs-scroll-panel is-active" data-cs-toggle-panel="a" data-native-scroll>
           <img src="../assets/images/foe-validation-option-a.png" alt="Option A — 'Your Future in Environment' redesign, single-column program list, scrollable" />
         </div>
-        <div class="cs-scroll-panel" data-cs-toggle-panel="b">
+        <div class="cs-scroll-panel" data-cs-toggle-panel="b" data-native-scroll>
           <img src="../assets/images/foe-validation-option-b.png" alt="Option B — 'Your Future in Environment' redesign, grid layout, scrollable" />
         </div>
       </div>
@@ -389,7 +396,7 @@
 
 <footer>
   <div class="footer-inner">
-    <h2>Let's c*nnect!</h2>
+    <h2 class="reveal" data-scramble>Let's c*nnect!</h2>
     <div class="footer-links">
       <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
       <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
@@ -399,5 +406,6 @@
 </footer>
 
 <script src="../js/main.js"></script>
+<script src="../js/scramble-text.js"></script>
 </body>
 </html>

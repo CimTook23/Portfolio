@@ -32,19 +32,21 @@
 <div class="hero__grid hero__grid--homepage" aria-hidden="true"></div>
 
 <div class="nav-wrap">
-  <header class="nav" id="top">
+  <header class="nav container container--wide" id="top">
     <a class="nav__logo" href="index.html" aria-label="Jaydon — home">
       <span class="nav__logo-badge"><img src="assets/images/nav-avatar.png" alt="" /></span>
-      <span class="nav__logo-text">Jaydon</span>
     </a>
 
-    <ul class="nav__links" id="navLinks">
-      <li><a href="#case-studies">Case studies</a></li>
-      <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
-      <li><a href="digital-media.html">Digital Media</a></li>
-    </ul>
+    <div class="nav__switch">
+      <a class="nav__switch-opt is-active" href="index.html" aria-current="page">Work</a>
+      <a class="nav__switch-opt" href="digital-media.html">Play</a>
+    </div>
 
-    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="about.html">About me</a></li>
+      <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
+    </ul>
 
     <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -58,30 +60,22 @@
 
   <section class="hero">
     <div class="hero__intro container container--wide">
+      <h1 class="hero__title reveal" data-scramble>JAYDON WANG</h1>
+
       <div class="hero__faces reveal">
         <video class="hero__computer" data-src="assets/videos/hero-computer.webm"
           poster="assets/videos/hero-computer-poster.png" muted loop preload="none" playsinline
           aria-label="Looping animation of a laptop screen glitching between video static and Jaydon's cartoon avatar"></video>
       </div>
 
-      <h1 class="hero__title reveal" data-scramble>JAYDON WANG</h1>
-
       <p class="hero__desc reveal">
         Enjoys working in product, visual and brand design. Outside of side quests and
         breakdancing, he often finds himself:
       </p>
-
-      <a class="btn btn-outline hero__btn-single reveal" href="#case-studies">Building experiences ↓</a>
     </div>
   </section>
 
   <section id="case-studies" class="container container--wide">
-    <div class="section-head reveal">
-      <div>
-        <h2>Projects &amp; Case Studies</h2>
-      </div>
-    </div>
-
     <div class="case-studies__layout">
       <div class="project-grid">
 
@@ -129,10 +123,16 @@
 
       </div>
 
-      <div class="filters reveal">
-        <button class="filter-pill filter-pill--all is-active" data-filter="all">All</button>
-        <div class="filters__group">
-          <button class="filter-pill" data-filter="product-design">Product Design</button>
+      <div class="case-studies__side">
+        <div class="section-head reveal">
+          <div>
+            <h2>Projects<br>&amp; Case Studies</h2>
+          </div>
+        </div>
+
+        <div class="filters reveal">
+          <button class="filter-pill is-active" data-filter="all">All</button>
+          <button class="filter-pill" data-filter="product-design">Product design</button>
           <button class="filter-pill" data-filter="marketing">Marketing</button>
           <button class="filter-pill" data-filter="event-coordination">Event coordination</button>
         </div>
@@ -144,7 +144,7 @@
 
 <footer>
   <div class="footer-inner">
-    <h2>Let's c*nnect!</h2>
+    <h2 class="reveal" data-scramble>Let's c*nnect!</h2>
     <div class="footer-links">
       <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
       <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>

@@ -3,9 +3,10 @@
    Restrained glassmorphism, matched to the reference layout
    ========================================================= */
 
-/* Sinteca — the big hero-style titles' font (see --font-hero below).
-   Not on Google Fonts, so it's a local file (assets/fonts/, license in
-   the accompanying .txt there) rather than a <link> in <head>. */
+/* Sinteca — no longer referenced by --font-hero (see below, now PP
+   Mondwest), but the files/@font-face stay: nothing currently uses them,
+   removing a working @font-face isn't part of this task, and it's a
+   one-line revert if a future design ever wants this face back. */
 @font-face {
   font-family: "Sinteca";
   src: url("../assets/fonts/Sinteca-Regular.otf") format("opentype");
@@ -18,6 +19,18 @@
   font-family: "Sinteca";
   src: url("../assets/fonts/Sinteca-Bold.otf") format("opentype");
   font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* PP Mondwest — the pixel/glitch display face (see --font-hero below).
+   Commercial font (Pangram Pangram), not on Google Fonts, self-hosted
+   under the same license as the desktop app install. Regular only —
+   this typeface ships in a single weight. */
+@font-face {
+  font-family: "PP Mondwest";
+  src: url("../assets/fonts/PPMondwest-Regular.otf") format("opentype");
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
@@ -47,8 +60,9 @@
   --font-display: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
   /* the big hero-style titles (homepage name, case-study hero titles,
-     footer heading) — was the pixel font "Jersey 15", now Sinteca */
-  --font-hero: "Sinteca", sans-serif;
+     footer heading) plus the PP Mondwest section headings — was Jersey
+     15, then Sinteca, now PP Mondwest */
+  --font-hero: "PP Mondwest", serif;
 
   --radius-lg: 28px;
   --radius-md: 20px;
@@ -56,6 +70,86 @@
   --radius-pill: 999px;
 
   --container: 1320px;
+
+  /* ---------- type scale — 7 styles, nothing else ----------
+     PP Mondwest (--font-hero) + Inter (--font-body/--font-display),
+     base 16 / scale 1.392, sized for a 1440px-wide screen. Every size
+     reaches its ceiling exactly at 1440px viewport width and holds
+     flat beyond it — a bigger monitor sits further away, so type
+     shouldn't keep growing past this reference; --container already
+     caps line length instead. The remaining two display/heading tiers
+     (--text-h1, --text-h2) fall back fluidly to a floor at 375px;
+     --text-body/--text-caption stay flat at every width since 16px/11px
+     are already close to the smallest comfortable reading size.
+
+     --text-title is the one exception to all of the above — see its own
+     definition just below for why it's pure vw with no 1440px ceiling
+     at all now. */
+  /* restored to the original brand-spec size (120px @1440) — it had
+     been dialed to 2/3 (80px) earlier in the project, but that read too
+     small across the board, so it's back to spec. Applies to EVERY
+     member of this style everywhere it's used (JAYDON WANG, Jaydon's
+     Digital Museum, About me, the footer, and the three case-study page
+     titles) via this one token, not a per-element override, so the
+     class stays one consistent size.
+
+     Pure vw (no rem term, no separate ≥1440px tier below anymore) —
+     aileens-beautiful-site.webflow.io was pulled up specifically to see
+     how a reference site keeps large display text at a genuinely
+     CONSTANT size relative to the viewport at every width, with no
+     "stops scaling past this breakpoint" seam: their whole type scale
+     is `body { font-size: 1vw }` + headings sized in em off that, so
+     every heading is a fixed % of viewport width forever. Reproduced
+     here directly on the token instead (this codebase sizes type via
+     px/rem custom properties, not an em cascade off body, so there's
+     no root font-size to repurpose the same way) — 8.333vw reproduces
+     the exact 120px-@-1440px brand anchor (120 / 1440 × 100 = 8.3̄vw)
+     while now scaling continuously past it instead of flattening at
+     7.5rem/120px the way the old two-tier clamp() did. 48px/300px are
+     safety rails only, not a second tier: 48px keeps it legible below
+     ~576px (phones), 300px is a backstop against runaway growth on an
+     extreme ultra-wide monitor (doesn't engage until ~3600px wide) —
+     neither changes the ratio anywhere in the range real viewports
+     actually use, unlike the old clamp()'s floor/ceiling. */
+  --text-title: clamp(48px, 8.333vw, 300px);   /* 120px @1440 — titles (PP Mondwest, scramble) */
+  --text-h1: clamp(2rem, calc(1.296rem + 3.005vw), 4rem);          /* 64px @1440 — section headings (both fonts) */
+  --text-h2: clamp(1.75rem, calc(1.42rem + 1.408vw), 2.688rem);    /* 43px @1440 — card titles, meta labels, subheads */
+  --text-h3: 1.375rem;                                              /* 22px — homepage hero paragraph ("Enjoys working in product...") */
+  --text-body: 1rem;                                                /* 16px — all paragraph + button text */
+  --text-caption: 0.688rem;                                         /* 11px — captions, tags, metadata */
+}
+
+/* the 1440px sizes above are the brand spec's ceiling, not the whole
+   site's — on an actual large monitor they were reading a little small.
+   Past 1440px, every token keeps growing (each formula picks up exactly
+   where its 1440px value left off, so there's no visible jump at the
+   breakpoint) up to a second, higher ceiling reached at 1920px, then
+   holds flat again beyond that — display/heading tiers grow ~15%
+   further, body/caption a gentler ~10% since reading text shouldn't
+   scale as aggressively as headlines. */
+@media (min-width: 1440px) {
+  :root {
+    /* headings (title/h1/h2/h3) now scale ×2 by 1920px — same multiplier
+       across the whole heading family, so their relative proportions to
+       each other stay exactly what they are at 1440px, just uniformly
+       bigger. Body/caption scale ×1.375 (the title/body split from
+       before — display text can grow more aggressively than reading
+       text without hurting layout/legibility). */
+    /* --text-title no longer has a tier here — it's pure vw now (see
+       its :root definition above), so it already keeps scaling smoothly
+       past 1440px on its own, with no seam at this breakpoint to patch.
+       --text-h1, --text-h2, and --text-h3 are also intentionally NOT
+       overridden here — all three stay at their original, flat ceilings
+       (the base :root values above, unedited since first defined) for
+       any viewport ≥1440px: 4rem for --text-h1 (section headings —
+       "Projects & Case Studies", "Introduction", etc.), 2.688rem for
+       --text-h2 (the "subheading" style), and 1.375rem/22px for
+       --text-h3 (the homepage hero paragraph) — confirmed against the
+       actual 1.375rem/22px spec, no big-screen growth for any of the
+       three. */
+    --text-body: clamp(1rem, calc(-0.125rem + 1.25vw), 1.375rem);     /* 22px @1920 (×1.375) */
+    --text-caption: clamp(0.688rem, calc(-0.086rem + 0.86vw), 0.946rem); /* ~15.1px @1920 (×1.375) */
+  }
 }
 
 * {
@@ -74,6 +168,42 @@ textarea {
 
 html {
   scroll-behavior: smooth;
+}
+
+/* ---------- scrollbar ---------- */
+
+/* thin, rounded, translucent instead of the browser's default chunky
+   gray bar — reads much smoother against the site's dark background.
+   Firefox picks this pair up directly; the ::-webkit-* rules below cover
+   Chrome/Edge/Safari, which ignore scrollbar-color entirely. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  /* padding-box + a transparent border, not a plain width, is what
+     keeps the thumb from touching the track's edges — it's what makes
+     a border-radius on a scrollbar thumb actually visible instead of
+     looking clipped to a rectangle */
+  background-color: var(--text-muted);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+  border-radius: var(--radius-pill);
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--text-secondary);
 }
 
 /* ---------- light mode ----------
@@ -104,7 +234,7 @@ html[data-theme="light"] model-viewer {
 body {
   position: relative;
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: var(--text-body);
   /* #121327 fades to black right around where the circle buttons begin.
      NOT `fixed` attachment — that pins the gradient to the viewport, so
      it recomputes for whatever's currently on screen and effectively
@@ -171,7 +301,7 @@ section {
 .eyebrow {
   display: inline-block;
   font-family: var(--font-display);
-  font-size: clamp(11px, calc(10.515px + 0.129vw), 13px);
+  font-size: var(--text-caption);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -181,39 +311,32 @@ section {
 /* ---------- nav ---------- */
 
 .nav-wrap {
-  position: sticky;
-  /* was a single breakpoint snap (20px down to 14px at 920px) — fluid
-     now, so the sticky gap shrinks continuously with the viewport
-     instead of jumping */
-  top: clamp(14px, calc(12.544px + 0.388vw), 20px);
-  z-index: 50;
-  width: min(90%, 1080px);
-  margin-inline: auto;
+  /* not sticky by design — the bar scrolls away with the rest of the
+     page instead of pinning to the viewport */
   padding-top: clamp(14px, calc(12.544px + 0.388vw), 20px);
 }
 
 .nav {
-  display: flex;
+  /* three independent groups (logo / Work·Play switch / links), not one
+     floating pill — a grid keeps the switch mathematically centered
+     (equal 1fr side columns) no matter how wide the logo or the link
+     list ends up being, which justify-content:space-between can't
+     guarantee once the two sides are different widths */
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  justify-content: space-between;
-  /* the pill's own gap/padding were fixed px — everything INSIDE it
-     (logo badge, link text, the Contact button) was already fluid, but
-     the container around them wasn't, so the bar stopped shrinking
-     once those inner pieces hit their own floors. --nav-pad-h keeps
-     the left side 2px more padded than the right at every size (an
-     optical balance thing around the round logo badge/rounded pill
-     ends), same as the old fixed 22px/20px pair. */
-  --nav-pad-h: clamp(14px, calc(12.544px + 0.388vw), 20px);
   gap: clamp(14px, calc(11.087px + 0.777vw), 26px);
-  padding: clamp(10px, calc(8.544px + 0.388vw), 16px) var(--nav-pad-h) clamp(10px, calc(8.544px + 0.388vw), 16px) calc(var(--nav-pad-h) + 2px);
-  border-radius: var(--radius-pill);
+  padding-block: clamp(10px, calc(8.544px + 0.388vw), 16px);
 }
 
-/* shared "liquid glass" surface — nav bar, Case studies button */
-.nav,
+/* shared "liquid glass" surface, now only for .btn-glass (currently
+   unused in markup, kept as a reusable component) — the nav bar itself
+   sits directly on the page with no pill/blur of its own; only the
+   Work/Play switch below carries its own glass surface */
 .btn-glass {
   position: relative;
   isolation: isolate;
+  background: var(--nav-bg);
   /* drop shadow: 50% #000, blur 17, y 4 + inner shadow: 25% #fff, blur 10, y 4 */
   box-shadow:
     0 4px 17px rgba(0, 0, 0, 0.5),
@@ -223,19 +346,6 @@ section {
   -webkit-backdrop-filter: blur(20px) saturate(180%);
 }
 
-/* Case studies button keeps a solid-ish glass fill */
-.btn-glass {
-  background: var(--nav-bg);
-}
-
-/* nav bar itself is truly transparent — page content blurs/distorts through it on scroll */
-.nav {
-  background: rgba(38, 39, 57, 0.38);
-  backdrop-filter: blur(26px) saturate(190%);
-  -webkit-backdrop-filter: blur(26px) saturate(190%);
-}
-
-.nav::after,
 .btn-glass::after {
   content: "";
   position: absolute;
@@ -258,14 +368,18 @@ section {
 .nav__logo {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-shrink: 0;
+  grid-column: 1;
+  justify-self: start;
 }
 
 .nav__logo-badge {
-  width: clamp(80px, calc(72.233px + 2.071vw), 112px);
-  height: clamp(37px, calc(33.359px + 0.971vw), 52px);
-  border-radius: 16px;
+  /* full image, uncropped — aspect-ratio matches the source asset
+     (124×59) exactly, so object-fit: cover below never has to crop
+     anything off the sides to fill the box */
+  width: clamp(64px, calc(58.808px + 1.294vw), 90px);
+  aspect-ratio: 124 / 59;
+  border-radius: 14px;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -292,32 +406,67 @@ section {
   display: none;
 }
 
+/* Work / Play — the site's two halves (case studies vs. Digital Media)
+   as a segmented control. The track shares the sitewide glass-outline
+   formula (see .btn-outline, e.g. the homepage's "Building experiences"
+   button) so it reads as the same surface; .is-active reuses the
+   sitewide "active pill" look (see .filter-pill.is-active) so the
+   interaction pattern matches too. */
+.nav__switch {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  padding: 4px;
+  border-radius: var(--radius-pill);
+  grid-column: 2;
+  justify-self: center;
+}
+
+.nav__switch-opt {
+  /* same flat spec as .btn (was its own fluid clamp()) — the actual
+     Work/Play options inside the toggle, not the outer track (see
+     .nav__switch for that) */
+  padding: 0.938rem 1.875rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-body);
+  font-weight: 500;
+  color: var(--text-secondary);
+  white-space: nowrap;
+  /* same bouncy back-out curve as .btn — see its own comment for why */
+  transition: color 0.2s ease, background 0.2s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.nav__switch-opt:hover {
+  color: var(--text-primary);
+  transform: scale(1.14);
+}
+
+.nav__switch-opt.is-active {
+  background: var(--light);
+  color: var(--light-ink);
+}
+
 .nav__links {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: clamp(20px, calc(15.400px + 2.028vw), 36px);
   flex-wrap: nowrap;
+  grid-column: 3;
+  justify-self: end;
 }
 
 .nav__links a {
-  display: inline-block;
-  padding: 12px clamp(14px, calc(12.544px + 0.388vw), 18px);
-  border-radius: var(--radius-pill);
-  font-size: clamp(14px, calc(13.515px + 0.129vw), 16px);
+  font-size: var(--text-body);
   font-weight: 400;
-  color: var(--text-primary);
-  transition: color 0.2s ease, background 0.2s ease;
+  color: #fff;
   white-space: nowrap;
+  transition: color 0.2s ease;
 }
 
 .nav__links a:hover,
 .nav__links a:focus-visible {
-  color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.nav__cta {
-  flex-shrink: 0;
+  color: var(--text-secondary);
 }
 
 /* light/dark mode switch — always visible (unlike .nav__toggle, which
@@ -361,75 +510,102 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .nav__toggle {
   display: none;
+  grid-column: 3;
+  justify-self: end;
 }
 
 /* ---------- buttons ---------- */
 
+/* every button on the site (regardless of variant class) shares one
+   exact spec now, not just .btn-outline: #fff text, no fill, 1px
+   #727272 stroke, an inner shadow (x:0 y:1 blur:10 #fff 25%), and the
+   sitewide glass effect (light -45°/80%, refraction 58, depth 18,
+   dispersion 50, frost 15 — approximated the same way every other glass
+   surface on the site is, via backdrop-filter blur+saturate plus the
+   inner-shadow glow standing in for refraction/depth/dispersion/frost;
+   there's no direct CSS equivalent for those Figma-specific params).
+   .btn-glass/.btn-light/.btn-gradient used to each carry their own
+   fill/text-color/shadow on top of this — those are gone now so every
+   variant actually renders identically; the variant classes are kept
+   only where a hover still needs its own distinct feedback (see below).
+   .footer-links .btn is the one deliberate exception (see its own
+   comment) — white text + no fill would be invisible on that section's
+   white background. */
 .btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-family: var(--font-body);
   font-weight: 600;
-  font-size: clamp(16px, calc(15.029px + 0.259vw), 20px);
-  padding: clamp(14px, calc(12.544px + 0.388vw), 20px) clamp(24px, calc(21.087px + 0.777vw), 36px);
+  font-size: var(--text-body);
+  /* fixed, not fluid — a flat 0.938rem/1.875rem spec across every
+     button on the site, not a clamp() range like before */
+  padding: 0.938rem 1.875rem;
   border-radius: var(--radius-pill);
-  border: 1px solid transparent;
+  border: 1px solid #727272;
+  background: transparent;
+  color: #fff;
+  box-shadow: inset 0 1px 10px rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.2s ease, background 0.2s ease;
+  /* back-out easing (overshoots past the target size, then settles) is
+     what actually gives this the bouncy, "pops up" feel on hover instead
+     of a flat linear grow — same idea as the chunky, springy button
+     scale-up in Nintendo's Mii Creator. Faster/bigger than the first
+     pass (0.35s/1.08 -> 0.22s/1.14) per follow-up feedback. */
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.2s ease, background 0.2s ease;
 }
 
 .btn:hover {
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.14);
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* glass pill — "Case studies", mobile nav toggle */
+/* glass pill — "Case studies", mobile nav toggle. No properties of its
+   own left — kept only as a marker class (see the shared .btn rule) in
+   case a future variant-specific tweak needs a hook here again. */
 .btn-glass {
-  color: var(--text-primary);
 }
 
-.btn-glass:hover {
-  filter: brightness(1.15);
-}
-
-/* solid light pill — "Contact" */
-.btn-light {
-  background: var(--light);
-  color: var(--light-ink);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
+/* solid light pill — "Contact" — no longer solid; same shared glass
+   look as every other button now, kept only for its own hover tweak */
 .btn-light:hover {
-  background: #fff;
+  background: rgba(255, 255, 255, 0.08);
 }
 
-/* the one accent-colored button on the site */
-.btn-gradient {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: 0 6px 22px rgba(168, 85, 247, 0.35);
-}
-
+/* the one accent-colored button on the site — no longer accent-colored;
+   same shared glass look as every other button now, kept only for its
+   own hover tweak (a bit brighter than the default, since this one used
+   to carry the site's one spot of accent color) */
 .btn-gradient:hover {
-  background: var(--accent-strong);
-  box-shadow: 0 10px 28px rgba(168, 85, 247, 0.45);
+  background: rgba(168, 85, 247, 0.18);
 }
 
-/* no-fill glass — hero "Building experiences" button, hero circles, filter
-   pills, tags, case-study tag chips, and (below) the callout / CTA pills
-   and takeaway cards — every white-stroke component on the site shares
-   this one glass formula now: stroke ~90%-opacity white, low 10px blur
-   (kept low on purpose — see .cs-callout, "The creative content..." —
-   rather than the heavier 20px blur this group used to carry), drop
-   shadow, and a soft-blurred inner glow standing in for the Figma
-   refraction/depth/dispersion glass effect. */
-.btn-outline,
+/* no-fill glass — hero circles, and (below) the callout / CTA pills and
+   takeaway cards: every glass-surface component on the site that ISN'T
+   a button or a tag (those each moved to their own distinct formula —
+   buttons up in .btn, tags down by .tag) shares this one formula:
+   low 10px blur (kept low on purpose — see .cs-callout, "The creative
+   content..." — rather than the heavier 20px blur this group used to
+   carry), drop shadow, and a soft-blurred inner glow standing in for
+   the Figma refraction/depth/dispersion glass effect. Original
+   ~90%-opacity white stroke — these are decorative/content surfaces,
+   not buttons, so they keep the old look rather than .btn's #727272 +
+   single inner-shadow spec.
+
+   .cs-callout and .cs-takeaway-card (the "My takeaways"/"The next
+   steps"/"What I learned" cards — same component, different heading
+   copy per case study) still share this base (position/isolation/color)
+   but get their own flat fill + no stroke + no glass right below,
+   unlike .hero__circle/.cs-quote, which keep the original look. .cs-cta
+   (the "Visit the website here."-style callouts that are actually
+   links) is deliberately excluded from that flat treatment too: it
+   already carries .btn/.btn-outline and gets the sitewide button
+   treatment from there instead, which per this request is exactly what
+   every callout WITH a link keeps. */
 .hero__circle,
-.filter-pill,
-.tag,
-.cs-tag,
 .cs-callout,
-.cs-cta,
 .cs-takeaway-card,
 .cs-quote {
   position: relative;
@@ -444,15 +620,49 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   color: #fff;
 }
 
-.btn-outline:hover,
+/* flat #171717, no stroke, no glass at all — overrides the shared rule
+   above entirely rather than leaving blur/box-shadow declared but
+   invisible under an opaque fill (the inner glow specifically would
+   still show through regardless of the fill's opacity, so it has to be
+   switched off outright, not just covered up). */
+.cs-callout,
+.cs-takeaway-card {
+  background: #171717;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* .filter-pill/.nav__switch don't carry the .btn class, so they need
+   this repeated explicitly — otherwise identical to .btn's own glass
+   spec (transparent fill, #fff text, 1px #727272 stroke, the same
+   single inner-shadow). .btn-outline/.cs-cta dropped from this whole
+   block — both always carry .btn too (see their own markup), so they
+   already get every one of these properties from there now; repeating
+   them here would just be redundant, not different. */
+.filter-pill,
+.nav__switch {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  border: 1px solid #727272;
+  color: #fff;
+  box-shadow: inset 0 1px 10px rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+}
+
 .hero__circle:hover,
-.filter-pill:hover {
+.filter-pill:hover,
+.nav__switch:hover {
   background: rgba(255, 255, 255, 0.08);
 }
 
+/* font-size intentionally not overridden here — every button shares
+   --text-body now (see .btn); this variant only changes padding */
 .btn-sm {
   padding: 12px 22px;
-  font-size: clamp(13px, calc(12.636px + 0.097vw), 14.5px);
 }
 
 /* ---------- hero ---------- */
@@ -504,7 +714,10 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      hold onto a fixed padding even on a phone — clamp() gives it the
      same continuous shrink as everything else, and min() with the
      --hero-fit arm gives it a further shrink once height is tight */
-  padding-top: min(clamp(48px, calc(40.718px + 1.942vw), 78px), calc(78px * var(--hero-fit)));
+  /* down again (24-39px -> 14-23px) — with the title now a plain grid
+     item (see .hero__intro), this padding-top IS the whole gap to the
+     nav, no separate margin nudge layered on top of it anymore */
+  padding-top: min(clamp(14px, calc(12.2px + 0.583vw), 23px), calc(23px * var(--hero-fit)));
   /* was a flat 150px taller than padding-top at every viewport width
      (214–330px) — that was headroom for a decorative background that no
      longer needs it, and was the single biggest reason the hero didn't
@@ -577,37 +790,108 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   background-position: 0 0, 160px 0;
 }
 
+/* fills the full height .hero hands it (flex: 1 — .hero__intro is
+   .hero's only child, so this just becomes 100% of .hero's own,
+   JS-managed height) so the title/laptop/desc below have a real box to
+   lay out against instead of stacking by natural content height.
+   Three grid rows — title (auto, its own height), laptop (1fr, whatever
+   is left), desc (auto, its own height) — instead of the old
+   flex-center + position:absolute + manual margin-nudge approach:
+   align-items/justify-items: center on the middle 1fr row is what
+   actually centers the laptop evenly BETWEEN the title and the
+   paragraph, since 1fr sizes to exactly the leftover space between two
+   auto-sized rows — flex centering on the whole box couldn't do that,
+   since it centers the laptop in the box's true middle, which isn't the
+   same point once the title (tall) and the paragraph (short) eat
+   unequal amounts of space off the top and bottom. */
 .hero__intro {
   position: relative;
   z-index: 1;
+  flex: 1;
+  /* NOT width: 100% — that would override the width .container/
+     .container--wide already give this element (same specificity,
+     later in cascade) and erase their side inset entirely, pinning the
+     title flush against the true viewport edge */
+  display: grid;
+  grid-template-rows: auto 1fr auto;
 }
 
 .hero__title {
   font-family: var(--font-hero);
-  font-weight: 700;
-  /* scaled down from the old 64–200px range: a name-as-headline should
-     still read as the hero, but 200px was fighting the rest of the
-     hierarchy (nav, body copy) rather than anchoring it — 40–88px keeps
-     it the biggest thing on the page without overpowering it. min()'d
-     against --hero-fit (see .hero) so a short window shrinks it further
-     still, rather than cropping it */
-  font-size: min(clamp(40px, calc(28.35px + 3.107vw), 88px), calc(88px * var(--hero-fit)));
+  /* 400, not 700 — PP Mondwest only ships one weight; a "bold" request
+     against it would just be browser-synthesized faux bold, which
+     distorts a pixel-grid face like this one */
+  font-weight: 400;
+  /* plain --text-title, same as every other member of this style
+     (Digital Media's title, the case-study page titles, About me,
+     JAYDON WANG included) — no longer min()'d against --hero-fit. It
+     used to shrink further on a short window, but that made JAYDON WANG
+     render visibly smaller than every other title on ordinary laptop
+     screens (short enough to push --hero-fit below 1 even without the
+     window being unusually short). .hero's own overflow: hidden is
+     still the safety net if this ever runs long on an extreme window.
+
+     JAYDON WANG briefly had its own width-driven override here (see
+     .hero__intro .hero__title below) to keep it under half the
+     viewport's width at any screen size — that constraint was
+     explicitly dropped in favor of matching every other title's size
+     exactly, which is what plain --text-title (no override) now does. */
+  font-size: var(--text-title);
   line-height: 1.2;
   color: #fff;
 }
 
+/* homepage only (scoped through .hero__intro, not the bare .hero__title
+   the About page also uses) — pins the name to the top row, left edge,
+   instead of the centered stack every other page keeps. Just a normal
+   grid item now (row 1, auto-sized to its own height) — no more
+   position: absolute + a manually-tuned negative margin to fake "flush
+   with the top": row 1 already IS exactly the title's height, so it
+   sits flush against .hero's padding-top with nothing extra needed. To
+   move the title closer to the nav from here, shrink .hero's own
+   padding-top (see .hero) — that's the actual gap being closed. */
+.hero__intro .hero__title {
+  grid-row: 1;
+  justify-self: start;
+  text-align: left;
+  /* no font-size override anymore — this used to have its own pure-vw
+     clamp() specifically so JAYDON WANG always stayed under half the
+     viewport's width at any screen size (measured off the font's actual
+     glyph widths, with its own legibility floor for narrow phones).
+     That constraint was explicitly dropped in favor of matching every
+     other title's size exactly (see .hero__title's own comment on
+     font-size) — so this now just inherits --text-title like the rest,
+     and will run wider than half the viewport on most screens as a
+     result. See git history for the old formula if that constraint
+     ever needs to come back. */
+  /* white glow behind the name, per design request: FFFFFF at 62%
+     opacity, 17px blur, no offset (a pure glow, not a cast shadow) */
+  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
+}
+
 .hero__desc {
-  max-width: 1100px;
-  /* fluid to match the fluid title above it — a fixed px gap here would
-     look cramped next to a big headline on a wide screen and loose next
-     to a small one on a narrow phone. min()'d against --hero-fit like
-     everything else in the hero (see .hero) */
-  margin-top: min(clamp(10px, calc(7.573px + 0.647vw), 20px), calc(20px * var(--hero-fit)));
-  margin-inline: auto;
-  margin-bottom: 0;
-  font-size: min(clamp(14px, calc(11.184px + 0.751vw), 25.6px), calc(25.6px * var(--hero-fit)));
-  line-height: 1.15;
+  /* the reserved --text-h3 (1.375rem) style — this is the placement for
+     it. .page-hero .hero__desc (About page — different copy, "Is a
+     product designer...") is a separate, more specific rule that still
+     sets its own font-size, so this only actually reaches the homepage
+     paragraph, not both. No --hero-fit multiplier here either way —
+     see the git history for why that was dropped. */
+  font-size: var(--text-h3);
+  line-height: 1.5em;
   color: #ffffff;
+}
+
+/* homepage only (see .hero__intro .hero__title above) — bottom row,
+   right edge, mirroring the title's placement across the grid. Row 3 is
+   auto-sized to this paragraph's own height, so it sits flush against
+   .hero's padding-bottom the same way the title sits flush against
+   padding-top — no position: absolute needed here either. */
+.hero__intro .hero__desc {
+  grid-row: 3;
+  justify-self: end;
+  margin: 0;
+  max-width: 560px;
+  text-align: right;
 }
 
 .hero__desc strong {
@@ -617,19 +901,23 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 /* ---------- hero faces ---------- */
 
+/* sits in .hero__intro's middle grid row (1fr — exactly the leftover
+   space between the title row and the paragraph row), centered on both
+   axes there as the baseline — the margin-bottom below is a
+   deliberate nudge off that perfect center, back up toward the title,
+   requested on top of it. Mixes in a vh term (not just vw) because the
+   1fr row's own size tracks viewport HEIGHT, not width — a pure-vw
+   nudge is basically invisible on a tall/short-and-wide viewport where
+   that leftover row is huge relative to the nudge. */
 .hero__faces {
+  grid-row: 2;
+  justify-self: center;
+  align-self: center;
   position: relative;
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  /* nudges the laptop down a bit from the top of the hero. min()'d
-     against --hero-fit like everything else in the hero (see .hero) */
-  margin-top: min(clamp(16px, calc(10.175px + 1.553vw), 40px), calc(40px * var(--hero-fit)));
-  /* fluid for the same reason as .hero__desc's margin below — keeps the
-     gap proportionate to the (also fluid) laptop and title next to it
-     instead of reading as too tight on a big screen or too loose on a
-     small one */
-  margin-bottom: min(clamp(28px, calc(19.262px + 2.330vw), 64px), calc(64px * var(--hero-fit)));
+  margin-bottom: clamp(72px, calc(4vw + 7vh), 220px);
 }
 
 /* replaces the old two-headshot pairing (a photo + a cartoon face) with
@@ -642,28 +930,11 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 .hero__computer {
   /* min()'d against --hero-fit like everything else in the hero (see
      .hero), so it shrinks along with the rest on a short window instead
-     of forcing the hero taller than the space actually available */
-  height: min(clamp(190px, calc(148.738px + 11.003vw), 360px), calc(360px * var(--hero-fit)));
+     of forcing the hero taller than the space actually available.
+     Scaled to 3/4 of its previous size (190-360px -> 142.5-270px) */
+  height: min(clamp(142.5px, calc(111.55px + 8.25vw), 270px), calc(270px * var(--hero-fit)));
   width: auto;
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
-}
-
-.hero__btn-single {
-  display: inline-flex;
-  /* fluid for the same reason as the other hero spacing above — and a
-     touch more generous than the title→description gap, so the CTA
-     reads as its own distinct, clickable beat rather than crowding the
-     paragraph above it. min()'d against --hero-fit like everything else
-     in the hero (see .hero) */
-  margin-top: min(clamp(28px, calc(21.204px + 1.812vw), 56px), calc(56px * var(--hero-fit)));
-  /* .btn's own font-size/padding are already fluid by width — these add
-     the same height-based ceiling as the rest of the hero (see .hero)
-     so the button keeps shrinking with everything else on a short
-     window instead of becoming the tallest, most-cropped element */
-  font-size: min(clamp(16px, calc(15.029px + 0.259vw), 20px), calc(20px * var(--hero-fit)));
-  padding:
-    min(clamp(14px, calc(12.544px + 0.388vw), 20px), calc(20px * var(--hero-fit)))
-    min(clamp(24px, calc(21.087px + 0.777vw), 36px), calc(36px * var(--hero-fit)));
 }
 
 /* ---------- hero stage: character art + surrounding buttons ---------- */
@@ -682,12 +953,15 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.5));
 }
 
+/* font-size intentionally not overridden here — inherits --text-body
+   from .btn; this variant only changes position/padding */
 .hero__btn {
   position: absolute;
   top: 11%;
   z-index: 2;
-  font-size: clamp(16px, calc(13.087px + 0.777vw), 28px);
-  padding: clamp(14px, calc(8.66px + 1.424vw), 36px) clamp(24px, calc(20.117px + 1.036vw), 40px);
+  /* was its own fluid clamp() — now the same flat 0.938rem/1.875rem
+     every other button on the site uses (see .btn) */
+  padding: 0.938rem 1.875rem;
 }
 
 .hero__btn--left {
@@ -796,64 +1070,130 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   flex-wrap: wrap;
 }
 
+/* Projects & Case Studies only — centered above the filters instead of
+   the left-aligned heading+subtitle bar .section-head is elsewhere (e.g.
+   Digital Media's "Motion design"). Scoped through .case-studies__side so
+   that base .section-head layout stays untouched for other pages. Was
+   right-aligned flush to the column's far edge; centered to read closer
+   to the kynejang.com reference's centered sidebar treatment. */
+.case-studies__side .section-head {
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.case-studies__side .section-head h2 {
+  text-align: center;
+  /* "Projects" / "& Case Studies" is a hard <br> in the markup, not
+     natural wrapping — line-height is what actually controls the gap
+     between those two lines. Deliberately NOT part of the site-wide
+     1.5em paragraph line-height below — this is a heading, not a
+     paragraph. */
+  line-height: 1em;
+}
+
 .section-head h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-hero);
   font-weight: 400;
-  font-size: clamp(48px, calc(35.379px + 3.366vw), 100px);
+  font-size: var(--text-h1);
   letter-spacing: -0.01em;
 }
 
 .section-head__sub {
   color: var(--text-secondary);
-  /* matches .hero__desc's paragraph style (size, line-height) */
-  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
-  line-height: 1.15;
+  font-size: var(--text-body);
+  line-height: 1.5em;
   margin-top: 8px;
 }
 
-/* ---------- case studies layout: list + sticky filter sidebar ---------- */
+/* ---------- case studies layout: narrow card list + right-hand
+   heading/filters column ---------- */
 
 .case-studies__layout {
   display: flex;
   align-items: flex-start;
-  gap: 64px;
+  justify-content: space-between;
+  /* was 64px — with .project-grid widened (see below), the sticky
+     column no longer needs as much of a moat between it and the cards;
+     a screenshot pass at 1440px showed the old 32%-wide card column
+     leaving roughly two-thirds of the section as empty black space,
+     with the heading/filters floating disconnected from the content
+     they act on across that gap */
+  gap: 48px;
   margin-top: 40px;
 }
 
-/* ---------- filters (sticky sidebar) ---------- */
+/* heading + filters, right of the card list — sticks in view while the
+   (now taller, 3-card) list scrolls past on the left, and is forced to
+   exactly one viewport tall (top: 0 + height: 100vh) with its content
+   flex-centered inside that box, so once pinned the heading/filters land
+   near the vertical middle of the screen rather than hugging the top
+   edge. height is min()'d against --side-max-h (set by main.js from
+   .project-grid's real rendered height) purely as a safety cap — on a
+   short card list / very tall viewport, an unconstrained 100vh box here
+   would be taller than the list itself and stretch the whole row past
+   what the list actually needs.
 
-.filters {
-  flex: 0 0 220px;
+   padding-bottom is what pushes the pinned content up toward the top
+   third of the screen instead of dead center: box-sizing: border-box
+   (sitewide reset) keeps the box itself pinned at exactly 100vh, but
+   shrinks the content area justify-content centers within, from the
+   bottom only — so the centered group settles higher, above the box's
+   true middle. vh-based so it lands at roughly the same ~33%-from-top
+   position on any screen size. Was pushed as far as ~22vh at one point
+   (a series of "move it up more" requests), which in an actual
+   screenshot read as too close to the top edge — cramped, not the
+   "visually appealing" middle-upper placement that was the actual goal
+   the whole time. Backed off toward the original ~36% reference point,
+   not all the way back to it — the earlier nudges up weren't wrong,
+   just overshot.
+
+   margin-top is kept small and fixed on purpose: it needs to already be
+   visible the moment you scroll into the section (not pushed down out
+   of view while waiting to pin), so it only nudges the heading off the
+   very top edge rather than delaying the pin by any real amount. */
+.case-studies__side {
+  flex: 1;
+  min-width: 240px;
+  position: sticky;
+  top: 0;
+  height: min(100vh, var(--side-max-h, 100vh));
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  /* same gap as .filters__group below, so "All" sits exactly as far from
-     the first pill as the pills sit from each other */
-  gap: 20px;
-  position: sticky;
-  /* sticks centered in the viewport (not pinned near the top) while the
-     project list scrolls past — see .filters.reveal below, which also
-     accounts for this in its travel distance */
-  top: 50vh;
+  justify-content: center;
+  padding-bottom: 34vh;
+  margin-top: 8px;
+}
+
+/* ---------- filters ---------- */
+
+/* was a sticky, vertically-centered sidebar; now a plain wrapping row
+   under the heading, centered so it lines up with the heading's own
+   centered treatment (see .case-studies__side .section-head) — matches
+   the kynejang.com reference's centered sidebar, and drops the
+   position: sticky + translateY(-50%) reveal-animation math that only
+   made sense for the old sidebar treatment */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
 }
 
 .filter-pill {
-  padding: 12px 24px;
+  /* same flat spec as .btn (was 12px 24px) — filter pills are a button
+     family too now, not just tags/callouts' glass cousin */
+  padding: 0.938rem 1.875rem;
   border-radius: var(--radius-pill);
-  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  font-size: var(--text-body);
   font-weight: 400;
   cursor: pointer;
   white-space: nowrap;
-  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  /* same bouncy back-out curve as .btn — see its own comment for why */
+  transition: color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-/* the index page's project filters are the primary way to browse the
-   whole list, so they get a bigger, more confident size than the generic
-   .filter-pill default used elsewhere (case-study option toggles,
-   digital-media filters) */
-.filters .filter-pill {
-  padding: 18px 34px;
-  font-size: clamp(16px, calc(14.5px + 0.55vw), 19px);
+.filter-pill:hover {
+  transform: scale(1.14);
 }
 
 .filter-pill.is-active {
@@ -865,46 +1205,40 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   -webkit-backdrop-filter: none;
 }
 
-.filters__group {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 16px;
-}
-
-/* decorative rail — spans the whole .filters column (top: 0 to bottom: 0
-   of .filters itself, not just .filters__group), so it reaches all the
-   way up to "All" instead of starting below it. Sits outside the box
-   (negative offset) so it doesn't push the pills out of alignment.
-   .filters is already position: sticky above, which — like any non-static
-   position — is a valid positioning context for this, so no extra
-   position: relative is needed (and adding one here would silently win
-   the cascade over the sticky declared earlier and break it). */
-.filters::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: -26px;
-  width: 1px;
-  background: rgba(255, 255, 255, 0.18);
-}
-
 /* ---------- project list ---------- */
 
+/* a substantial fraction of the row (was a flat 480px cap, then 50%,
+   then dialed back to 32% — 50% read as too dominant against the
+   sparse right column once the media boxes were fixed to the images'
+   real 16:9 ratio, see .project-card__media). Back up to 50% now that
+   the right column carries the sticky heading/filters at full-viewport
+   height (see .case-studies__side) instead of being a plain in-flow
+   block — a screenshot pass showed 32% leaving roughly two-thirds of
+   the section as dead space at ordinary desktop widths, with the
+   filters floating disconnected from the cards across that gap; wider
+   cards also mean less total scroll depth for the same 3 projects.
+   flex-grow: 0 keeps it from ballooning past this just because
+   .case-studies__side doesn't need the rest of the space; flex-shrink: 1
+   is a safety net for the narrow band between this and the 900px
+   mobile breakpoint below, where the layout is still in row mode.
+   flex-basis sizes this along .case-studies__layout's main axis, which
+   is row on desktop — on mobile that layout switches to column (see
+   @media below), where flex-basis would size HEIGHT instead, so that
+   breakpoint sets an explicit width there. */
 .project-grid {
-  flex: 1;
+  flex: 0 1 50%;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 72px;
 }
 
+/* image on top, tag/title/description stacked below — was a horizontal
+   media-left/copy-right row; the reference reads as a vertical card */
 .project-card {
   display: flex;
-  align-items: flex-start;
-  gap: 40px;
+  flex-direction: column;
+  gap: 20px;
   transition: transform 0.35s ease;
 }
 
@@ -913,7 +1247,11 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .project-card__media {
-  flex: 0 0 38%;
+  width: 100%;
+  /* matches the source thumbnails' real aspect ratio (all three are
+     natively 16:9) — a mismatched box forces object-fit: cover to crop
+     regardless of how big or small the container is; this is what
+     actually eliminates the crop, not the container's width */
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 16px;
@@ -938,11 +1276,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .project-card__body {
-  padding-top: 2px;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  flex: 1;
 }
 
 .tag-row {
@@ -951,29 +1287,36 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   flex-wrap: wrap;
 }
 
+/* flat, not glass — deliberately distinct from .btn/.btn-outline's
+   blurred surface (see the shared glass-formula group above) so tags
+   read as a different kind of element from buttons at a glance, not
+   just a smaller button. Same padding spec as .btn (0.938rem/1.875rem)
+   is what ties the two families together instead. */
 .tag {
-  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  font-size: var(--text-caption);
   font-weight: 600;
-  padding: 12px 24px;
+  padding: 0.938rem 1.875rem;
   border-radius: 12px;
+  background: #171717;
+  border: 1px solid #727272;
   color: #fff;
 }
 
 .project-card__body h3 {
   font-family: var(--font-display);
-  font-size: clamp(2rem, calc(1.5146rem + 2.071vw), 4rem);
+  font-size: var(--text-h2);
   font-weight: 400;
 }
 
 .project-card__body p {
   color: #ffffff;
-  /* matches the hero paragraph's style (.hero__desc) — same clamp curve
-     and line-height, just without the *var(--hero-fit) multiplier, since
-     that custom property is scoped to .hero's own container-query
-     shrink-to-fit and isn't defined out here */
-  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
-  line-height: 1.15;
-  max-width: 60ch;
+  font-size: var(--text-body);
+  line-height: 1.5em;
+  /* was 60ch, which capped this narrower than the card itself (and so
+     narrower than the image above it) at ordinary widths — 100% lets it
+     run the full width of .project-card__media instead, wrapping onto
+     fewer lines for the same copy */
+  max-width: 100%;
 }
 
 /* ---------- about / contact strip ---------- */
@@ -987,15 +1330,16 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .split-panel h2 {
-  font-family: var(--font-display);
-  font-size: clamp(32px, calc(28.602px + 0.906vw), 46px);
+  font-family: var(--font-hero);
+  font-weight: 400;
+  font-size: var(--text-h1);
   margin-bottom: 20px;
 }
 
 .split-panel p {
   color: var(--text-secondary);
-  font-size: clamp(15px, calc(14.515px + 0.129vw), 17px);
-  line-height: 1.7;
+  font-size: var(--text-body);
+  line-height: 1.5em;
   margin-bottom: 32px;
   max-width: 500px;
 }
@@ -1028,13 +1372,13 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .contact-card__row span {
-  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  font-size: var(--text-caption);
   color: var(--text-secondary);
 }
 
 .contact-card__row strong {
   display: block;
-  font-size: clamp(14px, calc(13.515px + 0.129vw), 16px);
+  font-size: var(--text-body);
   color: var(--text-primary);
 }
 
@@ -1067,10 +1411,14 @@ footer {
    of environment") */
 .footer-inner h2 {
   font-family: var(--font-hero);
-  font-weight: 700;
-  font-size: clamp(3rem, calc(0.6942rem + 9.838vw), 12.5rem);
+  font-weight: 400;
+  font-size: var(--text-title);
   line-height: 1.05;
   color: var(--light-ink);
+  /* same white glow as JAYDON WANG (see .hero__intro .hero__title) —
+     reads more subtly here since the footer sits on a light background,
+     but keeps the treatment consistent across every title */
+  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
 }
 
 .footer-links {
@@ -1080,15 +1428,15 @@ footer {
   justify-content: center;
 }
 
-/* same pill shape/padding/weight as every other .btn on the site —
-   just recolored for a light section, since the sitewide glass
-   formula (white stroke, blur) is tuned for a dark background and
-   would be nearly invisible here. Dark border + soft shadow stand in
-   for that same "defined pill on its surface" read. */
+/* same pill shape/padding/weight/stroke as every other .btn on the site
+   — just the fill recolored for a light section, since the sitewide
+   glass formula (blur, inner glow) is tuned for a dark background and
+   would be nearly invisible here. Soft shadow stands in for that same
+   "defined pill on its surface" read; #727272 (see .btn) reads fine on
+   white too, so the border no longer needs its own light-theme value. */
 .footer-links .btn {
   background: #fff;
   color: var(--light-ink);
-  border-color: rgba(13, 15, 30, 0.15);
   box-shadow: 0 4px 14px rgba(13, 15, 30, 0.08);
 }
 
@@ -1098,7 +1446,8 @@ footer {
 
 .footer-inner p {
   color: rgba(13, 15, 30, 0.55);
-  font-size: clamp(13px, calc(12.636px + 0.097vw), 14.5px);
+  font-size: var(--text-caption);
+  line-height: 1.5em;
   margin: 0;
 }
 
@@ -1133,7 +1482,13 @@ footer {
      the same vertical room the original design had */
   padding: 170px 0 80px;
   box-sizing: border-box;
-  transform: scale(calc(100cqw / 2540px));
+  /* named so text sizes inside the stage (see .dm-hero__content
+     .hero__title etc.) can divide it back out and land on the exact
+     same rendered size as the rest of the site's type scale at ANY
+     viewport width, not just the one width this was hand-calibrated
+     against */
+  --stage-scale: calc(100cqw / 2540px);
+  transform: scale(var(--stage-scale));
   transform-origin: top left;
 }
 
@@ -1185,15 +1540,44 @@ footer {
    wraps to one word per line at the stage's fixed width) collided
    between lines, the descender on "Jaydon's" cutting into "Digital"
    and "Digital"'s into "Museum". 1.05 clears both. */
+/* dividing by --stage-scale (see .dm-hero__stage) instead of multiplying
+   by a hardcoded 2540/1440 is what makes this land on --text-title's
+   EXACT rendered size at any viewport width, not just 1440px — the old
+   fixed ratio only cancelled the stage's scale-down correctly at the
+   one width it was calibrated against, and silently drifted apart from
+   the homepage title (same class, meant to always match) at every
+   other width. References the token itself (not a hardcoded 7.5rem) so
+   this stays in sync if that token's value ever changes again. */
 .dm-hero__content .hero__title {
-  font-size: 200px;
+  font-size: calc(var(--text-title) / var(--stage-scale));
   line-height: 1.05;
+  /* same white glow as JAYDON WANG (see .hero__intro .hero__title) —
+     the 17px blur is divided by --stage-scale for the same reason
+     font-size above is: this element sits inside .dm-hero__stage's own
+     transform: scale(), so an uncompensated 17px would render smaller
+     than 17px once that scale shrinks it. Dividing first means it comes
+     out the ACTUAL 17px on screen, matching JAYDON WANG's glow exactly
+     rather than a scaled-down version of it. */
+  filter: drop-shadow(0 0 calc(17px / var(--stage-scale)) rgba(255, 255, 255, 0.62));
 }
 
+/* same reasoning as .dm-hero__content .hero__title above — was a
+   hardcoded 1rem, tracking neither --text-body's growth on a big screen
+   nor the stage's actual scale at widths other than 1440px */
 .dm-hero__desc {
   margin: 24px 0 0;
-  font-size: 25.6px;
+  font-size: calc(var(--text-body) / var(--stage-scale));
   text-align: left;
+  /* was unset, so this stretched to fill .dm-hero__content's full
+     1500px — noticeably wider than the title above it, which only
+     actually renders about 1253px wide at its widest wrapped line
+     (measured directly off .hero__title's rendered text, not its
+     1500px-wide box — the title's own box is the same 1500px, its
+     GLYPHS just don't reach that far). 1250px (same plain-px stage-unit
+     system as .dm-hero__content, not divided by --stage-scale — this is
+     a layout dimension inside the fixed 2540px canvas, not a type size)
+     lines the paragraph's wrap width up with that instead. */
+  max-width: 1250px;
 }
 
 /* Full-bleed layer, same trick as .dm-hero__grid — the model sits underneath
@@ -1230,21 +1614,47 @@ footer {
   -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 88%);
 }
 
+/* no longer position: absolute inside .dm-hero__stage's transformed
+   canvas — see the HTML comment where this now sits, right after
+   .dm-hero, for why. Plain flex row in normal document flow instead:
+   .btn-outline's own sitewide sizing/padding applies as-is (dropped the
+   old .dm-btn class, which only made sense scaled down from a huge
+   canvas-calibrated size — at this element's real, unscaled size that
+   would have rendered enormous), wraps at narrow widths since there's
+   no scale() shrinking it to fit anymore.
+
+   UPDATE: moved back inside .dm-hero__content, directly under the
+   paragraph — a truly responsive version of the original bottom-right
+   overlay (same spot, but never cut off on a short window) wasn't
+   possible without either scaling the title/character too, or escaping
+   the canvas entirely the way this used to. Under the paragraph was the
+   explicit fallback for when that's the case: still part of the same
+   scaled canvas as everything else (so it reflows with the title/
+   paragraph exactly in step, not independently), just laid out in
+   normal flow — column stacked, like the reference — instead of
+   position: absolute against a bottom offset that could run past a
+   short window. */
 .dm-hero__actions {
-  position: absolute;
-  z-index: 2;
-  right: 98px;
-  bottom: 195px;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  align-items: flex-start;
+  gap: 20px;
+  margin-top: 40px;
 }
 
+/* sized with the same canvas-scale math as the paragraph right above it
+   (.dm-hero__desc) — font-size divided by --stage-scale so it lands on
+   --text-body's real rendered size at any viewport width, not a
+   shrunk-down fraction of it. Padding/gap stay plain canvas-coordinate
+   pixels (not divided) on purpose, same as most other spacing in this
+   stage — these should scale WITH the composition as it zooms, not stay
+   pinned to one fixed on-screen size while everything around them
+   resizes. */
 .dm-btn {
-  min-width: 578px;
   justify-content: space-between;
-  font-size: 28px;
-  padding: 36px 44px;
+  gap: 40px;
+  font-size: calc(var(--text-body) / var(--stage-scale));
+  padding: 22px 32px;
 }
 
 /* No @media breakpoints for anything inside .dm-hero__stage — that's the
@@ -1286,7 +1696,11 @@ footer {
 .dm-video-meta__title {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.1rem, calc(0.877rem + 0.85vw), 1.75rem);
+  /* was var(--text-h2) (a fluid clamp reaching 43px+) — fixed 1.375rem
+     (22px) instead, matching the smaller, flat caption-style size used
+     elsewhere on the site (e.g. the homepage hero paragraph) rather
+     than scaling up like a section heading */
+  font-size: 1.375rem;
   color: #fff;
 }
 
@@ -1296,6 +1710,104 @@ footer {
    rather than being divided across a separate 3- or 4-column grid */
 .dm-media-grid--two {
   grid-template-columns: 1fr 1fr;
+}
+
+/* Motion design's own layout — 3 columns, the vertical Ground FX recap
+   in the middle, 2 horizontal videos stacked in each side column — per
+   a provided reference layout. Explicit :nth-child placement, not
+   grid-auto-flow, since the vertical tile specifically has to land in
+   the MIDDLE column regardless of DOM order, not wherever
+   auto-placement would happen to put it; DOM order itself (the 4
+   horizontal videos, then Ground FX last) is still what makes the
+   mobile fallback below work with zero extra rules.
+
+   Middle column is auto-sized (was a fixed 1.5fr, then briefly wider
+   still) rather than a wider fr share — Ground FX recap is capped by
+   HEIGHT (see .cs-square--fit-viewport's max-height), not by its
+   column's width, so a wider fr track didn't actually make the video
+   any bigger; it just left dead space between the video's real
+   (narrower) rendered width and the column's track width, which then
+   stacked with the grid's own gap to read as one oversized gap between
+   Ground FX and the right column. auto sizes the middle track to
+   exactly the video's own rendered width instead, so there's no leftover
+   space left to create that gap — Ground FX renders at whatever height
+   the max-height cap gives it, unrelated to any of this. */
+.dm-media-grid--motion {
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.dm-media-grid--motion .dm-media-item:nth-child(1) {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* nth-child(2)/(4) (row 2's pair) bottom-anchor their own content —
+   Terry Balloon's 1 tag vs. 10 years of design's 4 (which can wrap to
+   an extra line) would otherwise leave one title sitting higher than
+   the other purely because there's less above it. This only touches
+   the two items that actually share a row and need to agree with each
+   other — Ground FX recap below is a deliberate exception, see its own
+   comment. */
+.dm-media-grid--motion .dm-media-item:nth-child(2) {
+  grid-column: 1;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.dm-media-grid--motion .dm-media-item:nth-child(3) {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+.dm-media-grid--motion .dm-media-item:nth-child(4) {
+  grid-column: 3;
+  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* align-self: start, not end: this used to bottom-anchor Ground FX
+   recap so its title landed on the exact same line as "10 years of
+   design" — but at this tile's actual size, its own content (video +
+   tags + title) doesn't fill the full 2-row span it sits in, so
+   bottom-anchoring it left an ~80px dead gap ABOVE the video instead,
+   floating away from row 1 with nothing touching it. That reads as
+   broken, not aligned — a video and its own caption disagreeing with
+   every neighboring tile on where the row actually starts is a worse
+   look than the caption landing a bit off from "10 years of design"'s.
+   start keeps the video flush with row 1's top, matching every other
+   tile here, with its title sitting directly under it same as the
+   rest — it just runs long past row 1 into row 2's space, which is
+   expected for the one tall item in the layout. */
+.dm-media-grid--motion .dm-media-item:nth-child(5) {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: start;
+}
+
+/* below this, 3 columns of video tiles — one a tall portrait clip —
+   get too narrow to comfortably watch. Falls back to a single column
+   and hands placement back to plain DOM order: the 4 horizontal videos
+   first, the vertical Ground FX recap last (i.e. underneath all of
+   them) — exactly the fallback stacking order asked for, with no extra
+   reordering needed since that's already the source order. */
+@media (max-width: 1000px) {
+  .dm-media-grid--motion {
+    grid-template-columns: 1fr;
+  }
+
+  .dm-media-grid--motion .dm-media-item:nth-child(1),
+  .dm-media-grid--motion .dm-media-item:nth-child(2),
+  .dm-media-grid--motion .dm-media-item:nth-child(3),
+  .dm-media-grid--motion .dm-media-item:nth-child(4),
+  .dm-media-grid--motion .dm-media-item:nth-child(5) {
+    grid-column: auto;
+    grid-row: auto;
+    align-self: auto;
+  }
 }
 
 /* horizontal/widescreen tile ratio — 1129:711. Compound selector (not
@@ -1338,8 +1850,22 @@ footer {
 .cs-square.cs-square--fit-viewport {
   width: auto;
   max-width: 100%;
-  max-height: 65vh;
-  margin-inline: auto;
+  /* was 65vh — bumped up so Ground FX recap (the only tile using this
+     class) renders bigger, per its own explicit "make it larger"
+     request; still capped rather than unbounded so it can't grow taller
+     than the viewport itself on a short window */
+  max-height: 78vh;
+  /* was margin-inline: auto, which centered this tile's video (it's
+     narrower than its column — the only tile here that's ever narrower
+     than 100%, since the max-height cap above wins over width) while
+     .dm-video-meta right below it stays full-width/left-aligned same as
+     every other tile. That's what the "still misaligned" screenshot was
+     actually showing: the video floating inset from both edges while
+     its own caption hugs the true left edge underneath it. 0 keeps the
+     video flush left instead, matching the caption's left edge exactly
+     — and matching where every other tile's video sits, since none of
+     the others are ever narrower than their column to begin with. */
+  margin-inline: 0;
 }
 
 /* honest "space reserved" tile — no fake play button or borrowed
@@ -1357,7 +1883,7 @@ footer {
   border: 1px dashed rgba(255, 255, 255, 0.16);
   background: rgba(255, 255, 255, 0.02);
   color: var(--text-muted);
-  font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
+  font-size: var(--text-caption);
 }
 
 /* Inventory — empty item-slot grid standing in for a future real
@@ -1405,8 +1931,8 @@ footer {
 .page-hero p {
   max-width: 680px;
   color: var(--text-secondary);
-  font-size: clamp(15px, calc(14.272px + 0.194vw), 18px);
-  line-height: 1.7;
+  font-size: var(--text-body);
+  line-height: 1.5em;
 }
 
 /* the moved homepage hero content (title/paragraph/character/buttons) —
@@ -1419,18 +1945,20 @@ footer {
 
 .page-hero .hero__title {
   font-family: var(--font-hero);
-  font-weight: 700;
-  font-size: clamp(64px, calc(30.99px + 8.803vw), 200px);
+  font-weight: 400;
+  font-size: var(--text-title);
   line-height: 1.2;
   margin-bottom: 0;
   letter-spacing: normal;
+  /* same white glow as JAYDON WANG (see .hero__intro .hero__title) */
+  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
 }
 
 .page-hero .hero__desc {
   max-width: 1100px;
   margin: 30px auto 0;
-  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
-  line-height: 1.15;
+  font-size: var(--text-body);
+  line-height: 1.5em;
   color: #ffffff;
 }
 
@@ -1438,7 +1966,7 @@ footer {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: clamp(13px, calc(12.636px + 0.097vw), 14.5px);
+  font-size: var(--text-caption);
   color: var(--text-muted);
   margin-bottom: 28px;
 }
@@ -1515,7 +2043,7 @@ footer {
 
 .case-body p {
   color: var(--text-secondary);
-  line-height: 1.75;
+  line-height: 1.5em;
   font-size: clamp(15px, calc(14.636px + 0.097vw), 16.5px);
 }
 
@@ -1595,49 +2123,45 @@ footer {
 /* ---------- responsive ---------- */
 
 @media (max-width: 900px) {
+  /* stacks the side column (heading + filters) above the card list —
+     .project-card and .project-card__media need no override here
+     anymore, they're already full-width/column at every size now */
   .case-studies__layout {
     flex-direction: column-reverse;
     gap: 32px;
   }
 
-  .filters {
+  /* .case-studies__layout's own align-items: flex-start doesn't stretch
+     children to full width in either row or column mode, and
+     .project-grid's flex-basis sizes height (not width) once the
+     layout above switches to column — set the width explicitly here */
+  .project-grid {
+    width: 100%;
+  }
+
+  /* sticky only makes sense in the side-by-side desktop layout — on
+     mobile .case-studies__layout stacks into one column (column-reverse
+     above), so this sits in normal flow above the cards instead */
+  .case-studies__side {
+    width: 100%;
     position: static;
-    flex-direction: row;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 12px;
-    width: 100%;
+    /* the forced 100vh height and the sticky-delay margin (see
+       .case-studies__side) only make sense ahead of the desktop sticky
+       behavior; mobile stacks this column above the cards via
+       column-reverse, so it just needs its own natural content height
+       and the layout's own 32px gap like everything else here */
+    height: auto;
+    padding-bottom: 0;
+    margin-top: 0;
   }
 
-  .filters__group {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    padding-right: 0;
+  .case-studies__side .section-head,
+  .filters {
+    justify-content: flex-start;
   }
 
-  .filters__group::after {
-    display: none;
-  }
-
-  /* .filters is position: static here (not sticky), so the desktop
-     centering math in .filters.reveal above (built around translateY(-50%))
-     no longer applies — fall back to the site's plain rise-and-fade */
-  .filters.reveal {
-    transform: translateY(24px);
-  }
-
-  .filters.reveal.is-visible {
-    transform: translateY(0);
-  }
-
-  .project-card {
-    flex-direction: column;
-  }
-
-  .project-card__media {
-    flex-basis: auto;
-    width: 100%;
+  .case-studies__side .section-head h2 {
+    text-align: left;
   }
 
   .split-panel {
@@ -1654,21 +2178,17 @@ footer {
   }
 }
 
-/* 920px, not 760px — below ~920px the full desktop nav (logo + 4 links +
-   Contact + theme toggle, all with their own gaps/padding) no longer
-   fits inside .nav-wrap's own width (min(90%, 1080px)) and starts
-   clipping its right edge well before 760px, so the hamburger has to
-   take over earlier than you'd guess from eyeballing the content alone */
-@media (max-width: 920px) {
-  .nav {
-    flex-wrap: nowrap;
-  }
-
+/* 680px, not 920px — the new bar is much lighter than the old one (icon-
+   only logo, a two-word Work/Play switch, three plain-text links, no
+   Contact button), so it keeps fitting in one row much further down
+   before the hamburger has to take over */
+@media (max-width: 680px) {
   .nav__links {
     position: fixed;
-    top: 96px;
+    top: 88px;
     left: 16px;
     right: 16px;
+    z-index: 60;
     flex-direction: column;
     align-items: stretch;
     gap: 4px;
@@ -1683,6 +2203,21 @@ footer {
     transition: all 0.25s ease;
   }
 
+  /* stacked in the dropdown, each link needs a real tap target and its
+     own hover/active feedback — the plain inline-text treatment above
+     is sized for a single horizontal row, not a column of rows */
+  .nav__links a {
+    display: block;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+  }
+
+  .nav__links a:hover,
+  .nav__links a:focus-visible {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
   .nav__links.is-open {
     transform: translateY(0);
     opacity: 1;
@@ -1693,20 +2228,29 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
-    /* fluid across this media query's own range (375–920px) rather than
+    /* fluid across this media query's own range (375–680px) rather than
        a flat 46px all the way down to a phone — it's the one nav piece
        that was still a hard-coded size regardless of viewport */
-    width: clamp(38px, calc(32.5px + 1.468vw), 46px);
-    height: clamp(38px, calc(32.5px + 1.468vw), 46px);
+    width: clamp(38px, calc(28.164px + 2.623vw), 46px);
+    height: clamp(38px, calc(28.164px + 2.623vw), 46px);
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.14);
     color: var(--text-primary);
     cursor: pointer;
   }
+}
 
-  .nav__cta {
-    display: none;
+/* below ~420px even the compact switch starts crowding the logo and
+   hamburger in the same row — shrink its padding/gap further than the
+   fluid clamps above already take it, rather than letting it wrap */
+@media (max-width: 420px) {
+  .nav {
+    gap: 8px;
+  }
+
+  .nav__switch-opt {
+    padding: 8px 12px;
   }
 }
 
@@ -1831,14 +2375,30 @@ footer {
   margin-top: clamp(0.5rem, calc(0.3786rem + 0.518vw), 1rem);
 }
 
+/* wraps the title + tags together as .cs-hero__top's first flex item
+   (.cs-hero__meta is the second) — no layout properties of its own
+   needed beyond that; h1 and .cs-hero__tags already stack in normal
+   block flow. This is what makes .cs-hero__tags' margin-top measure
+   from the TITLE's own bottom edge specifically, instead of from
+   whichever of title/meta happens to be taller (see .cs-hero__tags'
+   own comment for why that was the actual bug). */
+.cs-hero__title-col {
+  min-width: 0;
+}
+
 /* same hero font as the "Jaydon Wang" homepage hero title */
 .cs-hero__title {
   font-family: var(--font-hero);
-  font-weight: 700;
-  font-size: clamp(3rem, calc(0.6942rem + 9.838vw), 12.5rem);
+  font-weight: 400;
+  /* plain --text-title, same as every other member of this style
+     (JAYDON WANG, Digital Museum, About me, the footer) — the title
+     class is one size everywhere, not scoped per element */
+  font-size: var(--text-title);
   line-height: 1.05;
   letter-spacing: normal;
   max-width: 14ch;
+  /* same white glow as JAYDON WANG (see .hero__intro .hero__title) */
+  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
 }
 
 .cs-hero__tags {
@@ -1847,14 +2407,34 @@ footer {
   display: flex;
   gap: clamp(0.5rem, calc(0.4393rem + 0.259vw), 0.75rem);
   flex-wrap: wrap;
-  margin-top: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  /* was clamp(1rem, ..., 1.75rem), and this element used to sit AFTER
+     the whole .cs-hero__top row (title + meta) rather than nested under
+     the title specifically (see .cs-hero__title-col) — on Aira and
+     Ground FX, whose titles are one short line, .cs-hero__meta's 3
+     stacked items ended up taller than the title, so the gap under the
+     title read as huge even though the gap under the (taller) meta
+     column was a normal, tight 28px. Now that this is nested inside
+     .cs-hero__title-col right after the title, this margin-top measures
+     from the title's own bottom edge specifically, unaffected by
+     whatever height .cs-hero__meta happens to be. Bumped from the old
+     28px cap to the site's established "small content gap" tier at the
+     same time (same formula as .cs-validation-toggle's own
+     default) for a clearly deliberate separation. */
+  margin-top: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
 }
 
+/* same treatment as the homepage's .tag — flat fill/stroke, no glass
+   (it was pulled out of the shared glass-formula group above), same
+   0.938rem/1.875rem padding as .btn. color: #fff added explicitly since
+   that used to come from the shared group too. */
 .cs-tag {
-  padding: clamp(0.5rem, calc(0.4697rem + 0.129vw), 0.625rem) clamp(1rem, calc(0.909rem + 0.388vw), 1.375rem);
+  padding: 0.938rem 1.875rem;
   border-radius: 0.625rem;
-  font-size: clamp(0.8125rem, calc(0.7822rem + 0.129vw), 0.9375rem);
+  font-size: var(--text-caption);
   font-weight: 500;
+  background: #171717;
+  border: 1px solid #727272;
+  color: #fff;
 }
 
 .cs-hero__meta {
@@ -1869,15 +2449,15 @@ footer {
   display: block;
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(1.25rem, calc(1.068rem + 0.777vw), 2rem);
+  font-size: var(--text-h2);
   letter-spacing: -0.01em;
   margin-bottom: 0.5rem;
 }
 
 .cs-hero__meta-item p {
   color: #fff;
-  font-size: clamp(0.875rem, calc(0.8447rem + 0.129vw), 1rem);
-  line-height: 1.5;
+  font-size: var(--text-caption);
+  line-height: 1.5em;
   max-width: 32ch;
 }
 
@@ -1897,7 +2477,7 @@ footer {
 .cs-heading {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(2.5rem, calc(1.4381rem + 4.531vw), 6.875rem);
+  font-size: var(--text-h1);
   letter-spacing: -0.01em;
   /* tighter than before — a divider reads as "attached" to its heading
      when the gap is a small fraction of the heading's size, not a
@@ -1924,24 +2504,10 @@ footer {
   transform: translateY(0);
 }
 
-/* index page's project filters — same "rise" idea as .cs-heading above,
-   but starting from much further down (near the bottom of the viewport)
-   since this sidebar is sticky and settles centered on screen rather than
-   pinned near the top, so the travel reads as it rising all the way up
-   into that centered resting spot instead of a small nudge. The -50%
-   keeps it centered throughout — it's the extra clamp() added on top
-   that provides the "further down to start" travel distance. */
-.filters.reveal {
-  opacity: 0;
-  transform: translateY(calc(-50% + clamp(4rem, calc(2rem + 8vw), 14rem)));
-  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
-    transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.filters.reveal.is-visible {
-  opacity: 1;
-  transform: translateY(-50%);
-}
+/* .filters no longer has a custom reveal override — it was built around
+   the old position: sticky sidebar's translateY(-50%) centering, which
+   no longer applies now that it's a plain in-flow wrapping row (see
+   .filters). It uses the site's generic .reveal fade-and-rise instead. */
 
 /* hairline divider under every section title */
 .cs-divider {
@@ -1973,8 +2539,8 @@ footer {
    body paragraphs. */
 .cs-para {
   margin: 0;
-  font-size: clamp(14px, calc(11.184px + 0.751vw), 25.6px);
-  line-height: 1.15;
+  font-size: var(--text-body);
+  line-height: 1.5em;
   color: #fff;
   max-width: 62ch;
 }
@@ -1988,20 +2554,22 @@ footer {
 .cs-cta {
   border-radius: 3.125rem;
   padding: clamp(2rem, calc(1.4994rem + 2.136vw), 4.0625rem) clamp(1.5rem, calc(0.1044rem + 5.955vw), 7.25rem);
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-size: var(--text-body);
   line-height: 1.55;
 }
 
 /* .cs-cta also carries .btn-outline, whose :hover state adds a faint
-   fill — override it so these stay fully transparent in every state */
-.cs-callout:hover,
+   fill — override it so it stays fully transparent in every state.
+   .cs-callout dropped from this rule — it's a flat #171717 fill now
+   (see its own rule above), not transparent, so there's nothing to
+   protect it from here; it never carried .btn-outline anyway. */
 .cs-cta:hover {
   background: transparent;
 }
 
 .cs-caption {
-  font-size: 0.9375rem;
-  line-height: 1.55;
+  font-size: var(--text-caption);
+  line-height: 1.5em;
   color: #fff;
   margin-top: 0.875rem;
   max-width: 60ch;
@@ -2023,7 +2591,7 @@ footer {
   margin-top: 2rem;
   /* match the size of the other paragraph text (.cs-para) instead of
      the smaller default caption size */
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-size: var(--text-body);
 }
 
 /* square image placeholders — Introduction (~1000px), Highlights
@@ -2074,7 +2642,7 @@ footer {
 .cs-subheading {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(1.375rem, calc(1.0679rem + 1.553vw), 2.25rem);
+  font-size: var(--text-h2);
   letter-spacing: -0.01em;
 }
 
@@ -2352,7 +2920,7 @@ footer {
    alongside it (via the same clamp curve) so the pill grows with its
    text rather than the text just getting cramped inside a fixed box. */
 .cs-validation-toggle .filter-pill {
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-size: var(--text-body);
   padding: clamp(0.75rem, calc(0.659rem + 0.388vw), 1.125rem) clamp(1.25rem, calc(1.068rem + 0.777vw), 2rem);
 }
 
@@ -2422,18 +2990,19 @@ footer {
 
 .cs-validation-list__row span:first-child {
   font-weight: 600;
-  font-size: 0.9375rem;
+  font-size: var(--text-body);
 }
 
 .cs-validation-list__row span:last-child {
-  font-size: 0.8125rem;
+  font-size: var(--text-caption);
   color: var(--text-muted);
 }
 
 .cs-validation-list__label {
   font-weight: 600;
   /* same size as the paragraph text */
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-size: var(--text-body);
+  line-height: 1.5em;
   color: #fff;
   margin: 0;
 }
@@ -2468,15 +3037,16 @@ footer {
 }
 
 .cs-quote__text {
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-size: var(--text-body);
   font-weight: 700;
-  line-height: 1.4;
+  line-height: 1.5em;
   color: #fff;
 }
 
 .cs-quote__attribution {
-  font-size: clamp(0.875rem, calc(0.8447rem + 0.129vw), 1rem);
+  font-size: var(--text-caption);
   font-weight: 500;
+  line-height: 1.5em;
   color: var(--text-secondary);
 }
 
@@ -2488,11 +3058,25 @@ footer {
   margin-top: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
 }
 
-/* same glass treatment as .cs-callout ("The creative content...") —
-   just a tighter 21px corner radius. min-height is fluid too, so
-   cards don't hold onto a fixed 11.25rem of empty space once they're
-   down to one column on a phone. Extra padding all around gives each
-   card more breathing room than the plain .cs-callout treatment. */
+/* exactly 3 cards (e.g. Aira's "The next steps") reads badly at 2
+   columns — 2 side by side, then a 3rd alone on its own row with a big
+   empty gap next to it. :has() + :nth-child(3):last-child is "select a
+   grid whose 3rd child is also its last child", i.e. exactly 3 items —
+   count-based, not a class added by hand, so this keeps applying
+   correctly if a card is ever added/removed, or another case study
+   adds its own 3-card group. Doesn't touch 2-, 4-, or 6-card groups
+   (Aira's own "What I learned", Faculty of Environment's and Ground
+   FX's "My takeaways"), which already read fine at 2 columns. */
+.cs-takeaways-grid:has(> :nth-child(3):last-child) {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+/* same flat #171717/no-stroke treatment as .cs-callout ("The creative
+   content...") — just a tighter 21px corner radius. min-height is
+   fluid too, so cards don't hold onto a fixed 11.25rem of empty space
+   once they're down to one column on a phone. Extra padding all around
+   gives each card more breathing room than the plain .cs-callout
+   treatment. */
 .cs-takeaway-card {
   border-radius: 1.3125rem;
   padding: clamp(1.75rem, calc(1.6286rem + 0.518vw), 2.25rem);
@@ -2537,14 +3121,14 @@ footer {
 .cs-takeaway-card h3 {
   font-family: var(--font-body);
   /* same size as the other paragraph text (.cs-para) */
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
+  font-size: var(--text-body);
   font-weight: 700;
 }
 
 .cs-takeaway-card p {
   /* same size as the other paragraph text (.cs-para) */
-  font-size: clamp(0.4375rem, calc(0.1796rem + 1.1vw), 1.5rem);
-  line-height: 1.55;
+  font-size: var(--text-body);
+  line-height: 1.5em;
   color: #fff;
 }
 
@@ -2552,7 +3136,12 @@ footer {
   .cs-split,
   .cs-highlights-grid,
   .cs-validation-copy,
-  .cs-takeaways-grid {
+  .cs-takeaways-grid,
+  /* the 3-card variant's :has() selector outweighs this plain-class
+     rule's specificity — without repeating it here explicitly, a
+     3-card group would stay 3-across even at phone width instead of
+     collapsing to 1 column like every other card count does */
+  .cs-takeaways-grid:has(> :nth-child(3):last-child) {
     grid-template-columns: 1fr;
   }
 

@@ -23,19 +23,21 @@
 <body>
 
 <div class="nav-wrap">
-  <header class="nav">
+  <header class="nav container container--wide">
     <a class="nav__logo" href="../index.html" aria-label="Jaydon — home">
       <span class="nav__logo-badge"><img src="../assets/images/nav-avatar.png" alt="" /></span>
-      <span class="nav__logo-text">Jaydon</span>
     </a>
 
-    <ul class="nav__links" id="navLinks">
-      <li><a href="../index.html#case-studies">Case studies</a></li>
-      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
-      <li><a href="../digital-media.html">Digital Media</a></li>
-    </ul>
+    <div class="nav__switch">
+      <a class="nav__switch-opt is-active" href="../index.html" aria-current="page">Work</a>
+      <a class="nav__switch-opt" href="../digital-media.html">Play</a>
+    </div>
 
-    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="../about.html">About me</a></li>
+      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
+    </ul>
 
     <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -52,7 +54,19 @@
     <div class="hero__grid" aria-hidden="true"></div>
 
     <div class="cs-hero__top">
-      <h1 class="cs-hero__title reveal">Ground FX</h1>
+      <!-- tags moved in here, right under the title, instead of sitting
+           after the whole title+meta row — see aira.html's copy of this
+           comment for why. -->
+      <div class="cs-hero__title-col">
+        <h1 class="cs-hero__title reveal" data-scramble>Ground FX</h1>
+
+        <div class="cs-hero__tags reveal">
+          <span class="cs-tag">Event</span>
+          <span class="cs-tag">2026</span>
+          <span class="cs-tag">Project Management</span>
+          <span class="cs-tag">Marketing</span>
+        </div>
+      </div>
 
       <div class="cs-hero__meta reveal">
         <div class="cs-hero__meta-item">
@@ -68,13 +82,6 @@
           <p>Social media, Adobe Creative Suite, project management, event branding.</p>
         </div>
       </div>
-    </div>
-
-    <div class="cs-hero__tags reveal">
-      <span class="cs-tag">Event</span>
-      <span class="cs-tag">2026</span>
-      <span class="cs-tag">Project Management</span>
-      <span class="cs-tag">Marketing</span>
     </div>
 
     <div class="cs-hero__actions reveal">
@@ -115,7 +122,7 @@
   <section id="objectives">
     <h2 class="cs-heading reveal">Main objectives</h2>
     <div class="cs-divider reveal"></div>
-    <p class="hero__desc cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">Recently being passed the torch
+    <p class="hero__desc cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem); max-width: none;">Recently being passed the torch
       for a 30-year tradition is a huge responsibility — to give myself clarity, I broke the event down into four
       areas of ownership.</p>
 
@@ -182,7 +189,7 @@
   <section id="team">
     <h2 class="cs-heading reveal">The team</h2>
     <div class="cs-divider reveal"></div>
-    <p class="hero__desc cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">An event is nothing without its
+    <p class="hero__desc cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem); max-width: none;">An event is nothing without its
       key players. The elements of hip-hop — DJing, MCing, breaking, knowledge, and graffiti — outlined what
       needed to take priority. We reached out through email, Instagram, and in-person requests to bring this
       team together.</p>
@@ -241,7 +248,7 @@
       Atrium, so securing that venue was a top priority alongside confirming our artists. Once the space and
       talent were locked in, my team and I mapped out the floor plan, registration area, judge seating, sponsor
       tables, and DJ setup for the best flow and audience visibility.</p>
-    <p class="hero__desc cs-para reveal" style="max-width: none; margin-top: 1.5rem;">To ensure seamless execution, we ran
+    <p class="hero__desc cs-para reveal" style="max-width: none; margin-top: clamp(1.5rem, 3vw, 2.25rem);">To ensure seamless execution, we ran
       a full test-through the weekend before the event — role-playing it start to finish to catch dead ends
       before the real day.</p>
     <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">With the team, I built and
@@ -376,7 +383,7 @@
     <h2 class="cs-heading reveal">My takeaways</h2>
     <div class="cs-divider reveal"></div>
 
-    <p class="hero__desc cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem);">Ground FX was more than an
+    <p class="hero__desc cs-para reveal" style="margin-bottom: clamp(1.5rem, 3vw, 2.25rem); max-width: none;">Ground FX was more than an
       event — it was a full-scale production that required strategic planning, strong branding, and disciplined
       execution. Leading both project management and marketing let me bridge structure with creativity, and
       strengthened how I manage stakeholders, budgets, and brand identity all at once.</p>
@@ -415,7 +422,7 @@
 
 <footer>
   <div class="footer-inner">
-    <h2>Let's c*nnect!</h2>
+    <h2 class="reveal" data-scramble>Let's c*nnect!</h2>
     <div class="footer-links">
       <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
       <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
@@ -425,5 +432,6 @@
 </footer>
 
 <script src="../js/main.js"></script>
+<script src="../js/scramble-text.js"></script>
 </body>
 </html>

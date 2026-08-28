@@ -24,19 +24,21 @@
 <body>
 
 <div class="nav-wrap">
-  <header class="nav">
+  <header class="nav container container--wide">
     <a class="nav__logo" href="index.html" aria-label="Jaydon — home">
       <span class="nav__logo-badge"><img src="assets/images/nav-avatar.png" alt="" /></span>
-      <span class="nav__logo-text">Jaydon</span>
     </a>
 
-    <ul class="nav__links" id="navLinks">
-      <li><a href="index.html#case-studies">Case studies</a></li>
-      <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
-      <li><a href="digital-media.html">Digital Media</a></li>
-    </ul>
+    <div class="nav__switch">
+      <a class="nav__switch-opt" href="index.html">Work</a>
+      <a class="nav__switch-opt is-active" href="digital-media.html" aria-current="page">Play</a>
+    </div>
 
-    <a class="btn btn-light nav__cta" href="mailto:wang.jaydon1@gmail.com">Contact</a>
+    <ul class="nav__links" id="navLinks">
+      <li><a href="about.html">About me</a></li>
+      <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
+    </ul>
 
     <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
       <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -95,12 +97,21 @@
             standard of all forms of design and so that he may use it to enhance his
             storytelling. His favorite? After effects.
           </p>
-        </div>
-      </div>
 
-      <div class="dm-hero__actions reveal">
-        <a class="btn btn-outline dm-btn" href="#motion-design"><span>Motion design</span><span>↓</span></a>
-        <a class="btn btn-outline dm-btn" href="#jaydon-mp4"><span>Jaydon MP4</span><span>↓</span></a>
+          <!-- back inside .dm-hero__stage, directly under the paragraph,
+               per the fallback asked for once a truly responsive version
+               of the original corner overlay turned out not to be
+               possible without either (a) moving the title/paragraph/
+               character too, since they all share one canvas scaled as
+               a single rigid unit, or (b) escaping that canvas entirely,
+               which was tried and rejected. In normal flow here, not
+               position: absolute — that's what lets it just add height
+               to the stage instead of needing its own bottom offset. -->
+          <div class="dm-hero__actions reveal">
+            <a class="btn btn-outline dm-btn" href="#motion-design"><span>Motion design</span><span>↓</span></a>
+            <a class="btn btn-outline dm-btn" href="#jaydon-mp4"><span>Jaydon MP4</span><span>↓</span></a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -132,7 +143,7 @@
          The two video tiles are wrapped in .dm-media-item so a title + tag
          row can sit underneath (same tag-chip language as the homepage
          project cards) without disturbing the plain placeholder tiles. -->
-    <div class="dm-media-grid dm-media-grid--two reveal">
+    <div class="dm-media-grid dm-media-grid--motion reveal">
       <div class="dm-media-item">
         <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="CmHm0k9JKVo" data-tags="after-effects,3d-modeling">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play Reese x Across the Spiderverse">
@@ -184,6 +195,22 @@
             <span class="tag">After effects</span>
           </div>
           <h3 class="dm-video-meta__title">Chlorine Stabilizing Mini Pucks</h3>
+        </div>
+      </div>
+      <div class="dm-media-item">
+        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="elPYYsEdtG4" data-tags="after-effects">
+          <button type="button" class="cs-video-tile__trigger" aria-label="Play Terry Balloon">
+            <img src="https://img.youtube.com/vi/elPYYsEdtG4/maxresdefault.jpg" alt="Terry Balloon video thumbnail" />
+            <span class="cs-video-tile__play" aria-hidden="true">
+              <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+            </span>
+          </button>
+        </div>
+        <div class="dm-video-meta">
+          <div class="tag-row">
+            <span class="tag">After effects</span>
+          </div>
+          <h3 class="dm-video-meta__title">Terry Balloon</h3>
         </div>
       </div>
       <div class="dm-media-item">
@@ -246,7 +273,7 @@
 
 <footer>
   <div class="footer-inner">
-    <h2>Let's c*nnect!</h2>
+    <h2 class="reveal" data-scramble>Let's c*nnect!</h2>
     <div class="footer-links">
       <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
       <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
