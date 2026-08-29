@@ -327,6 +327,16 @@
   const STAGE_WIDTH = 2540;
   const STAGE_HEIGHT = 1266;
 
+  /* Same role as HERO_FILL above: the share of the space below the nav
+     that the canvas's content is allowed to occupy, measured off the
+     reference display where the layout is already right. This was
+     effectively 1 — "shrink only far enough not to overflow" — which is
+     why the fit sat dormant at 1 and let the paragraph run down to the
+     bottom edge on a short window while leaving a third of the monitor
+     empty. Solving against the monitor's own ratio instead keeps that
+     display at exactly 1 and makes every shorter one match it. */
+  const DM_HERO_FILL = 0.71;
+
   const sizePlayHero = () => {
     if (!dmHero || !dmStage || !dmContent) return;
 
@@ -374,7 +384,7 @@
 
     const fit =
       renderedBottom > 0
-        ? Math.min(1, availableBelowNav() / renderedBottom)
+        ? Math.min(1, (availableBelowNav() * DM_HERO_FILL) / renderedBottom)
         : 1;
 
     dmStage.style.setProperty("--stage-fit", `${fit}`);

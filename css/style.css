@@ -96,6 +96,34 @@
      custom property would make those font-size declarations invalid. */
   --hero-fit: 1;
 
+  /* Height arms for the two things that sit ABOVE the hero content and
+     push it down: the nav bar itself, and the Play canvas's fixed top
+     padding. Both were width-only, and every clamp driving nav height
+     reaches its ceiling at 900px wide (see .nav__switch-opt) — so between
+     a 2560×1440 monitor and a 1920×1080 laptop at 125% the nav shrank by
+     4.6px while the available height fell by 593px, taking the nav from
+     8.8% of the viewport to 16% of it and pushing everything below it
+     down with it.
+
+     Plain CSS rather than JS, unlike --hero-fit: a hero's natural height
+     depends on the fit being solved for, which calc() can't express, but
+     the nav's height has no effect on the viewport height it's reading,
+     so there's no cycle here.
+
+     Both reach their 1 ceiling at 1230px of viewport height, deliberately
+     a little BELOW the 1271px reference monitor rather than exactly at
+     it: calibrated to land on 1271 they evaluated to 0.99999 there and
+     took 0.08px off the nav, so the reference wasn't quite pinned. The
+     headroom means every window at or above 1230px tall is untouched, and
+     the floors stop them running away on a very short one.
+
+     Every value they multiply is also max()'d against its own existing
+     floor, so the documented 900px→375px phone schedule is byte-identical
+     — verified at 375×812 and 375×667, where these resolve to ~0.79 and
+     every floor wins. */
+  --nav-fit: clamp(0.6, calc(0.3839 + 100svh / 1996px), 1);
+  --stage-lead: clamp(0.6, calc(0.4499 + 100svh / 2236px), 1);
+
   /* ---------- type scale — 7 styles, nothing else ----------
      FS Mondwest (--font-hero) + Inter (--font-body/--font-display),
      base 16 / scale 1.392, sized for a 1440px-wide screen. Every size
@@ -333,7 +361,10 @@ section {
 .nav-wrap {
   /* not sticky by design — the bar scrolls away with the rest of the
      page instead of pinning to the viewport */
-  padding-top: clamp(14px, calc(12.544px + 0.388vw), 20px);
+  /* the vw clamp is unchanged; --nav-fit is the height arm (see :root),
+     and max() against the clamp's own 14px floor keeps narrow screens
+     exactly as they were */
+  padding-top: max(14px, calc(clamp(14px, calc(12.544px + 0.388vw), 20px) * var(--nav-fit)));
   /* position: relative carries no visual/layout change on its own (no
      offsets set) — it's here purely so z-index actually applies: a
      static element ignores z-index entirely. Wrapping the whole nav in
@@ -357,7 +388,9 @@ section {
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: clamp(14px, calc(11.087px + 0.777vw), 26px);
-  padding-block: clamp(10px, calc(8.544px + 0.388vw), 16px);
+  /* height arm as on .nav-wrap above — gap is horizontal so it's left
+     alone; only the block padding contributes to how tall the bar is */
+  padding-block: max(10px, calc(clamp(10px, calc(8.544px + 0.388vw), 16px) * var(--nav-fit)));
 }
 
 /* shared "liquid glass" surface, now only for .btn-glass (currently
@@ -456,7 +489,10 @@ section {
      one thing shrinking together, not just the buttons shrinking
      inside a fixed-size holder. */
   gap: clamp(1px, calc(0.286px + 0.190vw), 2px);
-  padding: clamp(2px, calc(0.571px + 0.381vw), 4px);
+  /* --nav-fit applied to all four sides, not just the block axis: this is
+     a pill, so letting the track thin vertically while holding its full
+     horizontal inset would visibly change its shape rather than its size */
+  padding: max(2px, calc(clamp(2px, calc(0.571px + 0.381vw), 4px) * var(--nav-fit)));
 }
 
 .nav__switch-opt {
@@ -469,8 +505,18 @@ section {
      0.938rem/1.875rem size at 900px+ (unchanged from before there),
      continuously shrinking to a compact 8px/12px by 375px, so there's
      no breakpoint jump and no "stuck at full size" range in between.
-     The old 420px-only override is gone; this clamp already covers it. */
-  padding: clamp(8px, calc(3px + 1.333vw), 15.008px) clamp(12px, calc(-0.857px + 3.429vw), 30px);
+     The old 420px-only override is gone; this clamp already covers it.
+
+     Both clamps still describe the width schedule exactly as before. The
+     block axis additionally takes --nav-fit (see :root), because this
+     button is what actually sets the nav bar's height — 57.2px of the
+     bar's ~107px on a laptop — and that was completely flat at any width
+     above 900px. The inline axis is deliberately NOT multiplied: the
+     switch reads as a pill, and squashing it vertically while keeping its
+     width is the point, whereas taking both would just render the same
+     shape smaller and cost legibility for no vertical gain. */
+  padding-block: max(8px, calc(clamp(8px, calc(3px + 1.333vw), 15.008px) * var(--nav-fit)));
+  padding-inline: clamp(12px, calc(-0.857px + 3.429vw), 30px);
   border-radius: var(--radius-pill);
   /* was var(--text-body), which is intentionally flat/fixed below
      1440px — left the text at a constant 16px while the padding above
@@ -1724,11 +1770,22 @@ footer {
   width: 2540px;
   height: 1266px;
   /* was .dm-hero's own padding before the stage existed — kept here (not
-     dropped) since absolutely positioned children (.dm-hero__media,
-     inset: 0) are positioned against THIS box's padding edge, so this is
-     what pushes the title below the nav and gives the character's canvas
-     the same vertical room the original design had */
-  padding: 170px 0 80px;
+     dropped) since it's what pushes the title below the nav and gives the
+     character's canvas the same vertical room the original design had.
+
+     The top value takes --stage-lead (see :root). In canvas units this is
+     a rigid gap, so it rendered as a fixed distance under a nav that was
+     itself a much larger share of a short viewport — the two compounded
+     and pushed the text block down until the paragraph ended ~106px from
+     the bottom of a 671px window, against 421px of a 1271px one.
+
+     Only the character is absolutely positioned in here, and an abspos
+     child resolves against this box's PADDING box — which spans the whole
+     2540×1266 canvas whatever the padding is — so changing this moves the
+     text and leaves the character exactly where and how big it was. (The
+     previous wording of this comment implied the opposite; verified in
+     the browser that the head does not move.) */
+  padding: calc(170px * var(--stage-lead)) 0 80px;
   box-sizing: border-box;
   /* named so text sizes inside the stage (see .dm-hero__content
      .hero__title etc.) can divide it back out and land on the exact
@@ -1766,6 +1823,18 @@ footer {
 .dm-hero__grid {
   position: absolute;
   inset: 0;
+  /* runs well past the canvas on both sides so the pattern still reaches
+     the section's edges once --stage-fit is height-bound and the stage no
+     longer fills the width. Without this it stopped exactly at the canvas
+     and left the gutters bare — 79px a side on a 1524×671 laptop, and
+     ~390px on a very short window, where the seam is obvious. vw (not a
+     fixed canvas value) because the overhang has to out-reach the gutter
+     at every scale, and .dm-hero's own overflow: hidden crops whatever
+     isn't needed. Tiling is seamless: the repeating gradients below are
+     in canvas units, so extending the box just draws more of the same
+     pattern rather than rescaling it. */
+  left: -100vw;
+  right: -100vw;
   z-index: 0;
   pointer-events: none;
   background-image:
