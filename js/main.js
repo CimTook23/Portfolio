@@ -310,19 +310,25 @@
      one-transform contract intact while letting height constrain it too.
 
      The height arm measures against the canvas's CONTENT height, not the
-     full 1266: the bottom ~270 units are empty background below the last
-     button, and letting that spill past the fold is exactly what the
+     full 1266: the rest is empty background below the last thing that
+     renders, and letting that spill past the fold is exactly what the
      reference display already does. Fitting all 1266 would shrink the
      Play hero there too. Derived from the live layout rather than
-     hard-coded so it can't drift out of sync with the buttons. */
+     hard-coded so it can't drift out of sync with the composition.
+
+     .dm-hero__content is the anchor (the block wrapping the title and
+     paragraph) rather than any one child, so this keeps working as
+     things are added to or removed from the hero — it was measured off
+     the CTA buttons until those were dropped, at which point a missing
+     element would have disabled the height fit for the whole page. */
   const dmHero = document.querySelector(".dm-hero");
   const dmStage = dmHero && dmHero.querySelector(".dm-hero__stage");
-  const dmActions = dmHero && dmHero.querySelector(".dm-hero__actions");
+  const dmContent = dmHero && dmHero.querySelector(".dm-hero__content");
   const STAGE_WIDTH = 2540;
   const STAGE_HEIGHT = 1266;
 
   const sizePlayHero = () => {
-    if (!dmHero || !dmStage || !dmActions) return;
+    if (!dmHero || !dmStage || !dmContent) return;
 
     /* --stage-scale is left entirely alone (pure CSS, width-driven). All
        this touches is --stage-fit, the second factor that multiplies the
@@ -343,12 +349,12 @@
     /* Measured with offsetTop/offsetHeight, not getBoundingClientRect:
        those report the untransformed layout box, so they're already in
        canvas units AND they ignore the .reveal entry animation's own
-       transform, which would otherwise have the buttons still mid-flight
+       transform, which would otherwise have the content still mid-flight
        when this runs. Walking the offsetParent chain because
        .dm-hero__row is positioned, so it — not the stage — is the
-       actions' offsetParent. */
+       content's offsetParent. */
     let canvasBottom = 0;
-    let node = dmActions;
+    let node = dmContent;
     while (node && node !== dmStage) {
       canvasBottom += node.offsetTop;
       node = node.offsetParent;
@@ -356,10 +362,10 @@
     /* The walk already lands at the stage's own top edge — its 170px top
        padding is inside those offsets, not on top of them. The bottom
        padding is added deliberately though: it's the canvas's designed
-       breathing room under the last button, and counting it is what keeps
-       the buttons off the very bottom edge of the viewport. */
+       breathing room under the content, and counting it is what keeps the
+       last line off the very bottom edge of the viewport. */
     canvasBottom +=
-      dmActions.offsetHeight +
+      dmContent.offsetHeight +
       (parseFloat(getComputedStyle(dmStage).paddingBottom) || 0);
 
     // matches .dm-hero__stage's own calc(100cqw / 2540px) exactly
