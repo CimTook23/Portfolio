@@ -19,6 +19,11 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="css/style.css?v=2" />
+<!-- the 3D model's poster (see <model-viewer> below) — preloaded so it's
+     ready the instant the custom element upgrades, instead of the poster
+     itself being the thing you wait on. This is what makes the head show
+     up immediately instead of an empty gap before the real model loads. -->
+<link rel="preload" as="image" href="assets/images/me-head-poster.webp" fetchpriority="high" />
 <script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
 </head>
 <body>
@@ -72,6 +77,7 @@
           class="dm-hero__model"
           src="assets/models/me-head.glb"
           alt="A 3D scanned model of Jaydon's head and shoulders"
+          poster="assets/images/me-head-poster.webp"
           camera-controls
           disable-tap
           disable-zoom
