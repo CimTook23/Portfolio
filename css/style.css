@@ -133,6 +133,17 @@
   --text-h3: 1.375rem;                                              /* 22px — homepage hero paragraph ("Enjoys working in product...") */
   --text-body: 1rem;                                                /* 16px — all paragraph + button text */
   --text-caption: 0.688rem;                                         /* 11px — captions, tags, metadata */
+  /* dedicated to the nav's Work/Play switch (.nav__switch-opt) — not a
+     reuse of --text-body, which is intentionally flat/fixed below
+     1440px (see the media query below) since paragraph text shouldn't
+     shrink on a narrower screen. The switch is different: its padding
+     already shrinks fluidly at these widths (see .nav__switch-opt's
+     own comment), and leaving its font-size flat against that shrinking
+     padding was exactly the "doesn't shrink like the title does"
+     mismatch this token fixes. Same 900px→375px breakpoint pair as
+     that padding clamp, so text and padding shrink on the same
+     schedule instead of drifting apart. */
+  --text-nav-switch: clamp(12px, calc(9.143px + 0.762vw), 16px);     /* 16px @900px+, 12px @375px */
 }
 
 /* the 1440px sizes above are the brand spec's ceiling, not the whole
@@ -431,12 +442,17 @@ section {
 .nav__switch {
   display: flex;
   align-items: center;
-  gap: 2px;
   flex-shrink: 0;
-  padding: 4px;
   border-radius: var(--radius-pill);
   grid-column: 2;
   justify-self: center;
+  /* the track (this element) shrinking alongside the buttons it holds —
+     same 900px→375px schedule as .nav__switch-opt's own padding/font
+     clamps below, so the whole switch (track + both buttons) reads as
+     one thing shrinking together, not just the buttons shrinking
+     inside a fixed-size holder. */
+  gap: clamp(1px, calc(0.286px + 0.190vw), 2px);
+  padding: clamp(2px, calc(0.571px + 0.381vw), 4px);
 }
 
 .nav__switch-opt {
@@ -452,7 +468,14 @@ section {
      The old 420px-only override is gone; this clamp already covers it. */
   padding: clamp(8px, calc(3px + 1.333vw), 15.008px) clamp(12px, calc(-0.857px + 3.429vw), 30px);
   border-radius: var(--radius-pill);
-  font-size: var(--text-body);
+  /* was var(--text-body), which is intentionally flat/fixed below
+     1440px — left the text at a constant 16px while the padding above
+     kept shrinking around it, so the button never actually looked like
+     it was shrinking, just getting tighter-fitting. --text-nav-switch
+     is a dedicated token shrinking on this exact same 900px→375px
+     schedule, so text and padding scale down together — see its own
+     :root comment for the full reasoning. */
+  font-size: var(--text-nav-switch);
   font-weight: 500;
   color: var(--text-secondary);
   white-space: nowrap;
