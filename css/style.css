@@ -889,8 +889,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 /* homepage only (scoped through .hero__intro, not the bare .hero__title
-   the About page also uses) — pins the name to the top row, left edge,
-   instead of the centered stack every other page keeps. Just a normal
+   the About page also uses) — pins the name to the top row, centered,
+   matching the centered stack every other page keeps (was left-aligned;
+   changed on request to match the reference layout). Just a normal
    grid item now (row 1, auto-sized to its own height) — no more
    position: absolute + a manually-tuned negative margin to fake "flush
    with the top": row 1 already IS exactly the title's height, so it
@@ -899,8 +900,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    padding-top (see .hero) — that's the actual gap being closed. */
 .hero__intro .hero__title {
   grid-row: 1;
-  justify-self: start;
-  text-align: left;
+  justify-self: center;
+  /* no text-align override — inherits center from .hero */
   /* no font-size override anymore — this used to have its own pure-vw
      clamp() specifically so JAYDON WANG always stayed under half the
      viewport's width at any screen size (measured off the font's actual
@@ -929,16 +930,17 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 /* homepage only (see .hero__intro .hero__title above) — bottom row,
-   right edge, mirroring the title's placement across the grid. Row 3 is
+   centered, mirroring the title's placement across the grid (was right
+   edge; changed on request to match the reference layout). Row 3 is
    auto-sized to this paragraph's own height, so it sits flush against
    .hero's padding-bottom the same way the title sits flush against
    padding-top — no position: absolute needed here either. */
 .hero__intro .hero__desc {
   grid-row: 3;
-  justify-self: end;
+  justify-self: center;
   margin: 0;
   max-width: 560px;
-  text-align: right;
+  /* no text-align override — inherits center from .hero */
 }
 
 .hero__desc strong {
