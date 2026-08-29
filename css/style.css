@@ -199,38 +199,22 @@ html {
 
 /* ---------- scrollbar ---------- */
 
-/* thin, rounded, translucent instead of the browser's default chunky
-   gray bar — reads much smoother against the site's dark background.
-   Firefox picks this pair up directly; the ::-webkit-* rules below cover
-   Chrome/Edge/Safari, which ignore scrollbar-color entirely. */
+/* hidden entirely, on request — was previously a thin, rounded,
+   translucent bar (styled, not removed); this replaces that whole
+   ::-webkit-scrollbar-* rule set (track/thumb/hover) since none of it
+   paints once the bar itself is gone. Scrolling itself is untouched —
+   this only hides the visual track/thumb, not overflow/scroll
+   behavior — and -ms-overflow-style covers old (EdgeHTML) Edge, which
+   ignores both scrollbar-width and ::-webkit-scrollbar. */
 html {
-  scrollbar-width: thin;
-  scrollbar-color: var(--text-muted) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  /* padding-box + a transparent border, not a plain width, is what
-     keeps the thumb from touching the track's edges — it's what makes
-     a border-radius on a scrollbar thumb actually visible instead of
-     looking clipped to a rectangle */
-  background-color: var(--text-muted);
-  background-clip: padding-box;
-  border: 2px solid transparent;
-  border-radius: var(--radius-pill);
-  transition: background-color 0.2s ease;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text-secondary);
+  display: none;
+  width: 0;
+  height: 0;
 }
 
 /* ---------- light mode ----------
@@ -341,6 +325,17 @@ section {
   /* not sticky by design — the bar scrolls away with the rest of the
      page instead of pinning to the viewport */
   padding-top: clamp(14px, calc(12.544px + 0.388vw), 20px);
+  /* position: relative carries no visual/layout change on its own (no
+     offsets set) — it's here purely so z-index actually applies: a
+     static element ignores z-index entirely. Wrapping the whole nav in
+     one stacking context like this, rather than relying on the mobile
+     dropdown's own z-index: 60 below, guarantees nothing on the page
+     — now or added later, anywhere else in this file — can ever paint
+     over any part of the nav, not just the dropdown. 999 is well above
+     every other z-index in this file (60 is the next-highest, on
+     .nav__links below, which this now sits above too). */
+  position: relative;
+  z-index: 999;
 }
 
 .nav {
@@ -1124,6 +1119,14 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .project-card__media,
+  .project-card__media.is-flipping-in,
+  .project-card__media.is-flipped-in {
+    transition: none;
+  }
+}
+
 @media (max-width: 640px) {
   .hero__stage {
     display: flex;
@@ -1341,16 +1344,18 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 /* image on top, tag/title/description stacked below — was a horizontal
-   media-left/copy-right row; the reference reads as a vertical card */
+   media-left/copy-right row; the reference reads as a vertical card.
+   The hover effect (pointer-tracked 3D tilt, see js/main.js) is scoped
+   to .project-card__media only — .project-card itself carries no
+   hover transform, so the tag row/title/paragraph never move. */
 .project-card {
   display: flex;
   flex-direction: column;
   gap: 20px;
-  transition: transform 0.35s ease;
-}
-
-.project-card:hover {
-  transform: translateY(-6px);
+  /* gives .project-card__media's tilt below a vanishing point — lives
+     on the parent (not .project-card__media itself) because an element
+     can't be its own 3D perspective root */
+  perspective: 900px;
 }
 
 .project-card__media {
@@ -1364,22 +1369,59 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   border-radius: 16px;
   background: #0d1024;
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
-  transition: box-shadow 0.35s ease;
+  /* the rotate below is applied here, to the rounded/clipped box itself
+     rather than to the img inside it — so the corners tilt as part of
+     the same rigid object as the picture instead of staying a flat,
+     static window with the image swimming around behind it (which is
+     also what let the placeholder background peek through before) */
+  transition: transform 0.25s ease-out, box-shadow 0.3s ease;
+  will-change: transform;
+  /* the hover tilt only ever reaches ±10°, and the entrance flip below
+     stays well under 90° too — this is now a defensive margin rather
+     than something actually triggered, kept in case the flip angle
+     ever gets dialed back up past 90°, where (without this) the
+     browser would render the element's own mirrored front face
+     instead of a blank back, i.e. the photo and its logo/text would
+     visibly reverse partway through. */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
 }
 
-.project-card:hover .project-card__media {
+.project-card__media:hover {
   box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
+}
+
+/* one-time flip-in the first time the card scrolls into view (see
+   js/main.js), paired with .project-card.reveal's opacity fade below.
+   Driven by its own pair of classes rather than through
+   .reveal/.is-visible directly: .project-card__media's transform is
+   also what the pointer-tilt hover above sets inline, and .is-visible
+   stays on the card forever once added — if this slow 1.1s entrance
+   transition lived there, every hover tilt afterward would inherit
+   that same sluggish duration instead of the snappy 0.25s above. JS
+   swaps is-flipping-in -> is-flipped-in to run the animation, then
+   drops both classes once it finishes, handing the element back to
+   the plain rule above for all subsequent hover tilts. ease-in-out
+   (rather than the hover tilt's linear-ish ease-out) is what makes
+   the swing read as smooth momentum building up and settling back
+   down, instead of snapping off the start at full speed. */
+.project-card__media.is-flipping-in,
+.project-card__media.is-flipped-in {
+  transition: transform 1.1s ease-in-out, box-shadow 0.3s ease;
+}
+
+.project-card__media.is-flipping-in {
+  transform: rotateY(-15deg);
+}
+
+.project-card__media.is-flipped-in {
+  transform: rotateY(0deg);
 }
 
 .project-card__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.project-card:hover .project-card__media img {
-  transform: scale(1.05);
 }
 
 .project-card__body {
@@ -1640,6 +1682,10 @@ footer {
 .dm-hero__content {
   max-width: 1500px;
   margin-top: -110px;
+  /* reverted back to the original 200px on request — briefly tried 0
+     (nav-logo-aligned, no indent) but the 200px indent from the page
+     edge is the intended horizontal position, not a bug; margin-top
+     above is untouched either way, this is X-axis only. */
   margin-left: 200px;
   text-align: left;
 }
@@ -1696,11 +1742,14 @@ footer {
      actually renders about 1253px wide at its widest wrapped line
      (measured directly off .hero__title's rendered text, not its
      1500px-wide box — the title's own box is the same 1500px, its
-     GLYPHS just don't reach that far). 1250px (same plain-px stage-unit
-     system as .dm-hero__content, not divided by --stage-scale — this is
-     a layout dimension inside the fixed 2540px canvas, not a type size)
-     lines the paragraph's wrap width up with that instead. */
-  max-width: 1250px;
+     GLYPHS just don't reach that far). Was 1250px (lined the paragraph's
+     wrap width up with the title's rendered width instead) — shortened
+     further to 900px on request, wrapping onto more, shorter lines for
+     easier reading rather than matching the title's own width. Same
+     plain-px stage-unit system as .dm-hero__content either way (not
+     divided by --stage-scale — this is a layout dimension inside the
+     fixed 2540px canvas, not a type size). */
+  max-width: 900px;
 }
 
 /* Full-bleed layer, same trick as .dm-hero__grid — the model sits underneath
@@ -1761,8 +1810,14 @@ footer {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 20px;
-  margin-top: 40px;
+  /* 20px -> 24px, and the margin-top below 40px -> 56px: a bit more air
+     both before the CTA group and between the two buttons in it, so the
+     group reads as its own distinct step after the reading content
+     (title + paragraph) instead of trailing directly off the last
+     line — same "give the next group room to breathe" move as the
+     homepage hero's --hero-stack-gap increase. */
+  gap: 24px;
+  margin-top: 56px;
 }
 
 /* sized with the same canvas-scale math as the paragraph right above it
@@ -1775,9 +1830,16 @@ footer {
    resizes. */
 .dm-btn {
   justify-content: space-between;
-  gap: 40px;
+  /* 40px -> 44px, and the padding below 22px/32px -> 28px/40px: these
+     read as noticeably smaller/lighter than everything else on a stage
+     built around a ~350px-tall title — sized up a bit for more presence
+     and a more comfortable click target, still well inside the same
+     canvas-unit scaling (not divided by --stage-scale) every other
+     spacing value here uses, so it zooms with the rest of the
+     composition instead of holding a fixed on-screen size. */
+  gap: 44px;
   font-size: calc(var(--text-body) / var(--stage-scale));
-  padding: 22px 32px;
+  padding: 28px 40px;
 }
 
 /* No @media breakpoints for anything inside .dm-hero__stage — that's the
@@ -2635,6 +2697,20 @@ footer {
 
 .cs-heading.reveal.is-visible {
   transform: translateY(0);
+}
+
+/* project cards fade in place — no rise — since the image's own
+   flip-in (js/main.js, .project-card__media.is-flipping-in above)
+   already carries the entrance motion; stacking the generic rise on
+   top of that read as two competing animations on the same card. Same
+   .reveal/.is-visible hook, same override pattern as .cs-heading.reveal
+   just above. */
+.project-card.reveal {
+  transform: none;
+}
+
+.project-card.reveal.is-visible {
+  transform: none;
 }
 
 /* .filters no longer has a custom reveal override — it was built around
