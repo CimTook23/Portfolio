@@ -732,6 +732,13 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   justify-content: flex-start;
   text-align: center;
   --hero-fit: min(1, calc(100cqh / 911px));
+  /* the fixed gap between title/laptop/desc in .hero__intro's stacked
+     grid (see its own comment) — replaces what used to be a 1fr row's
+     worth of leftover hero height sitting between them. min()'d against
+     --hero-fit like the paddings below, so it shrinks along with
+     everything else on a short window instead of holding a flat gap
+     the shrunk content no longer has room for. */
+  --hero-stack-gap: min(clamp(20px, 2.5vw, 48px), calc(48px * var(--hero-fit)));
   /* these override the generic section{padding-block} rule (higher
      specificity), so without their own fluid range the hero would
      hold onto a fixed padding even on a phone — clamp() gives it the
@@ -817,16 +824,20 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    .hero's only child, so this just becomes 100% of .hero's own,
    JS-managed height) so the title/laptop/desc below have a real box to
    lay out against instead of stacking by natural content height.
-   Three grid rows — title (auto, its own height), laptop (1fr, whatever
-   is left), desc (auto, its own height) — instead of the old
-   flex-center + position:absolute + manual margin-nudge approach:
-   align-items/justify-items: center on the middle 1fr row is what
-   actually centers the laptop evenly BETWEEN the title and the
-   paragraph, since 1fr sizes to exactly the leftover space between two
-   auto-sized rows — flex centering on the whole box couldn't do that,
-   since it centers the laptop in the box's true middle, which isn't the
-   same point once the title (tall) and the paragraph (short) eat
-   unequal amounts of space off the top and bottom. */
+   Four grid rows — title (auto), laptop (auto), desc (auto), then a
+   trailing 1fr SPACER row with nothing in it. That 1fr row is what
+   soaks up whatever height .hero__intro has left over beyond its own
+   three lines of actual content, and — because it comes AFTER all
+   three, not between them — that leftover space collects below the
+   paragraph instead of being stretched out as gaps between the title/
+   laptop/desc themselves. (Used to be auto 1fr auto, with the laptop
+   sitting in that middle 1fr row — centered there by default, nudged
+   up toward the title with a large margin-bottom. That kept the title
+   flush against the top, same as now, but put the entire hero's worth
+   of leftover space between the three elements, reading as "too far
+   apart" — moved that leftover space out to its own trailing row
+   instead, and gave title/laptop/desc a small fixed --hero-stack-gap
+   between them, so request.) */
 .hero__intro {
   position: relative;
   z-index: 1;
@@ -836,7 +847,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      later in cascade) and erase their side inset entirely, pinning the
      title flush against the true viewport edge */
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto auto 1fr;
+  row-gap: var(--hero-stack-gap);
 }
 
 .hero__title {
@@ -950,23 +962,19 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 /* ---------- hero faces ---------- */
 
-/* sits in .hero__intro's middle grid row (1fr — exactly the leftover
-   space between the title row and the paragraph row), centered on both
-   axes there as the baseline — the margin-bottom below is a
-   deliberate nudge off that perfect center, back up toward the title,
-   requested on top of it. Mixes in a vh term (not just vw) because the
-   1fr row's own size tracks viewport HEIGHT, not width — a pure-vw
-   nudge is basically invisible on a tall/short-and-wide viewport where
-   that leftover row is huge relative to the nudge. */
+/* sits in .hero__intro's 2nd grid row, auto-sized to its own content —
+   spacing to the title above and the paragraph below now comes from
+   .hero__intro's own row-gap (--hero-stack-gap), not a margin nudge
+   here. Used to sit in a 1fr row (the leftover space between title and
+   paragraph) with a large margin-bottom pulling it off-center back
+   toward the title — see .hero__intro's own comment for why that grew
+   the title/laptop/desc gaps far apart and was replaced. */
 .hero__faces {
   grid-row: 2;
   justify-self: center;
-  align-self: center;
   position: relative;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
-  margin-bottom: clamp(72px, calc(4vw + 7vh), 220px);
 }
 
 /* replaces the old two-headshot pairing (a photo + a cartoon face) with
