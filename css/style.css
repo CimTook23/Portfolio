@@ -702,15 +702,27 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    the window gets short enough for it to matter.
 
    The height budget is --hero-fit: a 0–1 ratio of "how much of the hero's
-   natural, unshrunk size actually fits" — 911px is that natural size (the
-   sum of every element's own old vw-clamp MAX value: padding, gaps, the
-   laptop video, one line of title, two lines of description, the
-   button). cqh (not vh) is what container-type: size below turns on,
-   so the ratio is against the space .hero ACTUALLY has, not the raw
-   viewport — main.js sets .hero's real height to the viewport height
-   minus whatever the nav above it is actually taking up. Unlike the old
-   clamp()s, this arm has no floor: a short enough window keeps shrinking
-   the hero for as long as it takes to fit, by design. */
+   natural, unshrunk size actually fits" — 1070px is that natural size.
+   Measured directly (Playwright, not hand-added-up) rather than summed
+   from each element's own stated max: the title and the description
+   BOTH stay at their plain vw-clamp size and are never shrunk by
+   --hero-fit (see their own comments for why — the title in
+   particular), so their real contribution to this budget only reaches
+   its true ceiling at the width where --text-title's own vw-clamp caps
+   out (≥3600px), not at any "typical" desktop width — a hand-summed
+   estimate at 1440px undercounted the title badly, and separately
+   assumed 2 lines of description when it actually wraps to 3. Swept
+   the natural (unshrunk, tall-viewport) content height across widths
+   375–3840px and took the max (1068px at the widest, rounded up to
+   1070) so this is a genuine worst case, not an estimate — recalculate
+   the same way (sweep, don't hand-sum) if the title, desc, laptop, or
+   --hero-stack-gap change again. cqh (not vh) is what container-type:
+   size below turns on, so the ratio is against the space .hero
+   ACTUALLY has, not the raw viewport — main.js sets .hero's real height
+   to the viewport height minus whatever the nav above it is actually
+   taking up. Unlike the old clamp()s, this arm has no floor: a short
+   enough window keeps shrinking the hero for as long as it takes to
+   fit, by design. */
 .hero {
   position: relative;
   overflow: hidden;
@@ -731,14 +743,18 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      window, same as before. */
   justify-content: flex-start;
   text-align: center;
-  --hero-fit: min(1, calc(100cqh / 911px));
+  --hero-fit: min(1, calc(100cqh / 1070px));
   /* the fixed gap between title/laptop/desc in .hero__intro's stacked
      grid (see its own comment) — replaces what used to be a 1fr row's
      worth of leftover hero height sitting between them. min()'d against
      --hero-fit like the paddings below, so it shrinks along with
      everything else on a short window instead of holding a flat gap
-     the shrunk content no longer has room for. */
-  --hero-stack-gap: min(clamp(20px, 2.5vw, 48px), calc(48px * var(--hero-fit)));
+     the shrunk content no longer has room for. Tightened further on
+     request (was 20-48px) — the laptop sits noticeably closer under
+     the title now, and the paragraph (same gap token, so it tracks the
+     laptop's new position rather than getting stranded below it) moves
+     up right along with it. */
+  --hero-stack-gap: min(clamp(12px, 1.5vw, 28px), calc(28px * var(--hero-fit)));
   /* these override the generic section{padding-block} rule (higher
      specificity), so without their own fluid range the hero would
      hold onto a fixed padding even on a phone — clamp() gives it the
@@ -988,8 +1004,12 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   /* min()'d against --hero-fit like everything else in the hero (see
      .hero), so it shrinks along with the rest on a short window instead
      of forcing the hero taller than the space actually available.
-     Scaled to 3/4 of its previous size (190-360px -> 142.5-270px) */
-  height: min(clamp(142.5px, calc(111.55px + 8.25vw), 270px), calc(270px * var(--hero-fit)));
+     Enlarged ~1.4x (142.5-270px -> 200-380px) on request — now that the
+     hero is a tight, centered stack (title/laptop/desc all close
+     together, see --hero-stack-gap) rather than spread across the full
+     hero height, the laptop needed more visual weight to still read as
+     the stack's secondary focal point instead of shrinking into it. */
+  height: min(clamp(200px, calc(156px + 11.55vw), 380px), calc(380px * var(--hero-fit)));
   width: auto;
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
 }
