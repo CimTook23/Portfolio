@@ -871,7 +871,19 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      explicitly dropped in favor of matching every other title's size
      exactly, which is what plain --text-title (no override) now does. */
   font-size: calc(var(--text-title) * var(--font-hero-scale));
-  line-height: 1.2;
+  /* FS Mondwest also bakes in far more ascent/descent padding around
+     its own glyphs than PP Mondwest did — measured both fonts' line
+     metrics directly (canvas ascent/descent vs actual glyph ink):
+     FS carries roughly 0.29em more built-in leading than PP did at
+     any given line-height ratio. This was invisible on single-line
+     titles, but on the multi-line ones ("Projects & Case Studies",
+     "Jaydon's Digital Museum") it showed up as noticeably looser
+     line spacing once --font-hero-scale enlarged the font to match
+     PP's visual size. Was 1.2 under PP Mondwest — 0.91 here is that
+     same PP-era looseness with FS's extra leading subtracted back
+     out, not an arbitrary tighten. Repeated (with each rule's own
+     original ratio minus ~0.29) on every other --font-hero rule. */
+  line-height: 0.91;
   color: #fff;
 }
 
@@ -1121,8 +1133,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      natural wrapping — line-height is what actually controls the gap
      between those two lines. Deliberately NOT part of the site-wide
      1.5em paragraph line-height below — this is a heading, not a
-     paragraph. */
-  line-height: 1em;
+     paragraph. Was 1em under PP Mondwest — see .hero__title for why
+     FS Mondwest needs its own ratio (0.71) to read the same. */
+  line-height: 0.71;
 }
 
 .section-head h2 {
@@ -1132,6 +1145,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   word-spacing: 0.28em;
   font-weight: 400;
   font-size: calc(var(--text-h1) * var(--font-hero-scale));
+  /* was unset ("normal", ≈1em for this font) — see .hero__title for
+     why FS Mondwest needs an explicit, tighter ratio */
+  line-height: 0.71;
   letter-spacing: -0.01em;
 }
 
@@ -1373,6 +1389,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   word-spacing: 0.28em;
   font-weight: 400;
   font-size: calc(var(--text-h1) * var(--font-hero-scale));
+  /* was unset ("normal", ≈1em for this font) — see .hero__title for
+     why FS Mondwest needs an explicit, tighter ratio */
+  line-height: 0.71;
   margin-bottom: 20px;
 }
 
@@ -1456,7 +1475,9 @@ footer {
   word-spacing: 0.28em;
   font-weight: 400;
   font-size: calc(var(--text-title) * var(--font-hero-scale));
-  line-height: 1.05;
+  /* was 1.05 under PP Mondwest — see .hero__title for why FS Mondwest
+     needs its own ratio (0.76) to read the same */
+  line-height: 0.76;
   color: var(--light-ink);
   /* same white glow as JAYDON WANG (see .hero__intro .hero__title) —
      reads more subtly here since the footer sits on a light background,
@@ -1593,7 +1614,12 @@ footer {
    this stays in sync if that token's value ever changes again. */
 .dm-hero__content .hero__title {
   font-size: calc(var(--text-title) * var(--font-hero-scale) / var(--stage-scale));
-  line-height: 1.05;
+  /* was 1.05 under PP Mondwest — see .hero__title for why FS Mondwest
+     needs its own ratio (0.76) to read the same. Matters here more
+     than most: "Jaydon's Digital Museum" wraps to two lines, so this
+     is the other multi-line title (with "Projects & Case Studies")
+     that visibly showed the extra leading. */
+  line-height: 0.76;
   /* same white glow as JAYDON WANG (see .hero__intro .hero__title) —
      the 17px blur is divided by --stage-scale for the same reason
      font-size above is: this element sits inside .dm-hero__stage's own
@@ -1993,7 +2019,9 @@ footer {
   word-spacing: 0.28em;
   font-weight: 400;
   font-size: calc(var(--text-title) * var(--font-hero-scale));
-  line-height: 1.2;
+  /* was 1.2 under PP Mondwest — see .hero__title for why FS Mondwest
+     needs its own ratio (0.91) to read the same */
+  line-height: 0.91;
   margin-bottom: 0;
   letter-spacing: normal;
   /* same white glow as JAYDON WANG (see .hero__intro .hero__title) */
@@ -2443,7 +2471,9 @@ footer {
      (JAYDON WANG, Digital Museum, About me, the footer) — the title
      class is one size everywhere, not scoped per element */
   font-size: calc(var(--text-title) * var(--font-hero-scale));
-  line-height: 1.05;
+  /* was 1.05 under PP Mondwest — see .hero__title for why FS Mondwest
+     needs its own ratio (0.76) to read the same */
+  line-height: 0.76;
   letter-spacing: normal;
   max-width: 14ch;
   /* same white glow as JAYDON WANG (see .hero__intro .hero__title) */
