@@ -56,18 +56,20 @@
 <main>
 
   <section class="dm-hero">
-    <!-- Fixed 1920×950 "canvas" — every element inside is styled with a
+    <!-- Fixed 2540×1266 "canvas" — every element inside is styled with a
          single fixed pixel value (no clamp()/vw of its own), and this
-         whole stage is scaled down as ONE rigid unit via .dm-hero's
-         aspect-ratio + this element's transform: scale(). That's the
-         difference from the previous approach (each property — font-size,
-         margin, transform — carrying its own separately-tuned clamp()):
-         those inevitably drifted out of sync with each other at
-         in-between widths, so the composition (text vs. character vs.
-         buttons) didn't match between breakpoints. Scaling one fixed
-         layout as a unit means every width is a proportional zoom of the
-         exact same composition — including the 1920px+ desktop look, at
-         100% scale — instead of an independent reflow. -->
+         whole stage is scaled down as ONE rigid unit via this element's
+         transform: scale(). That's the difference from the previous
+         approach (each property — font-size, margin, transform — carrying
+         its own separately-tuned clamp()): those inevitably drifted out of
+         sync with each other at in-between widths, so the composition
+         (text vs. character vs. buttons) didn't match between breakpoints.
+         Scaling one fixed layout as a unit means every window is a
+         proportional zoom of the exact same composition instead of an
+         independent reflow. The scale answers to viewport height as well
+         as width now (main.js computes it), so a window shorter than the
+         canvas's own 2.006 aspect ratio shrinks and centres the whole
+         composition rather than running it off the bottom. -->
     <div class="dm-hero__stage">
       <div class="dm-hero__grid" aria-hidden="true"></div>
 

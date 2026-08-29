@@ -87,6 +87,15 @@
 
   --container: 1320px;
 
+  /* 0–1 "shrink everything in this hero by this much so it fits below the
+     nav" multiplier — see .hero's own comment for the mechanism. main.js
+     overrides it per hero element (.hero, .cs-hero); 1 here is both the
+     pre-JS fallback and the real value for everything that ISN'T a hero,
+     since .hero__title and .hero__desc are shared classes (About's
+     .page-hero, the case-study body copy) and multiplying by an undefined
+     custom property would make those font-size declarations invalid. */
+  --hero-fit: 1;
+
   /* ---------- type scale — 7 styles, nothing else ----------
      FS Mondwest (--font-hero) + Inter (--font-body/--font-display),
      base 16 / scale 1.392, sized for a 1440px-wide screen. Every size
@@ -713,38 +722,45 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    version only shrank with WIDTH via vw units, so a short window just
    cropped the bottom of the hero instead of shrinking to fit it).
 
-   Every fluid property below is `min(<its old vw-based clamp>, <a height
-   budget>)`. The vw-clamp arm is completely unchanged from before, so
-   width-driven behavior (phones, tablets) looks exactly like it did —
-   the height arm only ever pulls things SMALLER than that, and only once
-   the window gets short enough for it to matter.
+   Every fluid property below is `calc(<its own vw-based clamp> *
+   var(--hero-fit))`. The vw-clamp arm is completely unchanged, so
+   width-driven behavior (phones, tablets) is exactly what it always was;
+   --hero-fit is a 0–1 multiplier that only ever pulls things smaller,
+   and only once the window gets short enough for it to matter.
 
-   The height budget is --hero-fit: a 0–1 ratio of "how much of the hero's
-   natural, unshrunk size actually fits" — 1070px is that natural size.
-   Measured directly (Playwright, not hand-added-up) rather than summed
-   from each element's own stated max: the title and the description
-   BOTH stay at their plain vw-clamp size and are never shrunk by
-   --hero-fit (see their own comments for why — the title in
-   particular), so their real contribution to this budget only reaches
-   its true ceiling at the width where --text-title's own vw-clamp caps
-   out (≥3600px), not at any "typical" desktop width — a hand-summed
-   estimate at 1440px undercounted the title badly, and separately
-   assumed 2 lines of description when it actually wraps to 3. Swept
-   the natural (unshrunk, tall-viewport) content height across widths
-   375–3840px and took the max (1068px at the widest, rounded up to
-   1070) so this is a genuine worst case, not an estimate — recalculate
-   the same way (sweep, don't hand-sum) if the title, desc, laptop, or
-   --hero-stack-gap change again. cqh (not vh) is what container-type:
-   size below turns on, so the ratio is against the space .hero
-   ACTUALLY has, not the raw viewport — main.js sets .hero's real height
-   to the viewport height minus whatever the nav above it is actually
-   taking up. Unlike the old clamp()s, this arm has no floor: a short
-   enough window keeps shrinking the hero for as long as it takes to
-   fit, by design. */
+   This used to be `min(<clamp>, calc(<max> * var(--hero-fit)))`, which
+   was NOT proportional: near fit = 1 the clamp arm won instead, so the
+   rendered height wasn't a straight multiple of --hero-fit and the
+   shrink landed unevenly across the stack. A plain multiply is linear,
+   which is what lets main.js solve for the right fit in a single
+   measuring pass — and it means every part of the hero shrinks by the
+   SAME factor, so a short window reproduces the tall-window composition
+   at a smaller size instead of rearranging it into a different one.
+
+   Unlike the old version the title and description shrink too (see their
+   own comments). They were deliberately left out before because
+   shrinking JAYDON WANG on its own made it render smaller than every
+   other page's title on an ordinary laptop; that objection is gone now
+   that .cs-hero__title takes the same multiplier, so the titles shrink
+   together and stay in proportion with each other rather than drifting
+   apart.
+
+   --hero-fit itself is set by main.js, not computed here: it depends on
+   the hero's natural (unshrunk) content height, which depends in turn on
+   --hero-fit, and neither calc() nor a container query can resolve that
+   cycle. That also retires the old hard-coded 1070px "natural height"
+   constant and the 375–3840px width sweep that was needed to keep it
+   honest — main.js measures the real number off the real page on every
+   resize instead. :root's --hero-fit: 1 is the fallback, so anything
+   that isn't a hero still renders full size. Unlike the old clamp()s
+   this has no floor: a short enough window keeps shrinking for as long
+   as it takes to fit, by design. */
 .hero {
   position: relative;
   overflow: hidden;
-  container-type: size;
+  /* container-type: size used to be here purely so --hero-fit could read
+     100cqh; main.js computes the fit now, and nothing else in the file
+     queries this container, so the containment it forced is gone too */
   /* JS (main.js) overwrites this with the exact space left below the
      nav; 100vh is just the pre-JS fallback so nothing flashes at 0
      height for the instant before that runs */
@@ -761,10 +777,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      window, same as before. */
   justify-content: flex-start;
   text-align: center;
-  --hero-fit: min(1, calc(100cqh / 1070px));
   /* the fixed gap between title/laptop/desc in .hero__intro's stacked
      grid (see its own comment) — replaces what used to be a 1fr row's
-     worth of leftover hero height sitting between them. min()'d against
+     worth of leftover hero height sitting between them. Multiplied by
      --hero-fit like the paddings below, so it shrinks along with
      everything else on a short window instead of holding a flat gap
      the shrunk content no longer has room for. Tightened further on
@@ -772,22 +787,27 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      the title now, and the paragraph (same gap token, so it tracks the
      laptop's new position rather than getting stranded below it) moves
      up right along with it. */
-  --hero-stack-gap: min(clamp(12px, 1.5vw, 28px), calc(28px * var(--hero-fit)));
+  /* nudged back up slightly (28px cap -> 36px) after .hero__intro
+     .hero__title picked up its own negative margin-bottom below —
+     trimming that title's real invisible font-metric padding closed
+     part of the title-to-laptop gap for free, so this can afford to be
+     a bit more generous again without the group reading as cramped */
+  --hero-stack-gap: calc(clamp(14px, 1.8vw, 36px) * var(--hero-fit));
   /* these override the generic section{padding-block} rule (higher
      specificity), so without their own fluid range the hero would
      hold onto a fixed padding even on a phone — clamp() gives it the
-     same continuous shrink as everything else, and min() with the
-     --hero-fit arm gives it a further shrink once height is tight */
+     same continuous shrink as everything else, and the --hero-fit
+     multiplier gives it a further shrink once height is tight */
   /* down again (24-39px -> 14-23px) — with the title now a plain grid
      item (see .hero__intro), this padding-top IS the whole gap to the
      nav, no separate margin nudge layered on top of it anymore */
-  padding-top: min(clamp(14px, calc(12.2px + 0.583vw), 23px), calc(23px * var(--hero-fit)));
+  padding-top: calc(clamp(14px, calc(12.2px + 0.583vw), 23px) * var(--hero-fit));
   /* was a flat 150px taller than padding-top at every viewport width
      (214–330px) — that was headroom for a decorative background that no
      longer needs it, and was the single biggest reason the hero didn't
      fit on an ordinary laptop window in the first place, so it's been
      brought back down near padding-top's own range instead */
-  padding-bottom: min(clamp(24px, calc(14.29px + 2.589vw), 64px), calc(64px * var(--hero-fit)));
+  padding-bottom: calc(clamp(24px, calc(14.29px + 2.589vw), 64px) * var(--hero-fit));
 }
 
 .hero__grid {
@@ -903,21 +923,26 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      against it would just be browser-synthesized faux bold, which
      distorts a pixel-grid face like this one */
   font-weight: 400;
-  /* plain --text-title, same as every other member of this style
-     (Digital Media's title, the case-study page titles, About me,
-     JAYDON WANG included) — no longer min()'d against --hero-fit. It
-     used to shrink further on a short window, but that made JAYDON WANG
-     render visibly smaller than every other title on ordinary laptop
-     screens (short enough to push --hero-fit below 1 even without the
-     window being unusually short). .hero's own overflow: hidden is
-     still the safety net if this ever runs long on an extreme window.
+  /* --text-title, same as every other member of this style (Digital
+     Media's title, the case-study page titles, About me, JAYDON WANG
+     included), times --hero-fit.
+
+     The --hero-fit arm was previously removed from here: shrinking this
+     title on a short window made JAYDON WANG render visibly smaller than
+     every other title on ordinary laptop screens, because it was the
+     ONLY title taking the multiplier. That's no longer true —
+     .cs-hero__title now takes the same one and the Digital Museum title
+     rides its stage's transform, so every title on the site shrinks by
+     the same proportion on the same window and they stay matched to each
+     other. Off the homepage --hero-fit resolves to :root's 1, so About's
+     .page-hero title is untouched.
 
      JAYDON WANG briefly had its own width-driven override here (see
      .hero__intro .hero__title below) to keep it under half the
      viewport's width at any screen size — that constraint was
      explicitly dropped in favor of matching every other title's size
-     exactly, which is what plain --text-title (no override) now does. */
-  font-size: calc(var(--text-title) * var(--font-hero-scale));
+     exactly, and this still does that. */
+  font-size: calc(var(--text-title) * var(--font-hero-scale) * var(--hero-fit));
   /* FS Mondwest also bakes in far more ascent/descent padding around
      its own glyphs than PP Mondwest did — measured both fonts' line
      metrics directly (canvas ascent/descent vs actual glyph ink):
@@ -961,6 +986,19 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   /* white glow behind the name, per design request: FFFFFF at 62%
      opacity, 17px blur, no offset (a pure glow, not a cast shadow) */
   filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
+  /* FS Mondwest's line-box carries real empty space below the visible
+     letters that --hero-stack-gap can't see or account for — it's
+     baked inside this element's own box, not the space between this
+     and .hero__faces below. Measured directly (rendered the same text
+     to an offscreen canvas at this element's computed font-size and
+     scanned for ink): about 0.1em of dead air sits between the bottom
+     of the glyphs and the bottom of this box, on top of whatever
+     --hero-stack-gap adds after it. This negative margin cancels that
+     out so the laptop sits right under the actual letters instead of
+     under invisible font padding — em-based so it scales with
+     --text-title/--font-hero-scale at every viewport, same as the
+     glow/word-spacing above. */
+  margin-bottom: -0.1em;
 }
 
 .hero__desc {
@@ -968,9 +1006,14 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      it. .page-hero .hero__desc (About page — different copy, "Is a
      product designer...") is a separate, more specific rule that still
      sets its own font-size, so this only actually reaches the homepage
-     paragraph, not both. No --hero-fit multiplier here either way —
-     see the git history for why that was dropped. */
-  font-size: var(--text-h3);
+     paragraph, not both.
+
+     The --hero-fit multiplier is back (it was dropped when the title's
+     was — see .hero__title for why that no longer applies). This class
+     is also shared with the case-study body copy, which sits outside any
+     hero and so resolves --hero-fit to :root's 1; .cs-para overrides
+     font-size there anyway. */
+  font-size: calc(var(--text-h3) * var(--hero-fit));
   line-height: 1.5em;
   color: #ffffff;
 }
@@ -985,7 +1028,13 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   grid-row: 3;
   justify-self: center;
   margin: 0;
-  max-width: 560px;
+  /* scaled by --hero-fit like the font-size it measures, so the line
+     breaks stay put. Left flat, a shrunk paragraph kept its full-width
+     measure and re-wrapped from three lines to two, which changed the
+     shape of the block on exactly the screens this is meant to leave
+     looking identical. (.cs-hero__title's 14ch and .cs-hero__meta-item
+     p's 32ch don't need this — ch already scales with font-size.) */
+  max-width: calc(560px * var(--hero-fit));
   /* no text-align override — inherits center from .hero */
 }
 
@@ -1019,15 +1068,23 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    focal element it needs more visual weight to hold its own against the
    headline below; width follows the laptop's own ~1.8:1 aspect ratio. */
 .hero__computer {
-  /* min()'d against --hero-fit like everything else in the hero (see
+  /* multiplied by --hero-fit like everything else in the hero (see
      .hero), so it shrinks along with the rest on a short window instead
      of forcing the hero taller than the space actually available.
      Enlarged ~1.4x (142.5-270px -> 200-380px) on request — now that the
      hero is a tight, centered stack (title/laptop/desc all close
      together, see --hero-stack-gap) rather than spread across the full
      hero height, the laptop needed more visual weight to still read as
-     the stack's secondary focal point instead of shrinking into it. */
-  height: min(clamp(200px, calc(156px + 11.55vw), 380px), calc(380px * var(--hero-fit)));
+     the stack's secondary focal point instead of shrinking into it.
+     Bumped up another ~10% (200-380px -> 220-420px, same vw slope
+     methodology, just rescaled) — the three-line stack (title/laptop/
+     desc) sits well short of .hero's full height on tall/wide
+     viewports, and the leftover space all collects below the
+     paragraph (see .hero__intro's own comment on the trailing 1fr
+     row); giving the laptop more presence is a safer way to fill that
+     imbalance than stretching gaps or overriding the title's
+     match-every-page size. */
+  height: calc(clamp(220px, calc(181px + 10.31vw), 420px) * var(--hero-fit));
   width: auto;
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
 }
@@ -1626,13 +1683,44 @@ footer {
      even if something upstream (a scrollbar, a future wrapper) ever
      makes this narrower than the viewport. */
   container-type: inline-size;
+  /* pre-JS fallback only — main.js overwrites height with
+     1266px * the real --stage-scale it computes (see .dm-hero__stage).
+     The scale used to be width-driven alone, which meant this section's
+     height was always viewport-width × 0.4984 no matter how short the
+     window was: on a 2560×1440 monitor that lands at almost exactly the
+     viewport height, which is why it looked right there and nowhere
+     else. On a wide-but-short laptop it ran a couple of hundred pixels
+     past the fold and overflow: hidden clipped the buttons off. */
   aspect-ratio: 2540 / 1266;
+  /* both of these exist to stop aspect-ratio working BACKWARDS. Once
+     main.js sets a height, an auto width lets the ratio derive the width
+     FROM that height rather than the other way round. It silently agreed
+     with the right answer at ordinary sizes (1266·s × 2.006 = 2540·s), so
+     it looked correct — until the generic section{padding-block: 64px}
+     floored this box at 128px on a very short window, at which point the
+     ratio handed the section a 257px width, the stage scale spiralled
+     down to match, and the composition collapsed. An explicit width makes
+     width and height both definite so the ratio is ignored; zeroing the
+     inherited padding removes the 128px floor that triggered it. The
+     stage is absolutely positioned and carries its own 170/80 padding, so
+     neither changes what actually renders. */
+  width: 100%;
+  padding-block: 0;
 }
 
 .dm-hero__stage {
   position: absolute;
   top: 0;
-  left: 0;
+  /* centers the canvas once --stage-scale is height-bound rather than
+     width-bound: at the width-bound scale 2540px * scale IS this
+     element's width, so this resolves to 0 and nothing moves (which is
+     every window at or above the design's 2.006 aspect ratio). On a
+     shorter window the canvas is scaled down past the point of filling
+     the width, and this splits the leftover across both sides instead of
+     leaving it all on the right. The 200px page-edge indent inside the
+     canvas (see .dm-hero__content) is preserved either way — it's part
+     of the composition being scaled, not measured from the viewport. */
+  left: calc((100% - 2540px * var(--stage-scale) * var(--stage-fit)) / 2);
   width: 2540px;
   height: 1266px;
   /* was .dm-hero's own padding before the stage existed — kept here (not
@@ -1646,9 +1734,32 @@ footer {
      .hero__title etc.) can divide it back out and land on the exact
      same rendered size as the rest of the site's type scale at ANY
      viewport width, not just the one width this was hand-calibrated
-     against */
+     against.
+
+     Unchanged, and deliberately still width-only — the type inside the
+     stage divides by THIS, so it has to keep meaning "1 canvas px is this
+     many real px at this viewport width" and nothing else. */
   --stage-scale: calc(100cqw / 2540px);
-  transform: scale(var(--stage-scale));
+  /* The height answer is a SECOND factor rather than a smaller
+     --stage-scale, and the difference matters. Type in here is sized
+     `/ var(--stage-scale)` so it lands on the site's type scale after the
+     transform — which means shrinking --stage-scale itself doesn't shrink
+     the text at all, it just makes the text bigger in canvas units until
+     it rewraps inside the fixed 1500px content column and the canvas gets
+     TALLER the more you try to shrink it. (Measured: solving that way
+     collapsed the scale to 0.11 and drove the buttons a full viewport
+     below the fold.)
+
+     --stage-fit multiplies the transform without being divided back out,
+     so it scales the text along with everything else and the canvas's own
+     geometry stays fixed. That makes the rendered height exactly linear
+     in it, which is what lets main.js solve for it in one measurement. 1
+     is both the pre-JS fallback and the value on any window at or taller
+     than the canvas's 2.006 aspect ratio, so the reference display and
+     every phone width are untouched. Still exactly one scale() for the
+     whole stage — the no-@media-inside-the-stage rule below is intact. */
+  --stage-fit: 1;
+  transform: scale(calc(var(--stage-scale) * var(--stage-fit)));
   transform-origin: top left;
 }
 
@@ -2501,8 +2612,18 @@ footer {
   position: relative;
   /* pulled up close to the nav, matching the digital-media page's
      title position */
-  padding-top: clamp(1rem, calc(0.7573rem + 1.036vw), 2rem);
-  padding-bottom: clamp(4rem, calc(3.2718rem + 3.107vw), 7rem);
+  /* every vertical value in this hero is multiplied by --hero-fit, the
+     same 0–1 "shrink to fit below the nav" factor the homepage hero uses
+     (see .hero for the full mechanism; main.js sets it per hero). This
+     hero had NO height-awareness at all before: its own dominant driver
+     is .cs-hero__actions' margin-top, a purely width-driven 10–21rem gap,
+     so on a wide-but-short laptop window the title wrapped to two lines
+     AND that gap stayed at desktop size, pushing the two CTA buttons a
+     couple of hundred pixels below the fold. Nothing here is min()'d — a
+     straight multiply keeps the whole composition proportional, so a
+     short window shows the same layout at a smaller size. */
+  padding-top: calc(clamp(1rem, calc(0.7573rem + 1.036vw), 2rem) * var(--hero-fit));
+  padding-bottom: calc(clamp(4rem, calc(3.2718rem + 3.107vw), 7rem) * var(--hero-fit));
   /* NOT overflow:hidden — the grid below breaks out to full viewport
      width via a negative-margin technique; overflow:hidden here would
      clip that breakout back down to the padded content width. Page-
@@ -2560,9 +2681,9 @@ footer {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  gap: calc(clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem) * var(--hero-fit));
   flex-wrap: wrap;
-  margin-top: clamp(0.5rem, calc(0.3786rem + 0.518vw), 1rem);
+  margin-top: calc(clamp(0.5rem, calc(0.3786rem + 0.518vw), 1rem) * var(--hero-fit));
 }
 
 /* wraps the title + tags together as .cs-hero__top's first flex item
@@ -2583,10 +2704,13 @@ footer {
      essentially zero-width */
   word-spacing: 0.18em;
   font-weight: 400;
-  /* plain --text-title, same as every other member of this style
-     (JAYDON WANG, Digital Museum, About me, the footer) — the title
-     class is one size everywhere, not scoped per element */
-  font-size: calc(var(--text-title) * var(--font-hero-scale));
+  /* --text-title, same as every other member of this style (JAYDON WANG,
+     Digital Museum, About me, the footer) — the title class is one size
+     everywhere, not scoped per element — times --hero-fit, exactly as
+     .hero__title takes it, so the two pages' titles shrink by the same
+     proportion on the same window instead of one holding full size while
+     the other gives way */
+  font-size: calc(var(--text-title) * var(--font-hero-scale) * var(--hero-fit));
   /* was 1.05 under PP Mondwest — see .hero__title for why FS Mondwest
      needs its own ratio (0.76) to read the same */
   line-height: 0.76;
@@ -2615,7 +2739,7 @@ footer {
      28px cap to the site's established "small content gap" tier at the
      same time (same formula as .cs-validation-toggle's own
      default) for a clearly deliberate separation. */
-  margin-top: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
+  margin-top: calc(clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem) * var(--hero-fit));
 }
 
 /* same treatment as the homepage's .tag — flat fill/stroke, no glass
@@ -2635,7 +2759,7 @@ footer {
 .cs-hero__meta {
   display: flex;
   flex-direction: column;
-  gap: clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem);
+  gap: calc(clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem) * var(--hero-fit));
   flex: 0 0 auto;
   min-width: clamp(11rem, calc(10.3325rem + 2.848vw), 13.75rem);
 }
@@ -2665,8 +2789,12 @@ footer {
   flex-wrap: wrap;
   /* generous open grid space between the tags and the buttons,
      matching the reference layout instead of a tight stack — pushed
-     down further so the pair reads as centered lower in the hero */
-  margin-top: clamp(10rem, calc(7.3301rem + 11.392vw), 21rem);
+     down further so the pair reads as centered lower in the hero.
+     This is by far the largest single contributor to .cs-hero's height
+     (160–336px of pure empty space), and being pure-vw it held its full
+     desktop size on short windows, which is what put the buttons below
+     the fold — so it takes the --hero-fit multiplier like the rest. */
+  margin-top: calc(clamp(10rem, calc(7.3301rem + 11.392vw), 21rem) * var(--hero-fit));
 }
 
 .cs-heading {
@@ -2731,12 +2859,14 @@ footer {
    the homepage's "Enjoys working in product..." paragraph, not just a
    numeric match — this rule is that context's override, same pattern as
    .page-hero .hero__desc and .dm-hero__desc elsewhere in this file:
-   - font-size/line-height are re-declared flat because .hero__desc's own
-     value is min()'d against --hero-fit, a custom property that only
-     exists inside .hero's container-query scope — outside it the var()
-     is invalid, which invalidates the whole property at computed-value
-     time, so leaving it to cascade from .hero__desc alone would silently
-     drop back to font-size:inherit.
+   - font-size/line-height are re-declared flat so this copy is never
+     touched by --hero-fit, which .hero__desc's own font-size multiplies
+     by. --hero-fit used to exist ONLY inside .hero, which made the var()
+     invalid out here and silently dropped the whole declaration back to
+     font-size:inherit — it now has a :root fallback of 1 specifically so
+     that can't happen to any of .hero__desc's other contexts, but these
+     paragraphs re-declare anyway: they sit outside any hero and should
+     hold their own size regardless of what a hero elsewhere is doing.
    - margin:0 cancels .hero__desc's own margin-top and margin-inline:auto.
      The auto margins matter most: these paragraphs are flex items inside
      .cs-split__body (align-items:flex-start), and an auto margin on a

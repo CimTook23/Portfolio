@@ -123,47 +123,288 @@
     });
   }
 
-  /* ---------- homepage hero: fit the viewport, never crop ----------
-     .hero's CSS (container-type: size + the --hero-fit custom property)
-     shrinks everything inside it — video, title, description, button,
-     padding — together as one unit once the available height gets
-     tight, using cqh (the container's own height) as the budget. That
-     budget has to be the space ACTUALLY left below the nav, not the raw
-     viewport (100vh alone would ignore the nav's own footprint and
-     still crop the hero by however tall the nav is) — measured here,
-     since nav-wrap sits in normal flow right above .hero, .hero's own
-     offsetTop already IS the nav's rendered height, no separate lookup
-     needed.
+  /* ---------- heroes: fit the space below the nav, never crop ----------
+     Three separate heroes have the same blind spot: .hero (homepage),
+     .cs-hero (case studies) and .dm-hero (Play). Every fluid value in all
+     three is vw-driven, so none of them can see viewport HEIGHT at all. A
+     2560×1440 monitor and a 1920×1080 laptop land within a few hundred px
+     of each other in width but nearly 600px apart in available height,
+     and the design was calibrated on the taller one — so on the laptop
+     the bottom of each hero fell past the fold (or got clipped outright
+     by .hero/.dm-hero's overflow: hidden).
 
-     .hero__grid--homepage lives at the body level (see index.html) so it
+     The nav is measured once here for all three. It used to be read as
+     .hero's own offsetTop, which is correct — nav-wrap sits in normal
+     flow directly above it — but homepage-only: .cs-hero and .dm-hero are
+     different class tokens, so that entire block was a no-op on every
+     other page. Reading .nav-wrap directly is what makes this shared.
+
+     Why this is in JS at all: --hero-fit depends on the hero's natural
+     (unshrunk) content height, and that height depends on --hero-fit.
+     calc() can't express a fixed point, and a container query can't
+     either — cqh would be reading the very height being solved for. The
+     old CSS sidestepped it with a hard-coded 1070px natural-height
+     constant that had to be re-swept across widths by hand whenever
+     anything inside the hero changed; measuring the live page instead
+     retires both the constant and the sweep. */
+  const navWrap = document.querySelector(".nav-wrap");
+
+  const availableBelowNav = () => {
+    const navHeight = navWrap ? navWrap.getBoundingClientRect().height : 0;
+    return Math.max(window.innerHeight - navHeight, 0);
+  };
+
+  /* The problem this whole block exists for is the wide-but-short window.
+     In portrait the page is expected to scroll and shrinking type to force
+     a hero into one screenful just makes it hard to read — a phone was
+     rendering the case-study title at 52px instead of 78px that way, which
+     breaks the stylesheet's own rule that width-driven behaviour (phones,
+     tablets) stays exactly as it was. So portrait gets no proportional
+     shrink, only the safety net where a hero would otherwise be clipped
+     outright. */
+  const isLandscape = () => window.innerWidth > window.innerHeight;
+
+  /* The share of the space below the nav the hero's content is allowed to
+     occupy. The two heroes need different values, for a structural reason
+     rather than a taste one:
+
+     .hero's designed trailing space is .hero__intro's 4th grid row, a 1fr
+     spacer that sits OUTSIDE the measured natural height (natural is the
+     title-to-paragraph stack plus the hero's own padding). Solving for
+     "content exactly fills the available height" would therefore squeeze
+     that spacer to nothing and change how the reference display renders.
+     0.831 is measured off that display — 960px of content in 1155px of
+     available height — and makes the slack scale WITH the hero, so a
+     short window shows the same composition instead of a tighter one. It
+     also lands --hero-fit at exactly 1 there, i.e. unchanged.
+
+     .cs-hero has no spacer: its trailing room is its own padding-bottom,
+     which IS inside the natural measurement, so a fill of 1 already
+     preserves it. Reserving extra on top (0.783, measured off Aira) was
+     wrong — it shrank every case-study hero to Aira's proportions, and
+     Faculty of Environment's two-line title makes its hero naturally
+     265px taller, so on the reference display that page got scaled to
+     77% for no reason. At 1 it only ever shrinks when the hero genuinely
+     doesn't fit, which is the actual requirement. */
+  const HERO_FILL = 0.831;
+  const CS_HERO_FILL = 1;
+
+  /* Not every part of a hero actually takes the multiplier: the case-study
+     tag pills, meta column and CTA buttons are plain text at a fixed size,
+     so their height is the same at any --hero-fit. That makes the rendered
+     height affine in the fit — rigid + elastic × fit — not proportional to
+     it, and a single sample would read the whole thing as elastic and
+     under-shrink. (Solving off one sample put the case-study buttons ~30px
+     BELOW the fold on a 1524×671 laptop, which is the bug this is fixing.)
+
+     Two samples separate the two parts exactly, no iteration needed:
+       h(1)   = rigid + elastic
+       h(0.5) = rigid + elastic / 2
+     so rigid = 2·h(0.5) − h(1) and elastic = 2·(h(1) − h(0.5)).
+
+     MIN_FIT is the backstop for a window so short that even the rigid part
+     alone overruns it — the fit would go to zero or negative and collapse
+     the title entirely. .cs-hero has no overflow: hidden (deliberately —
+     its background grid breaks out to full viewport width), so past that
+     floor the hero just runs long and stays scrollable, which is a better
+     failure than an invisible title. */
+  const MIN_FIT = 0.25;
+
+  const solveFit = (element, measureHeight, fill) => {
+    const target = availableBelowNav() * fill;
+
+    element.style.setProperty("--hero-fit", "1");
+    const atFull = measureHeight();
+    element.style.setProperty("--hero-fit", "0.5");
+    const atHalf = measureHeight();
+
+    const rigid = 2 * atHalf - atFull;
+    const elastic = 2 * (atFull - atHalf);
+
+    const fit = elastic > 0 ? (target - rigid) / elastic : 1;
+    element.style.setProperty(
+      "--hero-fit",
+      `${Math.max(MIN_FIT, Math.min(1, fit))}`
+    );
+  };
+
+  /* .hero__grid--homepage lives at the body level (see index.html) so it
      isn't clipped by .hero's own overflow: hidden or pushed down by the
      nav-wrap's layout space. Its top/left/right are pinned via CSS, but
-     its height has to reach from the true page top through the bottom
-     of .hero — computed here too, and after the height above since it
-     reads .hero's rendered bottom edge. */
+     its height has to reach from the true page top through the bottom of
+     .hero — computed here, and after the hero itself since it reads
+     .hero's rendered bottom edge. */
   const hero = document.querySelector(".hero");
   const homepageHeroGrid = document.querySelector(".hero__grid--homepage");
+  const heroTitle = hero && hero.querySelector(".hero__title");
+  const heroDesc = hero && hero.querySelector(".hero__desc");
 
-  if (hero) {
-    const sizeHero = () => {
-      const available = window.innerHeight - hero.offsetTop;
-      hero.style.height = `${Math.max(available, 0)}px`;
-    };
+  const sizeHomepageHero = () => {
+    if (!hero) return;
 
-    const sizeHomepageHeroGrid = () => {
-      if (!homepageHeroGrid) return;
+    hero.style.height = `${availableBelowNav()}px`;
+
+    if (heroTitle && heroDesc) {
+      /* .hero__intro's trailing 1fr row soaks up whatever slack is left,
+         so measuring .hero__intro would just report "however much room
+         there was", not "however much the content needs". The title's top
+         edge through the paragraph's bottom edge is the real stack, gaps
+         included; the hero's own padding is the rest of the budget.
+
+         offsetTop/offsetHeight rather than getBoundingClientRect because
+         both of these elements are .reveal, i.e. translateY(24px) easing
+         to 0 over 0.7s. Rects would fold that animation into the
+         measurement, and since the two can be at different points in it,
+         the stack would measure short by up to 24px. Offsets report the
+         layout box and ignore transforms; both elements share
+         .hero__intro as their offsetParent, so the difference is exact. */
+      const measureStack = () => {
+        const style = getComputedStyle(hero);
+        return (
+          heroDesc.offsetTop +
+          heroDesc.offsetHeight -
+          heroTitle.offsetTop +
+          parseFloat(style.paddingTop) +
+          parseFloat(style.paddingBottom)
+        );
+      };
+
+      // .hero clips (overflow: hidden), so portrait still gets a fit —
+      // just a fill of 1, which shrinks only far enough to avoid cropping
+      // rather than also reserving the trailing spacer's share
+      solveFit(hero, measureStack, isLandscape() ? HERO_FILL : 1);
+    }
+
+    if (homepageHeroGrid) {
       const heroBottom = hero.getBoundingClientRect().bottom + window.scrollY;
       homepageHeroGrid.style.height = `${heroBottom}px`;
+    }
+  };
+
+  /* .cs-hero has no height of its own — it's a normal-flow section — so
+     its own rendered height IS the measurement, no stack-summing needed.
+     It's also the hero with the most rigid content (tags, meta, buttons),
+     so it leans hardest on solveFit's two-sample split. Its dominant
+     contributor is
+     .cs-hero__actions' margin-top, a pure-vw 10–21rem gap that used to
+     hold full desktop size on a short window and push the two CTA
+     buttons a couple of hundred pixels below the fold. */
+  const csHero = document.querySelector(".cs-hero");
+
+  const sizeCaseStudyHero = () => {
+    if (!csHero) return;
+    // nothing clips here, so portrait can simply run long and scroll the
+    // way it always has
+    if (!isLandscape()) {
+      csHero.style.setProperty("--hero-fit", "1");
+      return;
+    }
+    solveFit(csHero, () => csHero.getBoundingClientRect().height, CS_HERO_FILL);
+  };
+
+  /* The Play hero is a fixed 2540×1266 canvas scaled by a single
+     transform (see .dm-hero__stage) — deliberately, so the composition
+     never reflows piece by piece. That scale was width-only, which meant
+     the section's height was always viewport width × 0.4984 regardless of
+     how short the window was. Giving the scale a second arm keeps the
+     one-transform contract intact while letting height constrain it too.
+
+     The height arm measures against the canvas's CONTENT height, not the
+     full 1266: the bottom ~270 units are empty background below the last
+     button, and letting that spill past the fold is exactly what the
+     reference display already does. Fitting all 1266 would shrink the
+     Play hero there too. Derived from the live layout rather than
+     hard-coded so it can't drift out of sync with the buttons. */
+  const dmHero = document.querySelector(".dm-hero");
+  const dmStage = dmHero && dmHero.querySelector(".dm-hero__stage");
+  const dmActions = dmHero && dmHero.querySelector(".dm-hero__actions");
+  const STAGE_WIDTH = 2540;
+  const STAGE_HEIGHT = 1266;
+
+  const sizePlayHero = () => {
+    if (!dmHero || !dmStage || !dmActions) return;
+
+    /* --stage-scale is left entirely alone (pure CSS, width-driven). All
+       this touches is --stage-fit, the second factor that multiplies the
+       transform without the type dividing it back out — see the stage's
+       own comment for why shrinking --stage-scale instead makes the
+       canvas grow rather than shrink. Because the canvas geometry is
+       fixed with respect to --stage-fit, the rendered height is exactly
+       linear in it and one measurement inverts it. */
+    /* .dm-hero's own width would be self-reinforcing: an over-large scale
+       overflows the stage, which widens the page, which widens .dm-hero,
+       which stops the width arm ever pulling back. Clamping to the
+       viewport breaks that loop, and still honours a narrower wrapper. */
+    const frameWidth = Math.min(
+      dmHero.clientWidth,
+      document.documentElement.clientWidth
+    );
+
+    /* Measured with offsetTop/offsetHeight, not getBoundingClientRect:
+       those report the untransformed layout box, so they're already in
+       canvas units AND they ignore the .reveal entry animation's own
+       transform, which would otherwise have the buttons still mid-flight
+       when this runs. Walking the offsetParent chain because
+       .dm-hero__row is positioned, so it — not the stage — is the
+       actions' offsetParent. */
+    let canvasBottom = 0;
+    let node = dmActions;
+    while (node && node !== dmStage) {
+      canvasBottom += node.offsetTop;
+      node = node.offsetParent;
+    }
+    /* The walk already lands at the stage's own top edge — its 170px top
+       padding is inside those offsets, not on top of them. The bottom
+       padding is added deliberately though: it's the canvas's designed
+       breathing room under the last button, and counting it is what keeps
+       the buttons off the very bottom edge of the viewport. */
+    canvasBottom +=
+      dmActions.offsetHeight +
+      (parseFloat(getComputedStyle(dmStage).paddingBottom) || 0);
+
+    // matches .dm-hero__stage's own calc(100cqw / 2540px) exactly
+    const stageScale = frameWidth / STAGE_WIDTH;
+    const renderedBottom = canvasBottom * stageScale;
+
+    const fit =
+      renderedBottom > 0
+        ? Math.min(1, availableBelowNav() / renderedBottom)
+        : 1;
+
+    dmStage.style.setProperty("--stage-fit", `${fit}`);
+
+    /* 1266 canvas units at the combined scale — the canvas's own aspect,
+       so the section's box still frames the composition it contains. */
+    dmHero.style.height = `${STAGE_HEIGHT * stageScale * fit}px`;
+  };
+
+  if (hero || csHero || dmHero) {
+    const sizeHeroes = () => {
+      sizeHomepageHero();
+      sizeCaseStudyHero();
+      sizePlayHero();
     };
 
-    const sizeHomepage = () => {
-      sizeHero();
-      sizeHomepageHeroGrid();
-    };
+    sizeHeroes();
+    window.addEventListener("resize", sizeHeroes);
+    // the laptop video and the 3D model settle after this fires
+    window.addEventListener("load", sizeHeroes);
 
-    sizeHomepage();
-    window.addEventListener("resize", sizeHomepage);
-    window.addEventListener("load", sizeHomepage);
+    /* FS Mondwest swapping in is the big one. Every hero here is measured
+       through a title set in it, and the fallback serif's metrics are
+       different enough that solving before the swap lands the Play page's
+       buttons ~90px below the fold and then leaves them there — `load`
+       does NOT wait for a webfont. */
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(sizeHeroes);
+    }
+
+    // the nav reflows on its own schedule too — a font swap, or the
+    // hamburger dropdown opening — and none of that raises a window
+    // resize event, so the listeners above would miss it
+    if (navWrap && "ResizeObserver" in window) {
+      new ResizeObserver(sizeHeroes).observe(navWrap);
+    }
   }
 
   /* ---------- homepage case studies: sticky sidebar, centered in the
