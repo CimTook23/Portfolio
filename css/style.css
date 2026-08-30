@@ -58,8 +58,59 @@
   --accent-strong: #9333ea;
 
   /* light pill (Contact button, active filter) */
-  --light: #eef0fb;
-  --light-ink: #0d0f1e;
+  /* ---- theme-swappable semantics (see html[data-theme="light"]) ----
+     Everything below used to be a hard-coded literal repeated through
+     the file. They are tokens now because the light theme is a real
+     palette swap: one value changes here and every rule that names it
+     follows, rather than each component carrying its own light-mode
+     override.
+
+     --overlay-rgb is the load-bearing one. Roughly fifty rules paint a
+     translucent white over the dark page — hairline grids, glass fills,
+     inner glows, borders — as rgba(255, 255, 255, a). Written as
+     rgba(var(--overlay-rgb), a) they all invert together, so a light
+     theme gets dark hairlines on light ground without touching a single
+     one of them individually. Shadows deliberately do NOT participate:
+     rgba(0, 0, 0, a) stays black in both themes, because a shadow is
+     cast light, not a surface tint, and an inverted shadow reads as a
+     glow. */
+  --overlay-rgb: 255, 255, 255;
+
+  --ink: #ffffff;                 /* text/marks that sit on the page ground */
+  --chip-bg: #171717;             /* .tag / .cs-tag / .cs-callout fill */
+  --chip-border: #727272;         /* the shared button + chip stroke */
+  --media-backdrop: #0d1024;      /* letterbox behind project thumbnails */
+  --hero-glow: rgba(255, 255, 255, 0.62);  /* halo on the FS Mondwest titles */
+
+  /* selected controls (nav Work/Play, filter pills). Split out of
+     --light/--light-ink so the footer slab can keep its own light
+     surface while these invert with the theme. */
+  --sel-bg: #eef0fb;
+  --sel-ink: #0d0f1e;
+
+  /* custom cursor (see .cursor-ring). White, not the Figma spec's
+     #727272: that grey is the site's own chip/button stroke, which is
+     exactly why it disappeared — the ring read as one more piece of
+     furniture instead of the pointer.
+
+     White stays white in BOTH themes rather than flipping to dark on the
+     light one. That works only because of --cursor-halo, a contrasting
+     1px outline hugging the ring — the same trick the OS pointer itself
+     uses to stay visible over arbitrary content. The halo is dark in both
+     themes for exactly that reason: it is what carries a white ring over
+     a light page, a photo, a video tile or the 3D model. */
+  --cursor-stroke: #ffffff;
+  --cursor-stroke-hot: #ffffff;
+  --cursor-glow: rgba(255, 255, 255, 0.32);
+  --cursor-halo: rgba(0, 0, 0, 0.5);
+
+  /* the footer's slab — a deliberate surface change against the page,
+     so it flips to the opposite of whatever the page ground is */
+  --slab-bg: #ffffff;
+  --slab-ink: #0d0f1e;
+  --slab-ink-soft: rgba(13, 15, 30, 0.55);
+  --slab-btn-bg: #ffffff;
+  --slab-btn-hover: #eef0fb;
 
   --font-display: "Inter", sans-serif;
   --font-body: "Inter", sans-serif;
@@ -183,6 +234,75 @@
   --text-nav-switch: clamp(11px, calc(9.571px + 0.381vw), 13px);     /* 13px @900px+, 11px @375px */
 }
 
+/* ---------- light mode ----------
+   A real palette, not a filter. The previous implementation was
+   `html[data-theme="light"] { filter: invert(1) hue-rotate(180deg) }`
+   with a second, cancelling invert on every img/video/canvas — a trick
+   that dates from an older version of this site and had stopped being
+   survivable: it inverted the brand purple into a green, it could not
+   tell a surface tint from a cast shadow (so shadows became glows), the
+   double-invert on media broke the moment an element was both a surface
+   and a picture, and `filter` on <html> creates a containing block that
+   quietly breaks position: fixed inside it.
+
+   This block instead redefines the tokens the rest of the file already
+   speaks in. Nothing below it is theme-aware; every rule just names a
+   token and follows. Adding a component needs no light-mode rule of its
+   own as long as it uses these.
+
+   Deliberately NOT overridden: rgba(0, 0, 0, a) shadows, which stay dark
+   in both themes, and the #000 letterbox on .cs-video / .cs-square--contain,
+   which matches the video sources' own black slate rather than the page. */
+html[data-theme="light"] {
+  --bg-top: #e9ebf7;
+  --bg-bottom: #ffffff;
+
+  --text-primary: #14162b;
+  --text-secondary: #4e5372;
+  --text-muted: #767b96;
+
+  --nav-bg: #dcdff0;
+  --surface-bg: rgba(20, 22, 43, 0.04);
+  --surface-border: rgba(20, 22, 43, 0.12);
+
+  /* #a855f7 only reaches ~3.5:1 on white — fine for a 120px title, not
+     for the inline links and small marks that also use it. Deepened. */
+  --accent: #7e22ce;
+  --accent-strong: #6b21a8;
+
+  /* the one line that flips ~44 translucent-white rules to dark */
+  --overlay-rgb: 20, 22, 43;
+
+  --ink: #14162b;
+  --chip-bg: #e7eaf7;
+  --chip-border: #a6abc6;
+  --media-backdrop: #dce0f0;
+  /* a white halo is invisible on white — a soft dark one keeps the
+     Mondwest titles feeling lit rather than flat */
+  --hero-glow: rgba(20, 22, 43, 0.22);
+
+  --sel-bg: #14162b;
+  --sel-ink: #f4f5fb;
+
+  /* the ring stays white here — only its supporting colours change. A
+     white glow is invisible on a light page, so it becomes a soft dark
+     one reading as a shadow under the ring, and the halo is pushed from
+     0.5 to 0.72: on a dark page the white stroke carries itself and the
+     halo only needs to define an edge, but on a light one the halo is
+     doing all the work of separating ring from background. */
+  --cursor-glow: rgba(20, 22, 43, 0.22);
+  --cursor-halo: rgba(20, 22, 43, 0.72);
+
+  /* the footer slab is a deliberate surface CHANGE, so it inverts with
+     the page rather than staying white-on-white */
+  --slab-bg: #14162b;
+  --slab-ink: #f4f5fb;
+  --slab-ink-soft: rgba(244, 245, 251, 0.62);
+  --slab-btn-bg: #22254a;
+  --slab-btn-hover: #2d3160;
+}
+
+
 /* the 1440px sizes above are the brand spec's ceiling, not the whole
    site's — on an actual large monitor they were reading a little small.
    Past 1440px, every token keeps growing (each formula picks up exactly
@@ -234,6 +354,206 @@ html {
   scroll-behavior: smooth;
 }
 
+/* ---------- back to top (case studies) ----------
+   Fixed to the viewport's bottom-right, so it rides along the whole
+   scroll rather than sitting at one point in the document.
+
+   position: fixed, not sticky, and the difference matters here: sticky
+   only pins within its own scroll container's box, so a sticky element
+   dropped at the end of <main> would only "stick" once you had already
+   scrolled to the end of main — exactly where a back-to-top control is
+   least needed. Fixed detaches it from the flow entirely.
+
+   Borrows the .filter-pill / .nav__switch surface (transparent fill,
+   1px stroke, inner glow, backdrop blur) rather than inventing one, so
+   it reads as the same family of control as everything else. */
+.cs-top {
+  position: fixed;
+  right: clamp(1.25rem, calc(0.5218rem + 3.107vw), 2.5rem);
+  bottom: clamp(1.25rem, calc(0.5218rem + 3.107vw), 2.5rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1px solid var(--chip-border);
+  color: var(--text-primary);
+  box-shadow: inset 0 1px 10px rgba(var(--overlay-rgb), 0.25);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  /* under .nav-wrap's 999 so the nav always wins, above everything else */
+  z-index: 90;
+
+  /* hidden until there is something to go back up to — a back-to-top
+     control sitting on the first screen points at where you already are.
+     main.js adds .is-visible past roughly one viewport of scroll.
+     pointer-events: none while hidden so it cannot be tabbed to or
+     clicked through the transparent state. */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
+  transition: opacity 0.25s ease, transform 0.25s ease,
+    background 0.2s ease, border-color 0.2s ease;
+}
+
+.cs-top.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.cs-top:hover {
+  background: rgba(var(--overlay-rgb), 0.08);
+  border-color: var(--text-secondary);
+}
+
+/* keyboard users get a real focus ring — the custom cursor's hover state
+   does nothing for them, and the control is otherwise a bare outline */
+.cs-top:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-top {
+    transition: opacity 0.25s ease;
+    transform: none;
+  }
+  .cs-top.is-visible {
+    transform: none;
+  }
+}
+
+/* ---------- custom cursor ----------
+   A 38px ring that replaces the system pointer. Shape follows the Figma
+   panel — a circle with no fill — but the stroke deliberately does not:
+   the spec's 1px #727272 is the site's own chip/button stroke colour, and
+   at 38px across it was a grey hairline that disappeared against photos,
+   video tiles and the 3D model. It is 2px of white with a
+   contrasting dark halo instead (see --cursor-stroke in :root). Restore the
+   original by setting --cursor-stroke: #727272 and the border to 1px. Drawn in CSS rather
+   than shipped as the supplied Ellipse PNG on purpose — "stroke weight 1,
+   position inside" is a vector instruction, and a 38px raster would soften
+   on a HiDPI screen while a border stays exactly 1 device-independent
+   pixel at any zoom. It also costs no request and can react to hover.
+
+   Gated behind pointer: fine. A touch device has no persistent pointer to
+   follow, and hiding the system cursor there would take away the caret on
+   a laptop's trackpad-less tablet mode for nothing. Everything in here —
+   including cursor: none — lives inside that query, so a touch user keeps
+   native behaviour untouched. */
+@media (pointer: fine) {
+  /* !important, and on the universal selector, on purpose. Six rules in
+     this file set cursor: pointer and every one of them is class-based
+     (.btn, .filter-pill, .nav__theme-toggle, ...). A type or universal
+     selector loses to a class on specificity, so `button { cursor: none }`
+     was silently beaten and the system arrow still appeared over every
+     button — measured, not assumed. Raising specificity selector-by-
+     selector would mean naming all six and re-naming them whenever one is
+     added; the intent here is absolute ("no native cursor anywhere while
+     the ring is active"), and !important is the honest expression of it.
+     Scoped to pointer: fine, so it cannot reach a touch device. */
+  html,
+  body,
+  *,
+  *::before,
+  *::after {
+    cursor: none !important;
+  }
+
+  /* Two elements, deliberately. This one is a fixed 38px POSITIONING box
+     that never changes size; ::after draws the visible circle inside it
+     and is the only thing that resizes.
+
+     The split exists because main.js places the ring with
+     translate3d(x - RADIUS, y - RADIUS) using a constant 19px — half of
+     38. Resize this box and that constant is wrong: the circle would
+     drift ~10px down-right of the true pointer the moment it changed
+     size, and the smear's rotate/scale (applied about the box's own
+     centre) would pivot around the wrong point. Keeping the box rigid
+     means the hover size change costs the follow loop nothing. */
+  .cursor-ring {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 38px;
+    height: 38px;
+    /* never let the ring eat a click, and keep it above everything
+       including .nav-wrap's z-index: 999 */
+    pointer-events: none;
+    z-index: 2147483647;
+    /* the element is moved by transform alone (never top/left), so the
+       whole follow loop stays on the compositor */
+    will-change: transform, filter;
+    /* opacity only — position must not be transitioned or it would fight
+       the rAF loop that already smooths it */
+    transition: opacity 0.25s ease;
+    opacity: 0;
+  }
+
+  .cursor-ring::after {
+    content: "";
+    position: absolute;
+    /* inset is what animates on hover — insetting equally on all four
+       sides shrinks the circle about the box's centre, so it stays
+       exactly on the pointer at every size */
+    inset: 0;
+    border-radius: 50%;
+    /* Figma: Fill (none) + Stroke #727272, weight 1, inside. --cursor-fill
+       is a hook rather than a value in use: set it to a colour if the ring
+       should read as the solid ball the PNG export shows. */
+    background: var(--cursor-fill, transparent);
+    /* 1px -> 2px. At 38px across, a single pixel of stroke is a hairline
+       and reads as an artefact rather than a pointer; 2px is still a thin
+       ring but holds its shape while it is being stretched and blurred by
+       the motion smear, which thins the stroke further along one axis. */
+    border: 2px solid var(--cursor-stroke, #ffffff);
+    /* first shadow is the halo — a contrasting hairline hugging the ring
+       so it stays readable over photos, video tiles and the 3D model,
+       where a single flat colour would sink into the background. Second
+       is a soft glow that makes it feel lit rather than drawn. */
+    box-shadow:
+      0 0 0 1px var(--cursor-halo, rgba(0, 0, 0, 0.45)),
+      0 0 14px 2px var(--cursor-glow, transparent);
+    transition: inset 0.2s ease, border-color 0.2s ease;
+  }
+
+  /* revealed on the first real pointer move, so the ring never sits parked
+     in the top-left corner before the visitor has touched the mouse */
+  .cursor-ring.is-live {
+    opacity: 1;
+  }
+
+  /* stands in for the system pointer over interactive elements — the
+     ring contracts to a small dot-like circle rather than expanding.
+     Shrinking reads as the cursor "focusing" on the thing under it, and
+     it keeps the target visible: a 58px ring grown over a filter pill
+     covered the pill it was pointing at, which is the opposite of what a
+     pointer should do. */
+  .cursor-ring.is-hot::after {
+    /* 38 - (10 * 2) = an 18px circle, still centred on the pointer */
+    inset: 10px;
+    border-color: var(--cursor-stroke-hot, #ffffff);
+  }
+
+  /* A ring is a 1px line; a plain filter: blur() at any strength that
+     reads as "fast" would dissolve it entirely. The motion blur is
+     therefore mostly the directional stretch applied in main.js — the
+     ring elongates along its own travel and thins across it, which is
+     what a smeared circle actually looks like — with only a light blur
+     layered on top. Both are set inline per frame. */
+}
+
+/* prefers-reduced-motion: keep the ring, drop the smear. The stretch and
+   blur are inline styles from the loop, so this has to out-specify them. */
+@media (pointer: fine) and (prefers-reduced-motion: reduce) {
+  .cursor-ring {
+    filter: none !important;
+  }
+}
+
 /* ---------- scrollbar ---------- */
 
 /* hidden entirely, on request — was previously a thin, rounded,
@@ -252,31 +572,6 @@ html {
   display: none;
   width: 0;
   height: 0;
-}
-
-/* ---------- light mode ----------
-   A toggle-able true color inversion rather than a hand-tuned light
-   palette — every dark background becomes white, every white/light
-   piece of text becomes black, site-wide, in one shot, instead of
-   redesigning each component's colors individually. Photographic /
-   video / embedded content (img, video, iframe, canvas, model-viewer)
-   gets the exact same filter applied a SECOND time so the two cancel
-   out and it keeps looking normal — otherwise every photo would
-   render as a photo negative along with the rest of the page.
-   Toggled + persisted via the [data-theme] attribute on <html> (see
-   main.js); the tiny inline script in each page's <head> applies the
-   saved preference before first paint to avoid a flash of the wrong
-   theme on load. */
-html[data-theme="light"] {
-  filter: invert(1) hue-rotate(180deg);
-}
-
-html[data-theme="light"] img,
-html[data-theme="light"] video,
-html[data-theme="light"] iframe,
-html[data-theme="light"] canvas,
-html[data-theme="light"] model-viewer {
-  filter: invert(1) hue-rotate(180deg);
 }
 
 body {
@@ -311,7 +606,7 @@ ul {
 
 ::selection {
   background: var(--accent);
-  color: #fff;
+  color: var(--ink);
 }
 
 /* ---------- restrained "glass" surface (secondary panels only) ---------- */
@@ -390,8 +685,29 @@ section + section {
      over any part of the nav, not just the dropdown. 999 is well above
      every other z-index in this file (60 is the next-highest, on
      .nav__links below, which this now sits above too). */
-  position: relative;
+  /* absolute, not relative: the bar is a LAYER over the page now rather
+     than a block that occupies flow and pushes every hero down by its own
+     height. z-index: 999 already put it on top in paint order; what it
+     did not do was stop it consuming ~130px of vertical space that the
+     Play hero wanted back.
+
+     Still not fixed — it scrolls away with the page exactly as before,
+     which absolute preserves and fixed would not. `main` takes an equal
+     padding-top so every other page renders byte-identically; only
+     .dm-hero opts out of that padding to reclaim the band. */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: 999;
+}
+
+/* Pays back the flow space .nav-wrap stopped occupying. Set from the
+   measured bar height by main.js (--nav-h); the 130px fallback is the
+   value at a typical desktop window, used only for the instant before
+   the script runs and whenever JS is unavailable. */
+main {
+  padding-top: var(--nav-h, 130px);
 }
 
 .nav {
@@ -420,7 +736,7 @@ section + section {
   /* drop shadow: 50% #000, blur 17, y 4 + inner shadow: 25% #fff, blur 10, y 4 */
   box-shadow:
     0 4px 17px rgba(0, 0, 0, 0.5),
-    inset 0 4px 10px rgba(255, 255, 255, 0.25);
+    inset 0 4px 10px rgba(var(--overlay-rgb), 0.25);
   /* glass effect approximation (refraction 58 / depth 20 / dispersion 50) */
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -434,10 +750,10 @@ section + section {
   padding: 1px;
   background: linear-gradient(
     115deg,
-    rgba(255, 255, 255, 0.35),
+    rgba(var(--overlay-rgb), 0.35),
     rgba(168, 85, 247, 0.18) 35%,
     rgba(103, 232, 249, 0.14) 65%,
-    rgba(255, 255, 255, 0.05)
+    rgba(var(--overlay-rgb), 0.05)
   );
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
   -webkit-mask-composite: xor;
@@ -445,12 +761,23 @@ section + section {
   pointer-events: none;
 }
 
+/* The grid's first column, holding the logo and the theme switch side by
+   side. Without this wrapper the switch had no grid-column of its own, so
+   auto-placement dropped it into row 2 — the bar became two rows tall,
+   which is what pushed --nav-h (and with it main's padding-top and every
+   hero below) down the page. One row again. */
+.nav__brand {
+  grid-column: 1;
+  justify-self: start;
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, calc(6.545px + 0.388vw), 14px);
+}
+
 .nav__logo {
   display: flex;
   align-items: center;
   flex-shrink: 0;
-  grid-column: 1;
-  justify-self: start;
 }
 
 .nav__logo-badge {
@@ -468,7 +795,7 @@ section + section {
   background: var(--nav-bg);
   box-shadow:
     0 3px 12px rgba(0, 0, 0, 0.45),
-    inset 0 3px 6px rgba(255, 255, 255, 0.2);
+    inset 0 3px 6px rgba(var(--overlay-rgb), 0.2);
 }
 
 .nav__logo-badge img {
@@ -559,8 +886,8 @@ section + section {
 }
 
 .nav__switch-opt.is-active {
-  background: var(--light);
-  color: var(--light-ink);
+  background: var(--sel-bg);
+  color: var(--sel-ink);
 }
 
 .nav__links {
@@ -584,7 +911,7 @@ section + section {
      token keeps every piece of nav text on one size and one schedule. */
   font-size: var(--text-nav-switch);
   font-weight: 400;
-  color: #fff;
+  color: var(--ink);
   white-space: nowrap;
   transition: color 0.2s ease;
 }
@@ -600,19 +927,22 @@ section + section {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  /* takes --nav-fit like the rest of the bar, so it shrinks with the logo
+     on a short window instead of being the one fixed-size thing in the
+     row and quietly setting the bar's minimum height */
+  width: max(30px, calc(38px * var(--nav-fit)));
+  height: max(30px, calc(38px * var(--nav-fit)));
   flex-shrink: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(var(--overlay-rgb), 0.05);
+  border: 1px solid rgba(var(--overlay-rgb), 0.14);
   color: var(--text-primary);
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
 }
 
 .nav__theme-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(var(--overlay-rgb), 0.1);
 }
 
 .nav__theme-toggle:active {
@@ -667,10 +997,10 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      button on the site, not a clamp() range like before */
   padding: 0.938rem 1.875rem;
   border-radius: var(--radius-pill);
-  border: 1px solid #727272;
+  border: 1px solid var(--chip-border);
   background: transparent;
-  color: #fff;
-  box-shadow: inset 0 1px 10px rgba(255, 255, 255, 0.25);
+  color: var(--ink);
+  box-shadow: inset 0 1px 10px rgba(var(--overlay-rgb), 0.25);
   backdrop-filter: blur(10px) saturate(180%);
   -webkit-backdrop-filter: blur(10px) saturate(180%);
   cursor: pointer;
@@ -684,7 +1014,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .btn:hover {
   transform: translateY(-2px) scale(1.14);
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--overlay-rgb), 0.08);
 }
 
 /* glass pill — "Case studies", mobile nav toggle. No properties of its
@@ -696,7 +1026,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 /* solid light pill — "Contact" — no longer solid; same shared glass
    look as every other button now, kept only for its own hover tweak */
 .btn-light:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--overlay-rgb), 0.08);
 }
 
 /* the one accent-colored button on the site — no longer accent-colored;
@@ -736,13 +1066,13 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   position: relative;
   isolation: isolate;
   background: transparent;
-  border: 0.5px solid rgba(255, 255, 255, 0.9);
+  border: 0.5px solid rgba(var(--overlay-rgb), 0.9);
   backdrop-filter: blur(10px) saturate(180%);
   -webkit-backdrop-filter: blur(10px) saturate(180%);
   box-shadow:
     0 0 23px rgba(0, 0, 0, 0.25),
-    inset 0 4px 16px rgba(255, 255, 255, 0.25);
-  color: #fff;
+    inset 0 4px 16px rgba(var(--overlay-rgb), 0.25);
+  color: var(--ink);
 }
 
 /* flat #171717, no stroke, no glass at all — overrides the shared rule
@@ -752,7 +1082,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    switched off outright, not just covered up). */
 .cs-callout,
 .cs-takeaway-card {
-  background: #171717;
+  background: var(--chip-bg);
   border: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
@@ -771,9 +1101,9 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   position: relative;
   isolation: isolate;
   background: transparent;
-  border: 1px solid #727272;
-  color: #fff;
-  box-shadow: inset 0 1px 10px rgba(255, 255, 255, 0.25);
+  border: 1px solid var(--chip-border);
+  color: var(--ink);
+  box-shadow: inset 0 1px 10px rgba(var(--overlay-rgb), 0.25);
   backdrop-filter: blur(10px) saturate(180%);
   -webkit-backdrop-filter: blur(10px) saturate(180%);
 }
@@ -781,7 +1111,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 .hero__circle:hover,
 .filter-pill:hover,
 .nav__switch:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(var(--overlay-rgb), 0.08);
 }
 
 /* font-size intentionally not overridden here — every button shares
@@ -893,15 +1223,15 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   background-image:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.4) 0px,
-      rgba(255, 255, 255, 0.4) 1px,
+      rgba(var(--overlay-rgb), 0.4) 0px,
+      rgba(var(--overlay-rgb), 0.4) 1px,
       transparent 1px,
       transparent 220px
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.4) 0px,
-      rgba(255, 255, 255, 0.4) 1px,
+      rgba(var(--overlay-rgb), 0.4) 0px,
+      rgba(var(--overlay-rgb), 0.4) 1px,
       transparent 1px,
       transparent 220px
     );
@@ -934,15 +1264,15 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   background-image:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.18) 0px,
-      rgba(255, 255, 255, 0.18) 1px,
+      rgba(var(--overlay-rgb), 0.18) 0px,
+      rgba(var(--overlay-rgb), 0.18) 1px,
       transparent 1px,
       transparent 320px
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.18) 0px,
-      rgba(255, 255, 255, 0.18) 1px,
+      rgba(var(--overlay-rgb), 0.18) 0px,
+      rgba(var(--overlay-rgb), 0.18) 1px,
       transparent 1px,
       transparent 320px
     );
@@ -1031,7 +1361,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      out, not an arbitrary tighten. Repeated (with each rule's own
      original ratio minus ~0.29) on every other --font-hero rule. */
   line-height: 0.91;
-  color: #fff;
+  color: var(--ink);
 }
 
 /* homepage only (scoped through .hero__intro, not the bare .hero__title
@@ -1060,7 +1390,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      ever needs to come back. */
   /* white glow behind the name, per design request: FFFFFF at 62%
      opacity, 17px blur, no offset (a pure glow, not a cast shadow) */
-  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
+  filter: drop-shadow(0 0 17px var(--hero-glow));
   /* FS Mondwest's line-box carries real empty space below the visible
      letters that --hero-stack-gap can't see or account for — it's
      baked inside this element's own box, not the space between this
@@ -1090,7 +1420,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      font-size there anyway. */
   font-size: calc(var(--text-h3) * var(--hero-fit));
   line-height: 1.5em;
-  color: #ffffff;
+  color: var(--ink);
 }
 
 /* homepage only (see .hero__intro .hero__title above) — bottom row,
@@ -1114,7 +1444,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .hero__desc strong {
-  color: #ffffff;
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -1499,8 +1829,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .filter-pill.is-active {
-  color: var(--light-ink);
-  background: var(--light);
+  color: var(--sel-ink);
+  background: var(--sel-bg);
   border: none;
   box-shadow: none;
   backdrop-filter: none;
@@ -1559,7 +1889,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   aspect-ratio: 16 / 9;
   overflow: hidden;
   border-radius: 16px;
-  background: #0d1024;
+  background: var(--media-backdrop);
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
   /* the rotate below is applied here, to the rounded/clipped box itself
      rather than to the img inside it — so the corners tilt as part of
@@ -1631,16 +1961,45 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 /* flat, not glass — deliberately distinct from .btn/.btn-outline's
    blurred surface (see the shared glass-formula group above) so tags
    read as a different kind of element from buttons at a glance, not
-   just a smaller button. Same padding spec as .btn (0.938rem/1.875rem)
-   is what ties the two families together instead. */
+   just a smaller button.
+
+   These no longer share .btn's 0.938rem/1.875rem padding spec, which
+   used to be the thing tying the two families together. That pairing
+   was costing more than it bought: at 1920px the chips rendered ~50px
+   tall and ~155px wide for "After effects" — button-sized, for a
+   non-interactive metadata label. A .tag is a <span>, not a control, so
+   it carries none of a button's hit-target obligation (the 44px minimum
+   applies to .filter-pill, which IS a <button>, and is deliberately
+   left alone). Standard chip sizing is 24–32px tall, and reading these
+   as clearly lighter-weight than the buttons beside them is the point.
+
+   Padding is in em rather than rem/px so it stays locked to the type
+   size at every width — one ratio instead of a second schedule that can
+   drift out of step with the font's own clamp, which is the failure
+   mode the stage comment at .dm-hero__stage describes. */
 .tag {
-  font-size: var(--text-caption);
+  /* own size rather than --text-caption: that token ramps ×1.375 above
+     1440px and hit ~15.1px at 1920, oversized for a metadata chip while
+     several other captions legitimately want that growth. This tops out
+     at 13px instead, on a 1000px→1920px schedule, and still floors at
+     --text-caption's own 11px so nothing changes on phones.
+       11.0px @ ≤1000px    11.96px @ 1440px
+       12.17px @ 1536px (a 1920×1080 laptop at 125% Windows scaling)
+       13.0px @ 1920px  (the same laptop at 100%) */
+  font-size: clamp(0.688rem, calc(0.552rem + 0.217vw), 0.813rem);
   font-weight: 600;
-  padding: 0.938rem 1.875rem;
-  border-radius: 12px;
-  background: #171717;
-  border: 1px solid #727272;
-  color: #fff;
+  /* ≈6px/12px at 1920, ≈5px/10px at the 11px floor — chip height lands
+     at ~31px and ~27px respectively, both inside the 24–32px range. */
+  padding: 0.46em 0.92em;
+  /* 12px → 8px: the radius has to come down with the height or the
+     proportion changes. 12px on a 50px chip reads as a rounded
+     rectangle; the same 12px on a 31px chip reads nearly as a pill,
+     which would collide with .filter-pill's actual pill shape. 8px
+     holds the original's rounded-rectangle character. */
+  border-radius: 8px;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+  color: var(--ink);
 }
 
 .project-card__body h3 {
@@ -1650,7 +2009,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .project-card__body p {
-  color: #ffffff;
+  color: var(--ink);
   font-size: var(--text-body);
   line-height: 1.5em;
   /* was 60ch, which capped this narrower than the card itself (and so
@@ -1713,8 +2072,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(var(--overlay-rgb), 0.06);
+  border: 1px solid rgba(var(--overlay-rgb), 0.1);
   flex-shrink: 0;
 }
 
@@ -1746,7 +2105,7 @@ footer {
      between sections because this is a change of surface, not just the
      next block of the same page. */
   margin-top: clamp(4rem, calc(1.888rem + 9.014vw), 10rem);
-  background: #fff;
+  background: var(--slab-bg);
   /* text-to-edge distance top and bottom — 320px (20rem) floor,
      never less regardless of viewport, growing a bit further on very
      large screens. Left/right keep the previous, smaller clamp. */
@@ -1774,11 +2133,11 @@ footer {
   /* was 1.05 under PP Mondwest — see .hero__title for why FS Mondwest
      needs its own ratio (0.76) to read the same */
   line-height: 0.76;
-  color: var(--light-ink);
+  color: var(--slab-ink);
   /* same white glow as JAYDON WANG (see .hero__intro .hero__title) —
      reads more subtly here since the footer sits on a light background,
      but keeps the treatment consistent across every title */
-  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
+  filter: drop-shadow(0 0 17px var(--hero-glow));
 }
 
 .footer-links {
@@ -1795,17 +2154,17 @@ footer {
    "defined pill on its surface" read; #727272 (see .btn) reads fine on
    white too, so the border no longer needs its own light-theme value. */
 .footer-links .btn {
-  background: #fff;
-  color: var(--light-ink);
+  background: var(--slab-btn-bg);
+  color: var(--slab-ink);
   box-shadow: 0 4px 14px rgba(13, 15, 30, 0.08);
 }
 
 .footer-links .btn:hover {
-  background: var(--light);
+  background: var(--slab-btn-hover);
 }
 
 .footer-inner p {
-  color: rgba(13, 15, 30, 0.55);
+  color: var(--slab-ink-soft);
   font-size: var(--text-caption);
   line-height: 1.5em;
   margin: 0;
@@ -1814,6 +2173,13 @@ footer {
 /* ---------- digital media hero ---------- */
 
 .dm-hero {
+  /* the one hero that reclaims the nav band instead of clearing it — see
+     main's padding-top above. Pulling the section up by exactly that
+     padding puts .dm-hero's top edge at the very top of the page, which
+     is what gives the title room to rise; .dm-hero__stage then takes an
+     equal `top` offset so the character and the grid stay exactly where
+     they were and only the text moves. */
+  margin-top: calc(var(--nav-h, 130px) * -1);
   position: relative;
   overflow: hidden;
   /* the section's own box is just a proportional frame — every actual
@@ -1853,7 +2219,12 @@ footer {
 
 .dm-hero__stage {
   position: absolute;
-  top: 0;
+  /* cancels .dm-hero's negative margin above, so the canvas — and with it
+     the 3D character and the background grid — lands in exactly the same
+     place on screen as before. The extra room opened up above the stage
+     is unclipped hero box, which is what lets the text overflow upward
+     into the nav band instead of being cut off by overflow: hidden. */
+  top: var(--nav-h, 130px);
   /* centers the canvas once --stage-scale is height-bound rather than
      width-bound: at the width-bound scale 2540px * scale IS this
      element's width, so this resolves to 0 and nothing moves (which is
@@ -1882,7 +2253,27 @@ footer {
      text and leaves the character exactly where and how big it was. (The
      previous wording of this comment implied the opposite; verified in
      the browser that the head does not move.) */
-  padding: calc(170px * var(--stage-lead)) 0 80px;
+  /* CAUTION: the title's position on this page is coupled to the nav's
+     height, and this constant is the only thing balancing it.
+
+     .dm-hero is the one section that reclaims the nav band rather than
+     clearing it (margin-top: -var(--nav-h)), and .dm-hero__stage pushes
+     back down by top: var(--nav-h). The title therefore lands at:
+
+         title_y = --nav-h + (padding-top - 110) * stage-scale
+
+     — the -110 being .dm-hero__content's negative margin. So --nav-h maps
+     onto the title's y position one-for-one: shrink the bar and the title
+     rises by exactly as much.
+
+     That is what happened here. This was 90px while the nav was 130px
+     tall (a wrapped two-row bar). Fixing the wrap took the nav to ~70px
+     and the title rose 60px with it, up into the bar. 180px rebalances
+     it against the corrected nav height and puts the title back where it
+     was: measured title_y of 111px at 2000x990, against 47px before.
+
+     If the nav's height is ever changed again, re-check this number. */
+  padding: calc(180px * var(--stage-lead)) 0 80px;
   box-sizing: border-box;
   /* named so text sizes inside the stage (see .dm-hero__content
      .hero__title etc.) can divide it back out and land on the exact
@@ -1937,15 +2328,15 @@ footer {
   background-image:
     repeating-linear-gradient(
       20deg,
-      rgba(255, 255, 255, 0.07) 0px,
-      rgba(255, 255, 255, 0.07) 1px,
+      rgba(var(--overlay-rgb), 0.07) 0px,
+      rgba(var(--overlay-rgb), 0.07) 1px,
       transparent 1px,
       transparent 200px
     ),
     repeating-linear-gradient(
       -20deg,
-      rgba(255, 255, 255, 0.07) 0px,
-      rgba(255, 255, 255, 0.07) 1px,
+      rgba(var(--overlay-rgb), 0.07) 0px,
+      rgba(var(--overlay-rgb), 0.07) 1px,
       transparent 1px,
       transparent 200px
     );
@@ -2004,7 +2395,7 @@ footer {
      than 17px once that scale shrinks it. Dividing first means it comes
      out the ACTUAL 17px on screen, matching JAYDON WANG's glow exactly
      rather than a scaled-down version of it. */
-  filter: drop-shadow(0 0 calc(17px / var(--stage-scale)) rgba(255, 255, 255, 0.62));
+  filter: drop-shadow(0 0 calc(17px / var(--stage-scale)) var(--hero-glow));
 }
 
 /* same reasoning as .dm-hero__content .hero__title above — was a
@@ -2238,7 +2629,7 @@ footer {
      elsewhere on the site (e.g. the homepage hero paragraph) rather
      than scaling up like a section heading */
   font-size: 1.375rem;
-  color: #fff;
+  color: var(--ink);
 }
 
 /* the one grid column layout for both sections — every tile (wide or
@@ -2417,8 +2808,8 @@ footer {
   justify-content: center;
   padding: 1rem;
   text-align: center;
-  border: 1px dashed rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(var(--overlay-rgb), 0.16);
+  background: rgba(var(--overlay-rgb), 0.02);
   color: var(--text-muted);
   font-size: var(--text-caption);
 }
@@ -2435,8 +2826,8 @@ footer {
 .dm-inventory-slot {
   aspect-ratio: 1 / 1;
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(var(--overlay-rgb), 0.03);
+  border: 1px solid rgba(var(--overlay-rgb), 0.08);
 }
 
 @media (max-width: 560px) {
@@ -2493,7 +2884,7 @@ footer {
   margin-bottom: 0;
   letter-spacing: normal;
   /* same white glow as JAYDON WANG (see .hero__intro .hero__title) */
-  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
+  filter: drop-shadow(0 0 17px var(--hero-glow));
 }
 
 .page-hero .hero__desc {
@@ -2501,7 +2892,7 @@ footer {
   margin: 30px auto 0;
   font-size: var(--text-body);
   line-height: 1.5em;
-  color: #ffffff;
+  color: var(--ink);
 }
 
 .breadcrumb {
@@ -2595,8 +2986,8 @@ footer {
   color: var(--text-muted);
   font-size: clamp(13px, calc(12.515px + 0.129vw), 15px);
   line-height: 1.6;
-  border: 1px dashed rgba(255, 255, 255, 0.16);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px dashed rgba(var(--overlay-rgb), 0.16);
+  background: rgba(var(--overlay-rgb), 0.02);
 }
 
 .tile-grid {
@@ -2759,7 +3150,7 @@ footer {
     padding: 14px;
     border-radius: var(--radius-md);
     background: var(--nav-bg);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(var(--overlay-rgb), 0.08);
     box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
     transform: translateY(-12px);
     opacity: 0;
@@ -2779,7 +3170,7 @@ footer {
 
   .nav__links a:hover,
   .nav__links a:focus-visible {
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(var(--overlay-rgb), 0.08);
   }
 
   .nav__links.is-open {
@@ -2798,8 +3189,8 @@ footer {
     width: clamp(38px, calc(28.164px + 2.623vw), 46px);
     height: clamp(38px, calc(28.164px + 2.623vw), 46px);
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(var(--overlay-rgb), 0.05);
+    border: 1px solid rgba(var(--overlay-rgb), 0.14);
     color: var(--text-primary);
     cursor: pointer;
   }
@@ -2873,16 +3264,34 @@ footer {
 
 .cs-hero {
   position: relative;
+  /* Column flex so the meta band can be pushed to the bottom edge with
+     margin-top: auto (see .cs-hero__meta). main.js sets an inline
+     min-height equal to the space below the nav, which is what makes all
+     three case studies present the SAME first screen regardless of how
+     many lines their title takes.
+
+     Before this, --hero-fit could only ever shrink a hero (solveFit
+     clamps at Math.min(1, fit)), never stretch one. Faculty of
+     Environment's two-line title overflowed the screen, so it got scaled
+     down to exactly fill it and looked right; Aira and Ground FX have
+     one-line titles, came up naturally short, sat at fit: 1, and left a
+     band of empty space at the bottom of the viewport that the jump
+     links rode up into. Filling the box and bottom-aligning the meta
+     fixes the short case without scaling anything UP, so type stays at
+     its designed size on all three. */
+  display: flex;
+  flex-direction: column;
   /* pulled up close to the nav, matching the digital-media page's
      title position */
   /* every vertical value in this hero is multiplied by --hero-fit, the
      same 0–1 "shrink to fit below the nav" factor the homepage hero uses
      (see .hero for the full mechanism; main.js sets it per hero). This
      hero had NO height-awareness at all before: its own dominant driver
-     is .cs-hero__actions' margin-top, a purely width-driven 10–21rem gap,
-     so on a wide-but-short laptop window the title wrapped to two lines
-     AND that gap stayed at desktop size, pushing the two CTA buttons a
-     couple of hundred pixels below the fold. Nothing here is min()'d — a
+     is the 10–21rem gap above .cs-hero__meta (which .cs-hero__actions
+     owned until the jump links moved out to their own section), a purely
+     width-driven value, so on a wide-but-short laptop window the title
+     wrapped to two lines AND that gap stayed at desktop size, pushing the
+     hero's last row a couple of hundred pixels below the fold. Nothing here is min()'d — a
      straight multiply keeps the whole composition proportional, so a
      short window shows the same layout at a smaller size. */
   padding-top: calc(clamp(1rem, calc(0.7573rem + 1.036vw), 2rem) * var(--hero-fit));
@@ -2903,7 +3312,7 @@ footer {
 }
 
 /* subtle hairline grid, matching the reference exactly: much fainter
-   than the shared .hero__grid's default (rgba(255,255,255,0.4) reads
+   than the shared .hero__grid's default (rgba(var(--overlay-rgb), 0.4) reads
    as a bold line; the reference is closer to 0.1), and stays visible
    almost all the way down instead of fading out at 55–95% — the
    shared version fades out quickly because the homepage hero is
@@ -2922,15 +3331,15 @@ footer {
   background-image:
     repeating-linear-gradient(
       0deg,
-      rgba(255, 255, 255, 0.1) 0px,
-      rgba(255, 255, 255, 0.1) 1px,
+      rgba(var(--overlay-rgb), 0.1) 0px,
+      rgba(var(--overlay-rgb), 0.1) 1px,
       transparent 1px,
       transparent 20vw
     ),
     repeating-linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.1) 0px,
-      rgba(255, 255, 255, 0.1) 1px,
+      rgba(var(--overlay-rgb), 0.1) 0px,
+      rgba(var(--overlay-rgb), 0.1) 1px,
       transparent 1px,
       transparent 20vw
     );
@@ -2938,14 +3347,22 @@ footer {
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
 }
 
+/* Was a wrapping ROW: title-col on the left, .cs-hero__meta as a narrow
+   vertical stack pinned to the right, space-between pushing them apart.
+   Now a column, so the meta reads as a full-width band of three across
+   underneath the title rather than a sidebar beside it. The horizontal
+   gap this used to need is gone with it — .cs-hero__meta owns its own
+   margin-top now, so the space between the two blocks is one explicit
+   value instead of a flex gap that also had to serve the row direction. */
 .cs-hero__top {
   position: relative;
   z-index: 1;
   display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: calc(clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem) * var(--hero-fit));
-  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: stretch;
+  /* takes whatever height .cs-hero's min-height leaves over, so the
+     margin-top: auto below has room to work against */
+  flex: 1;
   margin-top: calc(clamp(0.5rem, calc(0.3786rem + 0.518vw), 1rem) * var(--hero-fit));
 }
 
@@ -2958,6 +3375,12 @@ footer {
    own comment for why that was the actual bug). */
 .cs-hero__title-col {
   min-width: 0;
+  /* The FLOOR on the gap between the title block and the meta band. The
+     band is bottom-aligned, so on a normal window the real gap is
+     whatever the viewport leaves over — this only binds when the window
+     is too short for that to be generous, and stops the band crowding
+     the tags. */
+  margin-bottom: calc(clamp(3rem, calc(2.2718rem + 3.107vw), 6rem) * var(--hero-fit));
 }
 
 /* same hero font as the "Jaydon Wang" homepage hero title */
@@ -2980,7 +3403,7 @@ footer {
   letter-spacing: normal;
   max-width: 14ch;
   /* same white glow as JAYDON WANG (see .hero__intro .hero__title) */
-  filter: drop-shadow(0 0 17px rgba(255, 255, 255, 0.62));
+  filter: drop-shadow(0 0 17px var(--hero-glow));
 }
 
 .cs-hero__tags {
@@ -3002,62 +3425,130 @@ footer {
      28px cap to the site's established "small content gap" tier at the
      same time (same formula as .cs-validation-toggle's own
      default) for a clearly deliberate separation. */
-  margin-top: calc(clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem) * var(--hero-fit));
+  /* was clamp(1.5rem -> 2.25rem). Halved on request — the tags read as a
+     caption belonging to the title, and the old value sat them far enough
+     below it to look like a separate row. */
+  margin-top: calc(clamp(0.75rem, calc(0.659rem + 0.388vw), 1.125rem) * var(--hero-fit));
 }
 
 /* same treatment as the homepage's .tag — flat fill/stroke, no glass
    (it was pulled out of the shared glass-formula group above), same
    0.938rem/1.875rem padding as .btn. color: #fff added explicitly since
    that used to come from the shared group too. */
+/* Same treatment as .tag on the homepage/Play pages, and for the same
+   reason — see that rule's comment for the full argument. These are
+   <span>s carrying hero metadata ("Design jam", "2026", "UX/UI",
+   "Healthcare"), not controls, so they carry none of a button's
+   hit-target obligation, and they were running .btn's 0.938rem/1.875rem
+   padding with --text-caption's ×1.375 ramp above 1440px: ~51px tall at
+   1920, competing with the case-study title right above them. */
 .cs-tag {
-  padding: 0.938rem 1.875rem;
-  border-radius: 0.625rem;
-  font-size: var(--text-caption);
-  font-weight: 500;
-  background: #171717;
-  border: 1px solid #727272;
-  color: #fff;
+  /* identical schedule to .tag: 11px floor, 13px at 1920px */
+  font-size: clamp(0.688rem, calc(0.552rem + 0.217vw), 0.813rem);
+  font-weight: 500; /* unchanged — .cs-tag has always sat a step lighter than .tag's 600 */
+  padding: 0.46em 0.92em;
+  /* 0.625rem/10px → 6px, the same ×0.667 reduction .tag's radius took
+     (12px → 8px). Keeps these a touch tighter-cornered than .tag, which
+     is the relationship the two already had. */
+  border-radius: 0.375rem;
+  background: var(--chip-bg);
+  border: 1px solid var(--chip-border);
+  color: var(--ink);
 }
 
+/* Three equal columns spanning the hero's full width, not a fixed-width
+   sidebar column. The old min-width clamp (11–13.75rem) existed to stop
+   the sidebar collapsing next to the title; as a full-width grid there
+   is nothing to reserve width against, so 1fr thirds replace it.
+
+   This band is now the hero's last row: the jump links that used to sit
+   beneath it have moved out to .cs-jump, so the 10–21rem gap they needed
+   passes to this instead (see margin-top below). The hero ends on the
+   Role/Timeline/Skills line rather than on a row of buttons. */
 .cs-hero__meta {
-  display: flex;
-  flex-direction: column;
-  gap: calc(clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem) * var(--hero-fit));
-  flex: 0 0 auto;
-  min-width: clamp(11rem, calc(10.3325rem + 2.848vw), 13.75rem);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* start, not the default stretch: "Skills" runs to three lines while
+     "Timeline" runs to one, and stretching would leave each column's
+     content vertically centred against a row sized by the tallest of
+     them. Top alignment is what puts the three labels on one line. */
+  align-items: start;
+  /* Gutter widened from 1.5–3rem. With the columns at 1fr thirds and each
+     value capped at 32ch, the old gutter was narrower than the ragged
+     gap left inside a short column ("4 months"), so the eye couldn't
+     tell a column break from a line break — three groups read as one
+     drifting row. At 2–4.5rem the gutter is reliably the largest
+     horizontal gap in the band, which is what makes proximity do the
+     grouping work. */
+  gap: calc(clamp(2rem, calc(1.4544rem + 2.33vw), 4.5rem) * var(--hero-fit));
+  min-width: 0;
+  /* Bottom-aligned rather than a fixed 10–21rem push. A hard number
+     could only ever be correct at one viewport height: it put the band
+     in the right place on a two-line title and left it stranded
+     mid-screen on a one-line one. auto absorbs the leftover height
+     instead, so the band lands on the same line in every case study and
+     the jump links below it stay off the first screen by construction
+     rather than by luck. The minimum separation lives on
+     .cs-hero__title-col's margin-bottom, since auto cannot carry one. */
+  margin-top: auto;
 }
 
+/* Deliberately the exact same type as .project-card__body h3 (the "Aira"
+   title on a homepage case-study card): --font-display at --text-h2,
+   weight 400, no tracking adjustment. It always shared the family and the
+   size — there was never a separate font for these labels — but it
+   carried font-weight: 600 and letter-spacing: -0.01em of its own, which
+   is what made it read as a heavier, tighter relative of the card title
+   rather than the same style. Both dropped, so a project card and a case
+   study now name their subject in one voice. Keep these two rules in
+   step: if the card title's type changes, this follows. */
 .cs-hero__meta-item span {
   display: block;
   font-family: var(--font-display);
-  font-weight: 600;
+  font-weight: 400;
   font-size: var(--text-h2);
-  letter-spacing: -0.01em;
-  margin-bottom: 0.5rem;
+  /* was a flat 0.5rem/8px. A label of ~43px sitting 8px above its value
+     binds them tightly, but the pair then sat closer to the NEXT
+     column's text than its own parts were to each other in some
+     wrappings. Scaled with the label instead of fixed, so the label and
+     its value stay one visual unit at every size: 0.28em is ~12px at
+     1440 and holds that ratio as --text-h2 moves. */
+  margin-bottom: 0.28em;
 }
 
 .cs-hero__meta-item p {
-  color: #fff;
-  font-size: var(--text-caption);
+  color: var(--ink);
+  /* was --text-caption (11px at 1440). Against a --text-h2 label of
+     ~43px that is a 3.9:1 step; the reference reads closer to 2.9:1, and
+     as a full-width band rather than a cramped sidebar this text has the
+     room for it. 12px floor / ~14px at 1440 / ~15.8px at 1920. Its own
+     clamp rather than --text-body because --text-body reaches 16px at
+     1440 already, which overshoots the reference. */
+  font-size: clamp(0.75rem, calc(0.542rem + 0.37vw), 1rem);
   line-height: 1.5em;
   max-width: 32ch;
 }
 
-.cs-hero__actions {
+/* Was .cs-hero__actions, living inside .cs-hero. These are jump links
+   into the page rather than part of the hero's statement, and holding
+   them in the hero forced it to carry a 10–21rem block of empty space
+   purely to seat them at the bottom — space the meta band now occupies.
+
+   As its own section it needs no margin of its own: the global
+   `section { padding-block: 64px }` plus `.cs-container section + section`
+   already give it the same separation every other section boundary on
+   the page gets, so the jump row is spaced by the page's own rhythm
+   instead of a bespoke number. Dropping the --hero-fit multiplier with
+   it is required, not incidental — that variable is set on .cs-hero, so
+   out here the calc() would reference an undefined property and the
+   whole declaration would be thrown out. */
+.cs-jump__links {
   position: relative;
   z-index: 1;
   display: flex;
   justify-content: center;
   gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
   flex-wrap: wrap;
-  /* generous open grid space between the tags and the buttons,
-     matching the reference layout instead of a tight stack — pushed
-     down further so the pair reads as centered lower in the hero.
-     This is by far the largest single contributor to .cs-hero's height
-     (160–336px of pure empty space), and being pure-vw it held its full
-     desktop size on short windows, which is what put the buttons below
-     the fold — so it takes the --hero-fit multiplier like the rest. */
-  margin-top: calc(clamp(10rem, calc(7.3301rem + 11.392vw), 21rem) * var(--hero-fit));
 }
 
 .cs-heading {
@@ -3113,7 +3604,7 @@ footer {
 .cs-divider {
   height: 1px;
   width: 100%;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(var(--overlay-rgb), 0.4);
   margin-bottom: clamp(2.5rem, calc(1.8174rem + 2.913vw), 5.3125rem);
 }
 
@@ -3143,7 +3634,7 @@ footer {
   margin: 0;
   font-size: var(--text-body);
   line-height: 1.5em;
-  color: #fff;
+  color: var(--ink);
   max-width: 62ch;
 }
 
@@ -3172,7 +3663,7 @@ footer {
 .cs-caption {
   font-size: var(--text-caption);
   line-height: 1.5em;
-  color: #fff;
+  color: var(--ink);
   margin-top: 0.875rem;
   max-width: 60ch;
 }
@@ -3605,7 +4096,7 @@ footer {
   /* same size as the paragraph text */
   font-size: var(--text-body);
   line-height: 1.5em;
-  color: #fff;
+  color: var(--ink);
   margin: 0;
 }
 
@@ -3642,7 +4133,7 @@ footer {
   font-size: var(--text-body);
   font-weight: 700;
   line-height: 1.5em;
-  color: #fff;
+  color: var(--ink);
 }
 
 .cs-quote__attribution {
@@ -3731,7 +4222,7 @@ footer {
   /* same size as the other paragraph text (.cs-para) */
   font-size: var(--text-body);
   line-height: 1.5em;
-  color: #fff;
+  color: var(--ink);
 }
 
 @media (max-width: 56.25em) {
@@ -3744,6 +4235,14 @@ footer {
      3-card group would stay 3-across even at phone width instead of
      collapsing to 1 column like every other card count does */
   .cs-takeaways-grid:has(> :nth-child(3):last-child) {
+    grid-template-columns: 1fr;
+  }
+
+  /* the meta band collapses to a single stack at the same breakpoint
+     every other case-study grid does — three columns of label + wrapped
+     sentence stop reading below this width. This is also where it
+     returns to the vertical stack it was before the band existed. */
+  .cs-hero__meta {
     grid-template-columns: 1fr;
   }
 

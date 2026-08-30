@@ -11,7 +11,122 @@
      the inline script in <head> (before first paint, to avoid a
      flash of the wrong theme) — this just wires up the button to
      flip it and persist the choice. All the actual color-swapping is
-     CSS (html[data-theme="light"] { filter: invert(1) ... }). */
+     CSS. That attribute now selects a full token palette in style.css
+     (html[data-theme="light"]), not the old invert(1) filter. */
+  /* ---------- custom cursor ----------
+     A 38px ring (styled in style.css) that follows the pointer with a
+     little lag and smears in the direction of travel.
+
+     The smear is a stretch, not a blur. filter: blur() strong enough to
+     read as speed would erase a 1px stroke outright, so the ring is
+     elongated along its own velocity vector and thinned across it — the
+     shape a circle actually takes when it moves faster than a frame — and
+     only a light blur is layered on top of that.
+
+     Two positions are tracked deliberately. `tx/ty` is where the pointer
+     genuinely is; `x/y` is the ring, which eases toward it. The gap
+     between them IS the velocity the smear is derived from, so the lag
+     that makes the ring feel weighty is the same quantity that drives the
+     blur — one behaviour, not two that have to be kept in sync. */
+  /* ---------- back to top (case studies) ----------
+     The anchor itself needs no JS — href="#top" plus the page's
+     scroll-behavior: smooth already does the navigation, and it keeps
+     working if this script never runs. All this adds is the reveal, so
+     the control is not sitting on the first screen pointing at where the
+     visitor already is.
+
+     Threshold is a viewport height rather than a fixed pixel count: "you
+     have scrolled past roughly one screen" means the same thing on a
+     phone and a 1440p monitor, where a flat 600px would not.
+
+     Passive listener and no work beyond a class toggle — this runs on
+     every scroll event, alongside the eased-wheel rAF loop above, so it
+     deliberately reads scrollY and does nothing else. */
+  const backToTop = document.querySelector(".cs-top");
+  if (backToTop) {
+    const syncBackToTop = () => {
+      backToTop.classList.toggle(
+        "is-visible",
+        window.scrollY > window.innerHeight * 0.9
+      );
+    };
+    syncBackToTop();
+    window.addEventListener("scroll", syncBackToTop, { passive: true });
+    window.addEventListener("resize", syncBackToTop);
+  }
+
+  const finePointer = window.matchMedia("(pointer: fine)");
+  if (finePointer.matches) {
+    const ring = document.createElement("div");
+    ring.className = "cursor-ring";
+    ring.setAttribute("aria-hidden", "true");
+    document.body.appendChild(ring);
+
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const EASE = reduced ? 1 : 0.2;   /* 1 = pinned to the pointer, no lag and so no smear */
+    const RADIUS = 19;                /* half of the 38px box — the ring is positioned by its centre */
+
+    let tx = 0, ty = 0, x = 0, y = 0, px = 0, py = 0, live = false, raf = 0;
+
+    const loop = () => {
+      x += (tx - x) * EASE;
+      y += (ty - y) * EASE;
+
+      const vx = x - px, vy = y - py;
+      px = x; py = y;
+
+      let transform = `translate3d(${x - RADIUS}px, ${y - RADIUS}px, 0)`;
+
+      if (!reduced) {
+        const speed = Math.hypot(vx, vy);
+        /* 1 at rest, capped so a fast flick across a wide monitor cannot
+           stretch the ring into a line */
+        const stretch = Math.min(1 + speed * 0.028, 1.85);
+        /* thinning across the direction of travel preserves the ring's
+           area, which is what stops the smear reading as "it got bigger" */
+        const squash = 1 / (1 + (stretch - 1) * 0.55);
+        const angle = Math.atan2(vy, vx);
+        transform += ` rotate(${angle}rad) scale(${stretch}, ${squash})`;
+        ring.style.filter = `blur(${Math.min(speed * 0.16, 2.6)}px)`;
+      }
+
+      ring.style.transform = transform;
+
+      /* the loop stops once the ring has caught up — no rAF ticking
+         forever behind a still mouse */
+      if (Math.abs(tx - x) > 0.1 || Math.abs(ty - y) > 0.1) {
+        raf = requestAnimationFrame(loop);
+      } else {
+        raf = 0;
+        if (!reduced) ring.style.filter = "blur(0px)";
+      }
+    };
+
+    const kick = () => { if (!raf) raf = requestAnimationFrame(loop); };
+
+    window.addEventListener("pointermove", (e) => {
+      tx = e.clientX; ty = e.clientY;
+      if (!live) {
+        /* jump to the first known position rather than sliding in from
+           0,0, then fade in */
+        live = true;
+        x = tx; y = ty; px = tx; py = ty;
+        ring.classList.add("is-live");
+      }
+      /* grows over anything clickable, standing in for the system
+         pointer this replaces */
+      const hot = e.target instanceof Element &&
+        e.target.closest('a, button, [role="button"], input, textarea, select, summary');
+      ring.classList.toggle("is-hot", !!hot);
+      kick();
+    }, { passive: true });
+
+    /* the ring would otherwise hang at the last known edge position when
+       the pointer leaves the window entirely */
+    document.addEventListener("pointerleave", () => ring.classList.remove("is-live"));
+    document.addEventListener("pointerenter", () => { if (live) ring.classList.add("is-live"); });
+  }
+
   const themeToggle = document.getElementById("themeToggle");
 
   if (themeToggle) {
@@ -149,6 +264,19 @@
      retires both the constant and the sweep. */
   const navWrap = document.querySelector(".nav-wrap");
 
+  /* .nav-wrap is position: absolute now — a layer over the page rather
+     than a block in flow — so `main` pays back the space it stopped
+     occupying via padding-top: var(--nav-h). That variable has to come
+     from the real measured bar, because the bar's height is a stack of
+     clamps against --nav-fit and is not expressible in CSS on its own.
+     Kept in sync here so one resize handler drives both this and the
+     hero solving below. */
+  const syncNavHeight = () => {
+    const navHeight = navWrap ? navWrap.getBoundingClientRect().height : 0;
+    document.documentElement.style.setProperty("--nav-h", `${navHeight}px`);
+    return navHeight;
+  };
+
   const availableBelowNav = () => {
     const navHeight = navWrap ? navWrap.getBoundingClientRect().height : 0;
     return Math.max(window.innerHeight - navHeight, 0);
@@ -178,16 +306,33 @@
      short window shows the same composition instead of a tighter one. It
      also lands --hero-fit at exactly 1 there, i.e. unchanged.
 
-     .cs-hero has no spacer: its trailing room is its own padding-bottom,
-     which IS inside the natural measurement, so a fill of 1 already
-     preserves it. Reserving extra on top (0.783, measured off Aira) was
-     wrong — it shrank every case-study hero to Aira's proportions, and
-     Faculty of Environment's two-line title makes its hero naturally
-     265px taller, so on the reference display that page got scaled to
-     77% for no reason. At 1 it only ever shrinks when the hero genuinely
-     doesn't fit, which is the actual requirement. */
+     .cs-hero was on a fill of 1 until the meta band became bottom-aligned
+     (.cs-hero__meta, margin-top: auto). A fill of 1 asks solveFit to
+     shrink the content until it EXACTLY fills the available height, which
+     leaves auto exactly zero slack to distribute — so the moment a window
+     was short enough to push fit below 1, every bit of air between the
+     tags and the band vanished at once and the composition collapsed
+     upward. Measured on Faculty of Environment: at 2560x1272 the gap was
+     302px (24% of the viewport, fit 1, 206px of slack); at 1673x750 it
+     was 76px (10%, fit 0.856, zero slack). Same page, same layout, two
+     completely different compositions.
+
+     0.85 reserves 15% of the available height as guaranteed slack at
+     every viewport height, so auto always has something to distribute and
+     the gap stays proportional: that same page now reads 23.7% and 21.9%
+     at those two sizes.
+
+     This is NOT a return to the old 0.783, which was wrong for a
+     different reason — back then the gap above the band was a fixed
+     10-21rem, so reserving headroom shrank every hero to Aira's
+     proportions whether or not it needed it. With the band bottom-aligned
+     the reserve is absorbed by auto rather than by scaling, so a hero
+     that already fits is left alone: Aira and Ground FX still solve to
+     fit 1 at 1673x750 and are not scaled down at all. Only a hero that
+     genuinely overflows — Faculty of Environment's two-line title — pays
+     for it, which is the actual requirement. */
   const HERO_FILL = 0.831;
-  const CS_HERO_FILL = 1;
+  const CS_HERO_FILL = 0.85;
 
   /* Not every part of a hero actually takes the multiplier: the case-study
      tag pills, meta column and CTA buttons are plain text at a fixed size,
@@ -283,12 +428,14 @@
 
   /* .cs-hero has no height of its own — it's a normal-flow section — so
      its own rendered height IS the measurement, no stack-summing needed.
-     It's also the hero with the most rigid content (tags, meta, buttons),
+     It's also the hero with the most rigid content (title, tags, meta),
      so it leans hardest on solveFit's two-sample split. Its dominant
-     contributor is
-     .cs-hero__actions' margin-top, a pure-vw 10–21rem gap that used to
-     hold full desktop size on a short window and push the two CTA
-     buttons a couple of hundred pixels below the fold. */
+     contributor is the margin-top above .cs-hero__meta — a pure-vw
+     10–21rem gap that used to hold full desktop size on a short window
+     and push the hero's last row a couple of hundred pixels below the
+     fold. (.cs-hero__actions owned that margin until the jump links
+     moved out of the hero into their own .cs-jump section; the meta
+     band inherited both the gap and the y-position.) */
   const csHero = document.querySelector(".cs-hero");
 
   const sizeCaseStudyHero = () => {
@@ -297,9 +444,29 @@
     // way it always has
     if (!isLandscape()) {
       csHero.style.setProperty("--hero-fit", "1");
+      csHero.style.minHeight = "";
       return;
     }
+
+    /* Two steps, and the order matters.
+
+       solveFit models height as linear in --hero-fit (it samples at 1 and
+       0.5 and solves). A min-height would clamp one or both samples and
+       break that linearity, handing back a nonsense fit — so the floor is
+       cleared first and the hero is measured at its natural content
+       height. */
+    csHero.style.minHeight = "";
     solveFit(csHero, () => csHero.getBoundingClientRect().height, CS_HERO_FILL);
+
+    /* Then fill the screen. solveFit clamps at Math.min(1, fit), so it can
+       shrink a hero that overflows but never stretch one that comes up
+       short — a one-line title (Aira, Ground FX) sat at fit: 1 and ended
+       well above the fold, letting the .cs-jump links show on the first
+       screen while a two-line title (Faculty of Environment) filled it.
+       This floor closes that gap without scaling type UP: the extra
+       height is absorbed by .cs-hero__meta's margin-top: auto, which
+       parks the band on the hero's bottom edge in every case. */
+    csHero.style.minHeight = `${availableBelowNav()}px`;
   };
 
   /* The Play hero is a fixed 2540×1266 canvas scaled by a single
@@ -390,12 +557,23 @@
     dmStage.style.setProperty("--stage-fit", `${fit}`);
 
     /* 1266 canvas units at the combined scale — the canvas's own aspect,
-       so the section's box still frames the composition it contains. */
-    dmHero.style.height = `${STAGE_HEIGHT * stageScale * fit}px`;
+       so the section's box still frames the composition it contains —
+       PLUS the nav band this hero reclaims. .dm-hero is pulled up by
+       margin-top: -var(--nav-h) and .dm-hero__stage pushed back down by
+       the same amount, so the canvas still starts one nav-height into the
+       section; without adding that height back here the box would end one
+       nav-height early and .dm-hero's overflow: hidden would slice the
+       bottom off the character — a hard horizontal cut straight through
+       the shoulders, instead of the mask's fade into the page. */
+    dmHero.style.height = `${STAGE_HEIGHT * stageScale * fit + syncNavHeight()}px`;
   };
 
   if (hero || csHero || dmHero) {
     const sizeHeroes = () => {
+      /* first: the nav's height feeds main's padding, which moves every
+         hero's top edge. Solving a hero against a stale offset would be
+         solving against the previous window. */
+      syncNavHeight();
       sizeHomepageHero();
       sizeCaseStudyHero();
       sizePlayHero();
