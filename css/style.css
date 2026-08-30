@@ -2052,10 +2052,75 @@ footer {
 
 .dm-hero__model {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  transform: translateX(560px);
+  /* top/left rather than inset: 0 — the box below is explicitly sized, so
+     a bottom/right constraint would just be over-constrained and ignored. */
+  top: 0;
+  left: 0;
+
+  /* ---- render resolution, decoupled from canvas coordinates ----
+     Everything else in this stage is laid out in 2540x1266 canvas units
+     and shrunk to fit by ONE scale() on .dm-hero__stage. For plain DOM
+     content that's free: transform is a paint-time operation, so the
+     layout box stays 2540x1266 and only the painted result shrinks.
+
+     <model-viewer> is the exception, because it doesn't paint — it
+     rasterises. It sizes its WebGL drawing buffer off its own LAYOUT box
+     (x devicePixelRatio) and has no idea an ancestor is scaling it down,
+     so it was rendering a full 2540x1266 buffer no matter how small the
+     window was. Measured: at a 1512px-wide container it rendered 3.2M
+     pixels to display 0.71M of them — 4.5x over-render, paid every frame
+     the head-tracking loop redraws, and paid twice over since
+     model-viewer keeps a second presentation canvas at the same size.
+
+     The perverse part is that it got WORSE the smaller the window: at
+     2560px wide the scale lands near 1.0 and the over-render is 0.98x,
+     i.e. free. That's why this never showed up on the big display and
+     dragged badly on a laptop.
+
+     Fix: size the box in REAL screen pixels, then scale it back up by the
+     same factor so it still visually covers the canvas. Geometry is
+     unchanged (same origin, same aspect ratio, same translateX in canvas
+     units, since that's applied in the parent's coordinate space before
+     the counter-scale) — only the pixel count changes.
+
+     --model-quality is the knob, and it's worth understanding what it
+     trades. The OLD behaviour was accidental supersampling: a fixed
+     2540px-wide buffer shown at the container's width, i.e. a factor of
+     2540/container. On a 1512px laptop that's 1.68x; on a 1280px one,
+     1.98x. Free edge smoothing on hair and the shoulder silhouette — and
+     the exact thing that was costing the frame rate.
+
+     So --model-quality is how much of that smoothing to keep:
+       1    = native display resolution (no supersampling)
+       1.5  = keeps most of what a ~1500px laptop used to get
+     Measured on a fresh load at 1512x860 (buffer tracks the box exactly):
+       old            2540x1266 = 3.22M px
+       quality 1.5    2268x1131 = 2.57M px   (1.25x fewer)
+       quality 1      1512x754  = 1.14M px   (2.82x fewer)
+     1 is the default because 1.5 barely moves the needle, and
+     model-viewer already runs MSAA of its own, so native resolution
+     still gets antialiased edges — it just isn't supersampled on top.
+     If the hair or collar edges read as too crisp/jaggy on a real
+     laptop, raise this to 1.25 or 1.5; that's the only value to touch.
+
+     Capped at 1 via min() so a wide display never renders a buffer
+     LARGER than the 2540px canvas it used to — this can only ever do
+     less work than before, never more. (At 2560px wide the cap binds and
+     the geometry is byte-for-byte what it was: scale 1, no change.) */
+  --model-quality: 1;
+  --model-render-scale: min(
+    1,
+    calc(var(--stage-scale) * var(--stage-fit) * var(--model-quality))
+  );
+  width: calc(2540px * var(--model-render-scale));
+  height: calc(1266px * var(--model-render-scale));
+  /* translateX first (canvas units, unchanged), counter-scale second.
+     transform-origin has to be top left so the box grows back out from
+     the stage's own corner rather than from its centre — it was
+     irrelevant while this transform was translate-only. */
+  transform: translateX(560px) scale(calc(1 / var(--model-render-scale)));
+  transform-origin: top left;
+
   --poster-color: transparent;
   /* <model-viewer> draws its own loading bar across the TOP of the element
      while the .glb downloads — a 5px rgba(0, 0, 0, 0.4) strip that fades
