@@ -3093,6 +3093,21 @@ footer {
     justify-content: flex-start;
   }
 
+  /* justify-content above only left-aligns the pills INSIDE .filters'
+     box; it does nothing about where that box sits. The base rule caps
+     it at 32rem and centres it with margin-inline: auto, which is right
+     under a centred heading in the desktop sidebar — but this breakpoint
+     switches the heading to text-align: left, so the two disagreed: the
+     heading sat flush at the column's edge while the pills started
+     wherever the centred 512px box happened to begin. Measured at 899px
+     that was a 166px indent (and it shrank as the column narrowed, which
+     is why it only looked wrong across a band of widths rather than
+     always). Zeroing the margin puts the box's left edge on the column's,
+     so both start from the same line. */
+  .filters {
+    margin-inline: 0;
+  }
+
   .case-studies__side .section-head h2 {
     text-align: left;
   }
