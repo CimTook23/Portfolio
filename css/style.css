@@ -180,7 +180,7 @@
      mismatch this token fixes. Same 900px→375px breakpoint pair as
      that padding clamp, so text and padding shrink on the same
      schedule instead of drifting apart. */
-  --text-nav-switch: clamp(12px, calc(9.143px + 0.762vw), 16px);     /* 16px @900px+, 12px @375px */
+  --text-nav-switch: clamp(11px, calc(9.571px + 0.381vw), 13px);     /* 13px @900px+, 11px @375px */
 }
 
 /* the 1440px sizes above are the brand spec's ceiling, not the whole
@@ -346,6 +346,21 @@ section {
   padding-block: 64px;
 }
 
+/* separation BETWEEN sections, on top of the padding each already
+   carries. Written as section + section rather than a margin on every
+   section for two reasons: it can't add a gap above the first one (the
+   heroes are viewport-fitted — .hero's height is measured as viewport
+   minus nav, so a margin above it would push it down and overflow the
+   very fit that JS just solved), and adjacent margins can't double up.
+
+   Same construction as .cs-container section + section, which has done
+   this inside the case-study pages all along; that rule is more specific,
+   so those pages keep their own tighter rhythm rather than inheriting
+   this one. */
+section + section {
+  margin-top: clamp(3rem, calc(1.944rem + 4.507vw), 6rem);
+}
+
 .eyebrow {
   display: inline-block;
   font-family: var(--font-display);
@@ -361,10 +376,11 @@ section {
 .nav-wrap {
   /* not sticky by design — the bar scrolls away with the rest of the
      page instead of pinning to the viewport */
-  /* the vw clamp is unchanged; --nav-fit is the height arm (see :root),
-     and max() against the clamp's own 14px floor keeps narrow screens
-     exactly as they were */
-  padding-top: max(14px, calc(clamp(14px, calc(12.544px + 0.388vw), 20px) * var(--nav-fit)));
+  /* --nav-fit is the height arm (see :root); max() against the clamp's
+     own floor stops the two compounding into something tiny on a short
+     phone. Range dropped 14–20px → 10–14px in the same pass that took the
+     whole bar down a size — see .nav__switch-opt for the reasoning. */
+  padding-top: max(10px, calc(clamp(10px, calc(9.030px + 0.259vw), 14px) * var(--nav-fit)));
   /* position: relative carries no visual/layout change on its own (no
      offsets set) — it's here purely so z-index actually applies: a
      static element ignores z-index entirely. Wrapping the whole nav in
@@ -390,7 +406,7 @@ section {
   gap: clamp(14px, calc(11.087px + 0.777vw), 26px);
   /* height arm as on .nav-wrap above — gap is horizontal so it's left
      alone; only the block padding contributes to how tall the bar is */
-  padding-block: max(10px, calc(clamp(10px, calc(8.544px + 0.388vw), 16px) * var(--nav-fit)));
+  padding-block: max(8px, calc(clamp(8px, calc(7.273px + 0.194vw), 11px) * var(--nav-fit)));
 }
 
 /* shared "liquid glass" surface, now only for .btn-glass (currently
@@ -441,7 +457,7 @@ section {
   /* full image, uncropped — aspect-ratio matches the source asset
      (124×59) exactly, so object-fit: cover below never has to crop
      anything off the sides to fill the box */
-  width: clamp(64px, calc(58.808px + 1.294vw), 90px);
+  width: clamp(48px, calc(44.683px + 0.884vw), 66px);
   aspect-ratio: 124 / 59;
   border-radius: 14px;
   overflow: hidden;
@@ -492,7 +508,7 @@ section {
   /* --nav-fit applied to all four sides, not just the block axis: this is
      a pill, so letting the track thin vertically while holding its full
      horizontal inset would visibly change its shape rather than its size */
-  padding: max(2px, calc(clamp(2px, calc(0.571px + 0.381vw), 4px) * var(--nav-fit)));
+  padding: max(2px, calc(clamp(2px, calc(1.286px + 0.190vw), 3px) * var(--nav-fit)));
 }
 
 .nav__switch-opt {
@@ -501,22 +517,26 @@ section {
      down to 420px (where a separate, abrupt media-query override used
      to cut it down to 8px/12px in one jump), making the nav bar's own
      Work/Play switch eat a disproportionate, non-shrinking chunk of a
-     shrinking nav on tablet/small-laptop widths. Fluid instead — full
-     0.938rem/1.875rem size at 900px+ (unchanged from before there),
-     continuously shrinking to a compact 8px/12px by 375px, so there's
-     no breakpoint jump and no "stuck at full size" range in between.
-     The old 420px-only override is gone; this clamp already covers it.
+     shrinking nav on tablet/small-laptop widths. Fluid instead, so
+     there's no breakpoint jump and no "stuck at full size" range in
+     between. The old 420px-only override is gone; this clamp covers it.
 
-     Both clamps still describe the width schedule exactly as before. The
-     block axis additionally takes --nav-fit (see :root), because this
-     button is what actually sets the nav bar's height — 57.2px of the
-     bar's ~107px on a laptop — and that was completely flat at any width
-     above 900px. The inline axis is deliberately NOT multiplied: the
-     switch reads as a pill, and squashing it vertically while keeping its
-     width is the point, whereas taking both would just render the same
-     shape smaller and cost legibility for no vertical gain. */
-  padding-block: max(8px, calc(clamp(8px, calc(3px + 1.333vw), 15.008px) * var(--nav-fit)));
-  padding-inline: clamp(12px, calc(-0.857px + 3.429vw), 30px);
+     The whole bar was then taken down a size on request — it read as too
+     heavy for what it holds. Every nav clamp keeps the same 375px→cap
+     schedule shape it always had, with both endpoints scaled down and the
+     preferred term recomputed so the line still meets them exactly: this
+     padding 8→15.008px became 6→9px, the inline pair 12→30px became
+     10→20px, --text-nav-switch 12→16px became 11→13px, .nav-wrap's
+     padding-top 14→20px became 10→14px, .nav's padding-block 10→16px
+     became 8→11px, .nav__switch's track 2→4px became 2→3px, and
+     .nav__logo-badge 64→90px became 48→66px.
+
+     Unlike the earlier height-only pass, the INLINE axis shrinks too —
+     the request was for width as well as height, so the switch gets
+     genuinely smaller rather than just flatter. Only the block axis takes
+     --nav-fit on top of that, since only it feeds the bar's height. */
+  padding-block: max(6px, calc(clamp(6px, calc(3.857px + 0.571vw), 9px) * var(--nav-fit)));
+  padding-inline: clamp(10px, calc(2.857px + 1.905vw), 20px);
   border-radius: var(--radius-pill);
   /* was var(--text-body), which is intentionally flat/fixed below
      1440px — left the text at a constant 16px while the padding above
@@ -546,14 +566,23 @@ section {
 .nav__links {
   display: flex;
   align-items: center;
-  gap: clamp(20px, calc(15.400px + 2.028vw), 36px);
+  /* tightened 20–36px → 14–24px alongside the smaller link text above;
+     36px of air between three short words was spacing built for the
+     old, larger type */
+  gap: clamp(14px, calc(8.140px + 1.563vw), 24px);
   flex-wrap: nowrap;
   grid-column: 3;
   justify-self: end;
 }
 
 .nav__links a {
-  font-size: var(--text-body);
+  /* --text-nav-switch, not --text-body. --text-body grows above 1440px
+     (see its media query) and reached 22px on a 2560-wide monitor, which
+     was already the largest thing in the bar and became conspicuous once
+     the switch came down to 13px — a 22px link next to a 13px button read
+     as two different components rather than one bar. Sharing the switch's
+     token keeps every piece of nav text on one size and one schedule. */
+  font-size: var(--text-nav-switch);
   font-weight: 400;
   color: #fff;
   white-space: nowrap;
@@ -1272,8 +1301,28 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 24px;
+  /* 36px, not 24px, so the head itself guarantees the gap to whatever
+     follows it. It used to depend on the body element instead:
+     .dm-media-grid carries margin-top: 36px and collapsed against this to
+     36, while .cs-cta carries none and fell back to the bare 24 — so
+     Motion design sat 36px under its heading and Jaydon MP4 only 24px,
+     on two sections that are otherwise identical. Matching 36 here makes
+     Motion design collapse to the same 36 it already had (no visual
+     change there) and brings the others up to it. */
+  margin-bottom: 36px;
   flex-wrap: wrap;
+}
+
+/* the heading/copy column fills the row instead of shrinking to its own
+   content. As a default flex item (flex: 0 1 auto) it sized to its
+   widest child, so the Jaydon MP4 paragraph sat in an 860px column
+   inside a 2450px section while .cs-cta and .ig-embed-grid below it ran
+   the full width — the section read as two different widths stacked.
+   min-width: 0 lets it actually shrink when it needs to, since a flex
+   item's default min-width: auto refuses to go below its content. */
+.section-head > div {
+  flex: 1;
+  min-width: 0;
 }
 
 /* Projects & Case Studies only — centered above the filters instead of
@@ -1311,11 +1360,34 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   letter-spacing: -0.01em;
 }
 
-.section-head__sub {
-  color: var(--text-secondary);
-  font-size: var(--text-body);
-  line-height: 1.5em;
-  margin-top: 8px;
+/* spacing only. This paragraph now carries "hero__desc cs-para" in the
+   markup, exactly like every case-study body paragraph, so its size,
+   line-height and color come from .cs-para rather than being restated
+   here — same reasoning as the comment on .cs-para itself: literally the
+   same class, not a numeric match that can drift apart later. It used to
+   set --text-secondary, which is what made it read grey next to the white
+   body copy on the case studies.
+
+   Scoped through .section-head so this margin still beats .cs-para's
+   margin: 0 — .cs-para is later in the file, so a bare .section-head__sub
+   would lose to it and the paragraph would sit flush against the h2 (the
+   heading and this share a plain div with no gap of its own). */
+.section-head .section-head__sub {
+  /* the same clamp .dm-filter-row uses, not a fixed 28px. That row is
+     what occupies this slot under Motion design's heading, and its gap is
+     fluid (16px narrow → 28px at 1920px+), so a flat 28 would have
+     matched only above 1920 and drifted apart everywhere below — at
+     1600px wide the pills sit 25.5px under their heading, not 28. Copying
+     the expression keeps the two sections identical at every width. Was
+     8px, which made this paragraph read as tucked under the title rather
+     than as its own line of the composition. */
+  margin-top: clamp(16px, calc(13.087px + 0.7767vw), 28px);
+  /* runs the section's full width rather than .cs-para's 62ch measure.
+     62ch is a reading-length cap that suits a case study's long body
+     copy; here it left the paragraph in a narrow column while everything
+     else in the section spanned the full width. Type, line-height and
+     color still come from .cs-para — this overrides the measure only. */
+  max-width: none;
 }
 
 /* ---------- case studies layout: narrow card list + right-hand
@@ -1390,6 +1462,23 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   flex-wrap: wrap;
   justify-content: center;
   gap: 12px;
+  /* the pills wrap against THIS, not against however wide the sticky
+     column happens to be. .case-studies__side is flex: 1, so it ran to
+     1177px on a 2560-wide monitor and held all four pills in one long
+     763px row, only breaking below ~1500px. Capping the row makes it
+     break at every width instead.
+
+     32rem specifically: swept 24–32rem against the real pill widths at
+     1000–2560px. 32rem is the widest value that breaks on a big monitor,
+     and it lands on 3+1 at every width — the same split the layout
+     already fell into below 1440px, so nothing new appears. Narrower caps
+     (26rem and below) split it 2+1+1 on wide screens, which reads as
+     ragged rather than deliberate.
+
+     margin-inline keeps the capped row centred under the heading; without
+     it the column's align-items would leave it stuck to one side. */
+  max-width: 32rem;
+  margin-inline: auto;
 }
 
 .filter-pill {
@@ -1649,6 +1738,14 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    already spans the full viewport on its own, so no breakout trick
    is needed the way .cs-hero's grid needs one. */
 footer {
+  /* dark breathing room before the white slab starts. The generous
+     padding-block below is INSIDE that white, so it separates the footer
+     text from the footer's own edges — it does nothing to stop the page's
+     last section running straight into the colour change. This margin is
+     what actually holds the two apart, and it's bigger than the gap
+     between sections because this is a change of surface, not just the
+     next block of the same page. */
+  margin-top: clamp(4rem, calc(1.888rem + 9.014vw), 10rem);
   background: #fff;
   /* text-to-edge distance top and bottom — 320px (20rem) floor,
      never less regardless of viewport, growing a bit further on very
@@ -2554,8 +2651,30 @@ footer {
    before the hamburger has to take over */
 @media (max-width: 680px) {
   .nav__links {
-    position: fixed;
-    top: 88px;
+    /* absolute against .nav-wrap (position: relative, see its rule) with
+       top: 100%, rather than fixed at a hard-coded 88px. That 88px was a
+       measurement of the old, taller bar: once the nav shrank it stopped
+       matching, leaving a ~31px gap between the bar and the menu hanging
+       off it. Measuring from the wrap's own bottom edge tracks whatever
+       height the bar actually is, at any width or --nav-fit.
+
+       absolute, not fixed, is also the correct pairing for a nav that is
+       deliberately not sticky (see .nav-wrap): fixed kept the menu pinned
+       to the viewport while the bar it belongs to scrolled away from
+       underneath it.
+
+       NOTE the left/right pair below is currently inert, and was inert
+       under the old fixed positioning too (measured both: same 131px box
+       either way, so this rule change didn't cause it). .nav__links
+       carries justify-self: end for the desktop grid row, and for an
+       absolutely positioned box a non-normal justify-self makes it
+       shrink-to-fit and align to one edge rather than stretch between two
+       non-auto insets. Adding justify-self: stretch here would make the
+       menu span 16px to 16px as these declarations imply — left alone
+       deliberately, since that changes how the mobile menu looks and
+       nobody has asked for it. */
+    position: absolute;
+    top: calc(100% + 8px);
     left: 16px;
     right: 16px;
     z-index: 60;
