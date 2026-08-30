@@ -2057,6 +2057,16 @@ footer {
   height: 100%;
   transform: translateX(560px);
   --poster-color: transparent;
+  /* <model-viewer> draws its own loading bar across the TOP of the element
+     while the .glb downloads — a 5px rgba(0, 0, 0, 0.4) strip that fades
+     out a second after the model lands. On this page that read as a stray
+     black line cutting across the hero on a cold load (and never on a
+     warm one, since a cached model finishes before the bar ever paints),
+     with nothing to say it belonged to the loading state. The poster
+     already covers the wait, so the bar is redundant: zero out both the
+     colour and the height so nothing is left to paint. */
+  --progress-bar-color: transparent;
+  --progress-bar-height: 0px;
   background-color: transparent;
   /* fades the shoulders/torso out into the page background below */
   mask-image: linear-gradient(to bottom, #000 55%, transparent 88%);
