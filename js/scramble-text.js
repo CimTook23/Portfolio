@@ -31,6 +31,45 @@
     // Keep the real string available to assistive tech throughout the animation.
     el.setAttribute("aria-label", text);
 
+    /* ---- pin the resolved height for the duration of the animation ----
+       The glyph substitution below swaps every character for one of
+       GLYPHS, which are not the same width as the letters they stand in
+       for — so the title can WRAP TO A DIFFERENT NUMBER OF LINES while
+       it resolves. Measured on the Play hero at 1920x1080: "Jaydon's
+       Digital Museum" is 3 lines / 1052px resolved, but 2 lines / 701px
+       mid-scramble.
+
+       That 351px swing is not cosmetic, because this title is a measured
+       element. main.js's sizePlayHero() sums .dm-hero__content's height
+       to solve --stage-fit, and --stage-fit feeds .dm-hero__model's
+       width/height, which is what <model-viewer> sizes its WebGL drawing
+       buffer from. window.load fires ~600ms into the page — i.e. squarely
+       inside this 1500ms animation — so the hero was being solved against
+       a title made of random glyphs, and the resulting fit (0.94 instead
+       of 0.69) resized the drawing buffer from 0.88M to 1.61M pixels in
+       the middle of the load. That reallocation plus its forced re-render
+       is the ~1s freeze that stalled this very animation, the head
+       tracking, and everything else on the main thread.
+
+       Locking the height makes this element's layout contribution
+       constant across the animation, so a measurement taken at any point
+       during it agrees with the final one. offsetHeight, not
+       getBoundingClientRect(): on the Play page this title lives inside
+       .dm-hero__stage's transform: scale(), and a rect would report the
+       scaled size rather than the canvas-unit layout box main.js
+       actually measures. */
+    const lockedHeight = el.offsetHeight;
+    if (lockedHeight) el.style.height = lockedHeight + "px";
+
+    const release = () => {
+      el.style.height = "";
+      /* If this ran before the webfont swapped, the height pinned above
+         was the fallback's — so hand whoever measures this element a
+         chance to re-solve now that the real text and the real font are
+         both in place. main.js listens for this on the Play hero. */
+      el.dispatchEvent(new CustomEvent("scramble:done", { bubbles: true }));
+    };
+
     const chars = Array.from(text);
     el.innerHTML = chars
       .map((ch) =>
@@ -42,7 +81,13 @@
 
     const spans = Array.from(el.querySelectorAll(".scramble-char"));
     const n = spans.length;
-    if (n === 0) return;
+    // unreachable for any real title (`text` is non-empty and trimmed, so
+    // at least one non-space char exists) — but bailing here without
+    // releasing would strand the pinned height above permanently
+    if (n === 0) {
+      release();
+      return;
+    }
 
     // Even spread across the full duration regardless of title length, so
     // every title — short or long — finishes resolving at ~DURATION ms.
@@ -70,6 +115,7 @@
         }
       }
       if (remaining > 0) requestAnimationFrame(frame);
+      else release();
     }
 
     requestAnimationFrame(frame);

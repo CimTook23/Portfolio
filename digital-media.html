@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=14" />
+<link rel="stylesheet" href="css/style.css?v=16" />
 <!-- the 3D model's poster (see <model-viewer> below) — preloaded so it's
      ready the instant the custom element upgrades, instead of the poster
      itself being the thing you wait on. This is what makes the head show
@@ -294,12 +294,62 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=14"></script>
-<script src="js/scramble-text.js?v=14"></script>
-<script src="js/head-track.js?v=14"></script>
+<script src="js/main.js?v=16"></script>
+<script src="js/scramble-text.js?v=16"></script>
+<script src="js/head-track.js?v=16"></script>
 <!-- powers the Jaydon MP4 .instagram-media blockquotes above — Instagram's
      own script, not ours; it finds every blockquote with that class and
-     replaces it with the real embedded player. -->
-<script async src="https://www.instagram.com/embed.js"></script>
+     replaces it with the real embedded player.
+
+     Fetched when that grid comes within a screen of the viewport rather
+     than on page load. It used to be a plain `async` tag, which sounds
+     cheap but isn't: the moment it arrives it swaps all three blockquotes
+     for iframes, and each of those iframes is a full Instagram page with
+     its own framework bundle. Measured on a warm load, the three took
+     519/529/537ms and all of it landed at ~600ms — the same instant
+     window.load fires, i.e. mid-way through the hero's 1.5s scramble and
+     while the 3D head is being tracked. Nothing in that grid is visible
+     until you have scrolled two full sections down, so none of that work
+     had to happen then. The observer keeps the behaviour identical for
+     anyone who actually scrolls to it, just not before. -->
+<script>
+  (function () {
+    var grid = document.querySelector(".ig-embed-grid");
+    if (!grid) return;
+
+    var loaded = false;
+    function loadEmbedJs() {
+      if (loaded) return;
+      loaded = true;
+      var s = document.createElement("script");
+      s.async = true;
+      s.src = "https://www.instagram.com/embed.js";
+      document.body.appendChild(s);
+    }
+
+    // no IntersectionObserver (very old browser) — load it the old way
+    // rather than leaving three bare blockquotes on the page
+    if (!("IntersectionObserver" in window)) {
+      loadEmbedJs();
+      return;
+    }
+
+    var io = new IntersectionObserver(
+      function (entries) {
+        for (var i = 0; i < entries.length; i += 1) {
+          if (entries[i].isIntersecting) {
+            io.disconnect();
+            loadEmbedJs();
+            return;
+          }
+        }
+      },
+      // a screenful of lead time, so the embeds have started resolving by
+      // the time the section is actually reached
+      { rootMargin: "800px 0px" }
+    );
+    io.observe(grid);
+  })();
+</script>
 </body>
 </html>

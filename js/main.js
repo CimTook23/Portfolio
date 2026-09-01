@@ -493,6 +493,9 @@
   const dmContent = dmHero && dmHero.querySelector(".dm-hero__content");
   const STAGE_WIDTH = 2540;
   const STAGE_HEIGHT = 1266;
+  // last value actually written to --stage-fit — see the write below for
+  // why re-writing an unchanged one is worth avoiding
+  let lastStageFit = -1;
 
   /* Same role as HERO_FILL above: the share of the space below the nav
      that the canvas's content is allowed to occupy, measured off the
@@ -554,7 +557,28 @@
         ? Math.min(1, (availableBelowNav() * DM_HERO_FILL) / renderedBottom)
         : 1;
 
-    dmStage.style.setProperty("--stage-fit", `${fit}`);
+    /* Writing --stage-fit is not a free style update: it feeds
+       --model-render-scale, and so .dm-hero__model's width/height, which
+       is the box <model-viewer> sizes its WebGL drawing buffer from. Every
+       change therefore reallocates that buffer (plus its MSAA/depth
+       attachments and model-viewer's second presentation canvas) and
+       forces a full re-render, synchronously, on the main thread.
+
+       sizeHeroes() runs four or more times during an ordinary load —
+       inline, document.fonts.ready, window.load, and once per nav
+       ResizeObserver notification — and on a window at or above the
+       canvas's own 2.006 aspect ratio (the 2560x1440 reference display)
+       every one of those solves is clamped to exactly 1, so the buffer is
+       never resized and none of this is visible. Below that ratio the fit
+       is a real number that moves between solves, and each move was
+       another reallocation. Skipping writes that don't change the
+       rendered size is what keeps that to the times it's genuinely
+       needed; 0.001 of fit is well under a pixel of model box at any
+       viewport this runs at. */
+    if (Math.abs(fit - lastStageFit) > 0.001) {
+      lastStageFit = fit;
+      dmStage.style.setProperty("--stage-fit", `${fit}`);
+    }
 
     /* 1266 canvas units at the combined scale — the canvas's own aspect,
        so the section's box still frames the composition it contains —
@@ -579,10 +603,30 @@
       sizePlayHero();
     };
 
+    /* Several of the triggers below routinely fire in the SAME frame as
+       each other — the webfont landing resolves document.fonts.ready and
+       reflows the nav (waking its ResizeObserver) at once, and on a warm
+       load window.load follows a frame or two later. Each full pass
+       forces layout on three heroes and can resize the Play page's WebGL
+       buffer, so running one per event meant doing that work three or
+       four times over in a few milliseconds. Coalescing onto a single
+       animation frame collapses a burst into one solve, and gives a
+       resize drag one pass per frame instead of one per event. The first
+       call stays synchronous so the heroes are sized before first paint
+       rather than a frame after it. */
+    let pending = 0;
+    const scheduleSizeHeroes = () => {
+      if (pending) return;
+      pending = requestAnimationFrame(() => {
+        pending = 0;
+        sizeHeroes();
+      });
+    };
+
     sizeHeroes();
-    window.addEventListener("resize", sizeHeroes);
+    window.addEventListener("resize", scheduleSizeHeroes);
     // the laptop video and the 3D model settle after this fires
-    window.addEventListener("load", sizeHeroes);
+    window.addEventListener("load", scheduleSizeHeroes);
 
     /* FS Mondwest swapping in is the big one. Every hero here is measured
        through a title set in it, and the fallback serif's metrics are
@@ -590,15 +634,24 @@
        buttons ~90px below the fold and then leaves them there — `load`
        does NOT wait for a webfont. */
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(sizeHeroes);
+      document.fonts.ready.then(scheduleSizeHeroes);
     }
 
     // the nav reflows on its own schedule too — a font swap, or the
     // hamburger dropdown opening — and none of that raises a window
     // resize event, so the listeners above would miss it
     if (navWrap && "ResizeObserver" in window) {
-      new ResizeObserver(sizeHeroes).observe(navWrap);
+      new ResizeObserver(scheduleSizeHeroes).observe(navWrap);
     }
+
+    /* scramble-text.js pins its title's height for the 1.5s it animates,
+       so a solve landing mid-animation measures the resolved layout
+       rather than a line-count that random glyphs happened to produce
+       (see the comment there). It fires this when it releases the pin —
+       worth a final solve because the height it pinned was whatever the
+       title measured when the animation STARTED, which on a cold load can
+       still be the pre-swap fallback font. */
+    document.addEventListener("scramble:done", scheduleSizeHeroes);
   }
 
   /* ---------- homepage case studies: sticky sidebar, centered in the
