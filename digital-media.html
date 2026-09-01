@@ -18,13 +18,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=16" />
+<link rel="stylesheet" href="css/style.css?v=17" />
 <!-- the 3D model's poster (see <model-viewer> below) — preloaded so it's
      ready the instant the custom element upgrades, instead of the poster
      itself being the thing you wait on. This is what makes the head show
      up immediately instead of an empty gap before the real model loads. -->
 <link rel="preload" as="image" href="assets/images/me-head-poster.webp" fetchpriority="high" />
-<script type="module" src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js"></script>
+<!-- <model-viewer> is NOT loaded here any more — see the deferral script
+     at the bottom of this page for why. The poster preloaded above is
+     what fills the hero until it arrives. -->
 </head>
 <body>
 
@@ -294,9 +296,72 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=16"></script>
-<script src="js/scramble-text.js?v=16"></script>
-<script src="js/head-track.js?v=16"></script>
+<!-- ================= DEFERRED 3D MODEL =================
+     Everything <model-viewer> costs used to land inside the hero's own
+     entrance animation. The custom-element bundle is ~1MB of JavaScript to
+     fetch, parse and execute; upgrading the element then triggers the .glb
+     parse, two WebP texture decodes, the GPU upload of both, shader
+     compilation, and model-viewer's environment (PMREM) generation —
+     none of which is interruptible once it starts.
+
+     All of it fired within the first few hundred milliseconds, i.e. while
+     the title was mid-scramble and the .reveal transitions were running,
+     which is what made the page visibly seize rather than merely take a
+     moment to load. The work itself is not wasted — it is the character,
+     and it has to happen — it just has no reason to happen THEN.
+
+     So it is held until the hero has finished animating: scramble-text.js
+     fires scramble:done when the title finishes resolving, and a timer
+     backstops it (the scramble is skipped entirely under
+     prefers-reduced-motion, so that event is not guaranteed to arrive).
+     The visitor sees the poster the whole time either way, and the head
+     starts tracking the cursor a moment later than it used to. -->
+<script>
+  (function () {
+    var mv = document.getElementById("dmModel");
+    if (!mv) return;
+
+    /* the WebGL canvas is transparent around the character, so the CSS
+       poster standing in behind it has to be cleared once the real thing
+       is up or it shows through — see .dm-hero__model in style.css */
+    mv.addEventListener("load", function () {
+      mv.classList.add("is-model-ready");
+    }, { once: true });
+
+    var started = false;
+    function loadModelViewer() {
+      if (started) return;
+      started = true;
+      var s = document.createElement("script");
+      s.type = "module";
+      s.src = "https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
+      document.head.appendChild(s);
+    }
+
+    /* Under reduced motion there is no entrance animation to protect —
+       scramble-text.js leaves the real text in place and never runs — so
+       there is nothing to wait for and holding the model back would just
+       be a slower page for no reason. */
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      loadModelViewer();
+      return;
+    }
+
+    document.addEventListener("scramble:done", loadModelViewer, { once: true });
+
+    /* Deliberately a timer and NOT requestIdleCallback. rIC fires at the
+       first idle period, not at its timeout, and the gaps between frames
+       of an animation are idle — measured firing at 400ms, i.e. squarely
+       inside the 1500ms scramble this exists to stay out of. A plain
+       timeout past the animation's own duration is the guarantee that was
+       actually wanted; scramble:done normally beats it to the punch. */
+    setTimeout(loadModelViewer, 2500);
+  })();
+</script>
+
+<script src="js/main.js?v=17"></script>
+<script src="js/scramble-text.js?v=17"></script>
+<script src="js/head-track.js?v=17"></script>
 <!-- powers the Jaydon MP4 .instagram-media blockquotes above — Instagram's
      own script, not ours; it finds every blockquote with that class and
      replaces it with the real embedded player.

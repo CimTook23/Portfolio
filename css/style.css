@@ -2523,6 +2523,29 @@ footer {
   transform: translateX(560px) scale(calc(1 / var(--model-render-scale)));
   transform-origin: top left;
 
+  /* ---- poster stand-in, painted by CSS rather than by <model-viewer> ----
+     The <model-viewer> script is no longer loaded during page load (see
+     digital-media.html), which means this element spends the first couple
+     of seconds as an un-upgraded unknown element — and an un-upgraded
+     element cannot honour its own `poster` attribute, so the hero would
+     open with a hole where the character belongs.
+
+     Painting the same poster as this element's background covers that
+     window with no JavaScript at all. It costs one image decode that was
+     already happening (the file is preloaded in <head>), and because the
+     poster is 1920x957 — aspect 2.006, the canvas's own ratio to three
+     decimal places — `100% 100%` lands it on exactly the framing the
+     model renders at, with no letterboxing and no distortion. The
+     mask-image below applies to it too, so the stand-in fades out at the
+     bottom the same way the real model does.
+
+     It is dropped again on the model's `load` event, because the WebGL
+     canvas is transparent everywhere the character isn't: left in place,
+     the poster would keep showing through around the real model. */
+  background-image: url("../assets/images/me-head-poster.webp");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+
   --poster-color: transparent;
   /* <model-viewer> draws its own loading bar across the TOP of the element
      while the .glb downloads — a 5px rgba(0, 0, 0, 0.4) strip that fades
@@ -2538,6 +2561,11 @@ footer {
   /* fades the shoulders/torso out into the page background below */
   mask-image: linear-gradient(to bottom, #000 55%, transparent 88%);
   -webkit-mask-image: linear-gradient(to bottom, #000 55%, transparent 88%);
+}
+
+/* see .dm-hero__model's background-image above for why this exists */
+.dm-hero__model.is-model-ready {
+  background-image: none;
 }
 
 /* no longer position: absolute inside .dm-hero__stage's transformed
@@ -3045,6 +3073,19 @@ footer {
 
 .scramble-char--lock {
   animation: scramble-flash 380ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Every element this effect runs on also carries a filter: drop-shadow()
+   glow, and a filter has to be re-rendered from scratch each time the
+   element's content changes — which, for the 1500ms this animation runs,
+   is nearly every frame. scramble-text.js adds this class for exactly
+   that window (see the comment there). !important because the glow is
+   declared at several different specificities across the heroes and this
+   has to out-rank all of them; it is removed again the moment the last
+   character locks, so the glow is only absent while the text is still
+   unreadable glyphs anyway. */
+[data-scramble].is-scrambling {
+  filter: none !important;
 }
 
 @keyframes scramble-flash {

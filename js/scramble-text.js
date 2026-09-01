@@ -61,7 +61,25 @@
     const lockedHeight = el.offsetHeight;
     if (lockedHeight) el.style.height = lockedHeight + "px";
 
+    /* ---- suppress the title's glow for the duration ----
+       Every title this runs on carries a filter: drop-shadow() glow (see
+       .hero__title in style.css). A filter is not a paint the browser can
+       reuse: it renders the element into an offscreen buffer and runs a
+       blur over it, and it has to redo that whenever the element's
+       content changes. This loop rewrites a character roughly every 45ms
+       per span, so for the full 1500ms the entire title — a box that is
+       ~1500x1050 canvas units on the Play hero — was being re-rasterised
+       and re-blurred on nearly every frame, right at the moment the 3D
+       model is also loading and the reveals are running.
+
+       Dropping the glow while the glyphs are still flickering costs
+       almost nothing visually — it fades back in as the text resolves,
+       which reads as part of the effect — and gives those frames back to
+       everything else competing for them. */
+    el.classList.add("is-scrambling");
+
     const release = () => {
+      el.classList.remove("is-scrambling");
       el.style.height = "";
       /* If this ran before the webfont swapped, the height pinned above
          was the fallback's — so hand whoever measures this element a
