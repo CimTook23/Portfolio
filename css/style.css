@@ -485,8 +485,11 @@ html {
     pointer-events: none;
     z-index: 2147483647;
     /* the element is moved by transform alone (never top/left), so the
-       whole follow loop stays on the compositor */
-    will-change: transform, filter;
+       whole follow loop stays on the compositor. `filter` used to be
+       listed here too, back when the loop wrote a blur radius every
+       frame — promising the compositor a filter it no longer animates
+       just costs it preparation for nothing. */
+    will-change: transform;
     /* opacity only — position must not be transitioned or it would fight
        the rAF loop that already smooths it */
     transition: opacity 0.25s ease;
@@ -539,20 +542,28 @@ html {
   }
 
   /* A ring is a 1px line; a plain filter: blur() at any strength that
-     reads as "fast" would dissolve it entirely. The motion blur is
-     therefore mostly the directional stretch applied in main.js — the
-     ring elongates along its own travel and thins across it, which is
-     what a smeared circle actually looks like — with only a light blur
-     layered on top. Both are set inline per frame. */
+     reads as "fast" would dissolve it entirely. The motion smear is
+     therefore the directional stretch applied in main.js — the ring
+     elongates along its own travel and thins across it, which is what a
+     smeared circle actually looks like.
+
+     It used to be that stretch PLUS a light per-frame filter: blur().
+     The blur is gone, and the reason is cost rather than taste. This
+     element replaces the system cursor, and a system cursor is drawn by
+     the OS compositor at no cost to the page at all. Everything the ring
+     does per frame is now a single `transform` write — position, rotate
+     and scale are all compositor properties, so a moving ring produces
+     no layout, no paint and no raster. An animated filter radius was the
+     one thing that broke that: it forced the element to be re-rasterised
+     and run through a GPU blur every frame it moved, which on a laptop
+     already short of frames is precisely where it hurt most. The stretch
+     was always doing most of the work of reading as speed anyway. */
 }
 
-/* prefers-reduced-motion: keep the ring, drop the smear. The stretch and
-   blur are inline styles from the loop, so this has to out-specify them. */
-@media (pointer: fine) and (prefers-reduced-motion: reduce) {
-  .cursor-ring {
-    filter: none !important;
-  }
-}
+/* prefers-reduced-motion needs no rule of its own here any more. It used
+   to exist to out-specify the inline filter the loop wrote every frame;
+   with no inline filter left, main.js's own `reduced` branch simply skips
+   the smear transform and the ring follows the pointer rigidly. */
 
 /* ---------- scrollbar ---------- */
 

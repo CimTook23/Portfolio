@@ -63,16 +63,68 @@
     document.body.appendChild(ring);
 
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const EASE = reduced ? 1 : 0.2;   /* 1 = pinned to the pointer, no lag and so no smear */
+    const EASE = 0.2;                 /* the original per-frame-at-60fps feel — converted to a rate below, never used as a multiplier directly */
     const RADIUS = 19;                /* half of the 38px box — the ring is positioned by its centre */
 
+    /* ---- why this is a per-SECOND rate and not a per-frame fraction ----
+       `x += (tx - x) * 0.2` closes a fifth of the remaining gap every
+       FRAME, which makes the ring's weight a function of how fast the
+       machine happens to be rendering: at 60fps the gap is 80% closed in
+       ~7 frames = 116ms, but at 30fps those same 7 frames take 233ms and
+       the ring feels twice as heavy. Nothing about the pointer changed —
+       only the frame budget did. That's why the ring drags on the Play
+       page and on smaller/slower viewports specifically, where the 3D
+       model and the page's backdrop-filters are competing for the same
+       frames.
+
+       This is the identical bug head-track.js already documents fixing
+       for the model's head ("a flat per-FRAME lerp ... is frame-RATE
+       dependent"); the cursor was simply never given the same treatment.
+       Same conversion, same 60fps baseline, so the ring's feel on a
+       display that was already hitting 60fps is unchanged — it just now
+       feels the same everywhere else too.
+
+       Solving (1 - EASE) per 1/60s for a continuous decay rate:
+         factor = 1 - e^(-DECAY_RATE * dt) */
+    const DECAY_RATE = -Math.log(1 - EASE) * 60;
+
+    /* The smear had the same unit bug for the same reason. `speed` was
+       px-per-FRAME, so one physical mouse flick produced a bigger number
+       — and so more stretch — purely because the frame took longer. The
+       ring got visibly fatter on exactly the viewports where it was
+       already lagging, which is most of what "heavier" was. This is the
+       original 0.028 re-expressed against px-per-SECOND, so the rendered
+       stretch at 60fps is unchanged.
+
+       There is no blur companion to this constant any more. The loop used
+       to also write `filter: blur(Npx)` every frame, and that single line
+       was almost the entire render cost of this cursor: `transform` is a
+       compositor property, so moving/stretching the ring never touches
+       paint, but a CHANGING filter radius forces the element to be
+       re-rasterised and put through a GPU blur pass on every frame it
+       moves. A real system cursor is composited by the OS and costs the
+       page nothing, so a per-frame raster is the one thing that could
+       never match it. The directional stretch survives — it was always
+       doing most of the work of reading as speed (see .cursor-ring's own
+       comment in style.css), and being part of `transform` it is free. */
+    const STRETCH_PER_SPEED = 0.028 / 60;
+
     let tx = 0, ty = 0, x = 0, y = 0, px = 0, py = 0, live = false, raf = 0;
+    let lastFrame = 0;
+    let lastHotTarget = null;   // see the pointermove handler for why
 
-    const loop = () => {
-      x += (tx - x) * EASE;
-      y += (ty - y) * EASE;
+    const loop = (now) => {
+      /* clamped so a frame dropped to a stall (tab wake, a long task)
+         can't teleport the ring or spike the smear on the frame after */
+      const dt = lastFrame ? Math.min((now - lastFrame) / 1000, 1 / 15) : 1 / 60;
+      lastFrame = now;
 
-      const vx = x - px, vy = y - py;
+      const factor = reduced ? 1 : 1 - Math.exp(-DECAY_RATE * dt);
+      x += (tx - x) * factor;
+      y += (ty - y) * factor;
+
+      // px per second, not per frame — see STRETCH_PER_SPEED above
+      const vx = (x - px) / dt, vy = (y - py) / dt;
       px = x; py = y;
 
       let transform = `translate3d(${x - RADIUS}px, ${y - RADIUS}px, 0)`;
@@ -81,13 +133,12 @@
         const speed = Math.hypot(vx, vy);
         /* 1 at rest, capped so a fast flick across a wide monitor cannot
            stretch the ring into a line */
-        const stretch = Math.min(1 + speed * 0.028, 1.85);
+        const stretch = Math.min(1 + speed * STRETCH_PER_SPEED, 1.85);
         /* thinning across the direction of travel preserves the ring's
            area, which is what stops the smear reading as "it got bigger" */
         const squash = 1 / (1 + (stretch - 1) * 0.55);
         const angle = Math.atan2(vy, vx);
         transform += ` rotate(${angle}rad) scale(${stretch}, ${squash})`;
-        ring.style.filter = `blur(${Math.min(speed * 0.16, 2.6)}px)`;
       }
 
       ring.style.transform = transform;
@@ -98,7 +149,9 @@
         raf = requestAnimationFrame(loop);
       } else {
         raf = 0;
-        if (!reduced) ring.style.filter = "blur(0px)";
+        // so the next kick starts from a fresh 1/60 rather than measuring
+        // dt across however long the pointer sat still
+        lastFrame = 0;
       }
     };
 
@@ -113,11 +166,26 @@
         x = tx; y = ty; px = tx; py = ty;
         ring.classList.add("is-live");
       }
-      /* grows over anything clickable, standing in for the system
-         pointer this replaces */
-      const hot = e.target instanceof Element &&
-        e.target.closest('a, button, [role="button"], input, textarea, select, summary');
-      ring.classList.toggle("is-hot", !!hot);
+      /* Contracts over anything clickable, standing in for the system
+         pointer this replaces.
+
+         closest() walks every ancestor of the target against a
+         seven-selector list, and this handler runs on every pointermove
+         the browser delivers — but the answer can only change when the
+         pointer crosses from one element into another, which is a small
+         fraction of those events. Comparing the target first turns the
+         common case (moving within the element you are already over) into
+         one reference check. The browser is already tracking exactly this
+         to resolve :hover for a normal cursor; this is the cheapest way
+         to avoid doing it a second time in script. */
+      const target = e.target instanceof Element ? e.target : null;
+      if (target !== lastHotTarget) {
+        lastHotTarget = target;
+        ring.classList.toggle(
+          "is-hot",
+          !!(target && target.closest('a, button, [role="button"], input, textarea, select, summary'))
+        );
+      }
       kick();
     }, { passive: true });
 
