@@ -28,33 +28,6 @@
      between them IS the velocity the smear is derived from, so the lag
      that makes the ring feel weighty is the same quantity that drives the
      blur — one behaviour, not two that have to be kept in sync. */
-  /* ---------- back to top (case studies) ----------
-     The anchor itself needs no JS — href="#top" plus the page's
-     scroll-behavior: smooth already does the navigation, and it keeps
-     working if this script never runs. All this adds is the reveal, so
-     the control is not sitting on the first screen pointing at where the
-     visitor already is.
-
-     Threshold is a viewport height rather than a fixed pixel count: "you
-     have scrolled past roughly one screen" means the same thing on a
-     phone and a 1440p monitor, where a flat 600px would not.
-
-     Passive listener and no work beyond a class toggle — this runs on
-     every scroll event, alongside the eased-wheel rAF loop above, so it
-     deliberately reads scrollY and does nothing else. */
-  const backToTop = document.querySelector(".cs-top");
-  if (backToTop) {
-    const syncBackToTop = () => {
-      backToTop.classList.toggle(
-        "is-visible",
-        window.scrollY > window.innerHeight * 0.9
-      );
-    };
-    syncBackToTop();
-    window.addEventListener("scroll", syncBackToTop, { passive: true });
-    window.addEventListener("resize", syncBackToTop);
-  }
-
   const finePointer = window.matchMedia("(pointer: fine)");
   if (finePointer.matches) {
     const ring = document.createElement("div");
@@ -1088,8 +1061,8 @@
 
      The links are plain <a href="#id">. Scrolling is already handled by
      `html { scroll-behavior: smooth }` in style.css, exactly as it is for
-     .cs-jump__links and .cs-top, so there is no click handler here and
-     the list still navigates if the rest of this block ever throws. */
+     .cs-jump__links, so there is no click handler here and the list still
+     navigates if the rest of this block ever throws. */
   const toc = document.querySelector(".cs-toc");
   if (toc) {
     const sections = Array.prototype.slice
@@ -1148,9 +1121,26 @@
         return a;
       });
 
+      /* "Go back up" — what the floating .cs-top button in the
+         bottom-right corner used to do. Same anchor it used (#top, on
+         <main>), so the browser's own fragment navigation plus
+         scroll-behavior: smooth still does the work and it keeps
+         functioning if the rest of this block throws.
+
+         Appended to the panel rather than to `ol`, for two reasons: it
+         is not a section of the case study and has no business in a
+         list of them, and `links` below is index-matched to `sections`
+         by the scroll spy — an extra entry in that array would offset
+         every highlight after it. */
+      const toTop = document.createElement("a");
+      toTop.className = "cs-toc__top";
+      toTop.href = "#top";
+      toTop.textContent = "Go back up";
+
       list.appendChild(ol);
       panel.appendChild(title);
       panel.appendChild(list);
+      panel.appendChild(toTop);
       toc.appendChild(toggle);
       toc.appendChild(panel);
       toc.removeAttribute("hidden");
@@ -1229,6 +1219,9 @@
       links.forEach((link) => {
         link.addEventListener("click", () => setOpen(false));
       });
+
+      // same contract as the entries above: using the bar dismisses it
+      toTop.addEventListener("click", () => setOpen(false));
 
       document.addEventListener("keydown", (e) => {
         if (e.key === "Escape" && toc.classList.contains("is-open")) {

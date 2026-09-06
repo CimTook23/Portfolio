@@ -381,78 +381,6 @@ html {
   scroll-behavior: smooth;
 }
 
-/* ---------- back to top (case studies) ----------
-   Fixed to the viewport's bottom-right, so it rides along the whole
-   scroll rather than sitting at one point in the document.
-
-   position: fixed, not sticky, and the difference matters here: sticky
-   only pins within its own scroll container's box, so a sticky element
-   dropped at the end of <main> would only "stick" once you had already
-   scrolled to the end of main — exactly where a back-to-top control is
-   least needed. Fixed detaches it from the flow entirely.
-
-   Borrows the .filter-pill / .nav__switch surface (transparent fill,
-   1px stroke, inner glow, backdrop blur) rather than inventing one, so
-   it reads as the same family of control as everything else. */
-.cs-top {
-  position: fixed;
-  right: clamp(1.25rem, calc(0.5218rem + 3.107vw), 2.5rem);
-  bottom: clamp(1.25rem, calc(0.5218rem + 3.107vw), 2.5rem);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  background: transparent;
-  border: 1px solid var(--chip-border);
-  color: var(--text-primary);
-  box-shadow: inset 0 1px 10px rgba(var(--overlay-rgb), 0.25);
-  backdrop-filter: blur(10px) saturate(180%);
-  -webkit-backdrop-filter: blur(10px) saturate(180%);
-  /* under .nav-wrap's 999 so the nav always wins, above everything else */
-  z-index: 90;
-
-  /* hidden until there is something to go back up to — a back-to-top
-     control sitting on the first screen points at where you already are.
-     main.js adds .is-visible past roughly one viewport of scroll.
-     pointer-events: none while hidden so it cannot be tabbed to or
-     clicked through the transparent state. */
-  opacity: 0;
-  pointer-events: none;
-  transform: translateY(8px);
-  transition: opacity 0.25s ease, transform 0.25s ease,
-    background 0.2s ease, border-color 0.2s ease;
-}
-
-.cs-top.is-visible {
-  opacity: 1;
-  pointer-events: auto;
-  transform: translateY(0);
-}
-
-.cs-top:hover {
-  background: rgba(var(--overlay-rgb), 0.08);
-  border-color: var(--text-secondary);
-}
-
-/* keyboard users get a real focus ring — the custom cursor's hover state
-   does nothing for them, and the control is otherwise a bare outline */
-.cs-top:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .cs-top {
-    transition: opacity 0.25s ease;
-    transform: none;
-  }
-  .cs-top.is-visible {
-    transform: none;
-  }
-}
-
 /* ---------- custom cursor ----------
    A 38px ring that replaces the system pointer. Shape follows the Figma
    panel — a circle with no fill — but the stroke deliberately does not:
@@ -4632,8 +4560,11 @@ footer {
   color: var(--ink);
 }
 
-/* same focus treatment as .cs-top */
+/* the accent ring the removed .cs-top button used to carry - the
+   custom cursor's hover state does nothing for keyboard users, and
+   these rows are otherwise unpainted */
 .cs-toc__link:focus-visible,
+.cs-toc__top:focus-visible,
 .cs-toc__toggle:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
@@ -4652,6 +4583,41 @@ footer {
 .cs-toc__link.is-active {
   color: var(--ink);
   font-weight: 600;
+}
+
+/* "Go back up", the last row of the card.
+
+   This replaces the 56px round button that used to float in the
+   bottom-right corner. That control had to be fixed to the viewport and
+   faded in past a screen of scroll to avoid sitting on the hero; the
+   card is already pinned and already past the hero, so the same job
+   costs one more row here and one less floating object on the page.
+
+   Separated from the entries above by a hairline rather than by a gap
+   alone: it is the one row that does not point at a section, and after
+   nine or ten labels a plain gap reads as list padding. The rule is
+   painted with --overlay-rgb so it inverts with the theme like the ~50
+   other translucent marks on the site.
+
+   It is a sibling of .cs-toc__list, not a child, so the list's own
+   overflow never scrolls it out of reach on a short window. */
+.cs-toc__top {
+  display: block;
+  margin-top: 0.5rem;
+  padding: 0.75rem 0.75rem 0.25rem;
+  border-top: 1px solid rgba(var(--overlay-rgb), 0.12);
+  font-family: var(--font-body);
+  font-size: var(--text-toc);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--copy-ink);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+.cs-toc__top:hover,
+.cs-toc__top:focus-visible {
+  color: var(--ink);
 }
 
 /* collapsed-bar control: desktop has the whole card on screen already,
@@ -4692,9 +4658,10 @@ footer {
     top: clamp(0.75rem, 2vh, 1.25rem);
     left: 50%;
     transform: translateX(-50%);
-    /* above .cs-top's 90 would fight the back-to-top button for the same
-       corner; below it, and far below .nav-wrap's 999, keeps the nav
-       clickable the whole way down */
+    /* far below .nav-wrap's 999 so the nav stays clickable the whole way
+       down. Nothing else on the page is layered any more - the floating
+       back-to-top button that used to hold 90 is gone, and its job is
+       now the last row of this card. */
     z-index: 80;
     width: min(24rem, calc(100vw - 2.5rem));
     padding: 0;
@@ -4704,9 +4671,10 @@ footer {
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
-    /* hidden until the reader is past the hero — same threshold and same
-       reasoning as .cs-top: a control pointing into the page has no job
-       on the first screen, and here it would sit on top of the title */
+    /* hidden until the reader is past the hero: a control pointing into
+       the page has no job on the first screen, and here it would sit on
+       top of the title. The threshold outlived the .cs-top button it was
+       shared with, which faded in at the same point for the same reason. */
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
@@ -4791,7 +4759,11 @@ footer {
   }
 
   .cs-toc__list {
-    max-height: min(calc(60vh - 3.5rem), 22rem);
+    /* 7rem, not 3.5: the panel now also holds the title AND the "Go back
+       up" row, and only the list is allowed to scroll. Leaving the old
+       allowance would let the two of them push the last entries past the
+       panel's own max-height, where overflow: hidden would clip them. */
+    max-height: min(calc(60vh - 7rem), 18rem);
     padding: 0 0.5rem 0.75rem;
   }
 
@@ -4812,11 +4784,22 @@ footer {
     min-height: 44px;
     padding: 0.5rem 0.75rem;
   }
+
+  /* same 44px floor, and the panel's own side padding rather than the
+     list's, so the hairline runs the full width of the card */
+  .cs-toc__top {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0 0.5rem 0.25rem;
+    padding: 0.5rem 0.75rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .cs-toc,
   .cs-toc__link,
+  .cs-toc__top,
   .cs-toc__panel,
   .cs-toc__chev {
     transition: none;
