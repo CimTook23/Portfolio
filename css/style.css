@@ -4392,6 +4392,408 @@ footer {
   color: var(--ink);
 }
 
+/* =========================================================
+   Case study: article + sticky table of contents
+   =========================================================
+   The two-column shell. Everything below the jump links lives in here:
+   the article in column one, the contents card in column two.
+
+   The sidebar column is a clamp rather than a fraction on purpose. A
+   fractional track would keep growing on a 2560px monitor — .cs-container
+   has no max-width (see its own rule above), so the page really is that
+   wide — and a 400px-wide list of eight short words looks broken. Capped
+   at 20rem it stays a sidebar at every width, and the article column
+   absorbs all the extra space instead.
+
+   The 18vw middle arm is what actually sets the balance: the sidebar
+   takes close to a fifth of the page and the article gives up the same
+   amount, which is the point — the article was running to nearly a
+   thousand pixels of measure on a laptop, well past a comfortable
+   reading width, while the contents list was narrow enough that
+   ordinary section headings wrapped onto a second line. */
+.cs-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(13rem, 18vw, 20rem);
+  /* minmax(0, 1fr), not plain 1fr: a grid track's default min-width is
+     auto, which refuses to shrink below its widest content. Several
+     sections in here hold wide media and non-wrapping rows, and with a
+     plain 1fr any one of them would push the whole grid wider than the
+     viewport and hand the page a horizontal scrollbar. */
+  column-gap: clamp(2rem, calc(0.3243rem + 7.111vw), 4.5rem);
+  align-items: start;
+}
+
+/* Both children are placed explicitly because the card now comes FIRST in
+   the markup, ahead of the article it describes. That order is for the
+   keyboard: the aside is navigation, and with auto-placement (card last)
+   a keyboard user had to tab through every link, video tile and toggle in
+   a 3000px article before reaching a control that was on screen the whole
+   time. Reading order and tab order now both meet the card where it is
+   visible, and these two rules put it back on the right of the article
+   where it was. */
+.cs-layout__body {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.cs-toc {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+/* The article's own ceiling, on top of the track sizing above.
+
+   Narrowing the sidebar's share is enough on a laptop, but it barely
+   touches a 2560px monitor: .cs-container has no max-width, the sidebar
+   stops growing at 20rem, and every remaining pixel lands in the article
+   — nearly 1900px of it, which leaves .cs-split's two-up media close to
+   950px a side. Capping the article ELEMENT rather than its track is what
+   keeps both edges where the design already put them: the track still
+   runs the full width, so the card stays pinned to the right margin and
+   the article still starts flush with the hero's left edge above it. The
+   surplus becomes gutter between the two, as in the reference layout.
+
+   112rem leaves the article as wide as it can go while still keeping a
+   deliberate gutter: at 2560 the three parts land on 1792 / 138 / 320,
+   where 138 still reads as a gap rather than as the column edge. Taking
+   it any further collapses the gutter to the designed 72px and the cap
+   stops doing anything at all on this monitor. Below about 2500px it
+   never engages and the grid is the track sizing alone.
+
+   Worth knowing when tuning this number: it is not purely a media
+   control. .cs-para's own max-width is 62ch, but ch resolves against that
+   element's font-size, which is 22px here (it also carries .hero__desc) —
+   so the cap lands near 860px, and a two-up .cs-split body only reaches
+   it once the article passes about 1780px. The full-width paragraphs are
+   the ones to watch: several of them carry an inline max-width: none,
+   which beats this rule and any other, so they take the article's entire
+   width and their line length tracks this cap one-for-one.
+
+   No justify-self is needed: a stretched grid item that hits a max-width
+   is placed at the start of its track on its own. */
+.cs-layout__body {
+  max-width: 112rem;
+}
+
+/* .cs-container section + section can't reach across the new wrapper —
+   .cs-layout is a div, so the hero → jump → article rhythm would lose its
+   last gap. Same clamp as that rule so the spacing stays identical. */
+.cs-jump + .cs-layout {
+  margin-top: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+}
+
+/* The card itself.
+
+   align-self: start is load-bearing, not cosmetic. A grid item defaults
+   to stretch, so this aside would be exactly as tall as the article next
+   to it — and an element that already fills its whole containing block
+   has nowhere to stick TO, which makes position: sticky silently do
+   nothing. Shrinking it to its content height gives it the full column
+   to travel down.
+
+   top is a plain viewport offset with no nav compensation, matching
+   every other anchor on the site: .nav-wrap is absolute, not fixed (see
+   its own rule), so it scrolls away and never overlays the card. */
+.cs-toc {
+  position: sticky;
+  top: clamp(1.5rem, 5vh, 3rem);
+  align-self: start;
+  /* A flat panel, not one of the site's glass controls: solid fill, no
+     stroke, no inner glow, no backdrop blur. --chip-bg IS #171717 (see
+     :root) - naming the token rather than the literal is what keeps the
+     card legible in light mode, where the same token resolves to #e7eaf7
+     and the text tokens below invert with it. A hardcoded #171717 would
+     leave dark-on-dark text on a white page.
+     Vertical padding is unchanged; only the sides come in. */
+  background: var(--chip-bg);
+  border: 0;
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  padding-block: clamp(1.25rem, calc(0.886rem + 1.553vw), 1.75rem);
+  padding-inline: clamp(1.125rem, calc(0.761rem + 1.553vw), 1.625rem);
+}
+
+/* Typography borrowed wholesale from .nav__links a (About me / Resume /
+   Contact): same family, same --text-nav-switch size, same --ink colour.
+   Only the weight is held at 600, so the label still reads as a heading
+   now that the rule under it is gone and nothing else separates it from
+   the first entry. */
+.cs-toc__title {
+  /* the reference sets the title on the same rhythm as the entries below
+     it - same size, same left edge, one step of the row gap between - so
+     the whole card reads as a single list whose first line happens to be
+     bold. margin-bottom therefore matches .cs-toc__link's padding-block
+     rather than being a heading margin of its own. */
+  margin: 0 0 0.625rem;
+  padding-inline: 0.75rem;
+  font-family: var(--font-body);
+  font-size: var(--text-toc);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+/* data-native-scroll in the markup is what stops main.js's eased-wheel
+   handler from calling preventDefault on wheel events that land in here
+   (see its listener) — without it, wheeling over a list long enough to
+   overflow would scroll the page instead of the list.
+
+   The cap is generous: on a tall window nothing ever scrolls and this is
+   inert, on a short laptop the longest case study (ten entries) gets a
+   scrollbar instead of running off the bottom of the screen. */
+.cs-toc__list {
+  max-height: calc(100vh - 12rem);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--overlay-rgb), 0.25) transparent;
+}
+
+.cs-toc__list ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --text-toc is declared here rather than in :root because nothing else
+   on the site uses it: it is the one size that has to stay in proportion
+   to the CARD, not to the page. The card's own width is clamp(13rem,
+   18vw, 20rem), so the type tracks the same viewport arm and the two
+   scale together - a fixed size would look correct at one width only.
+   The 20px ceiling is set by the longest label any case study has
+   ("Information architecture", Aira) against the narrowest card. */
+.cs-toc {
+  --text-toc: clamp(1.0625rem, calc(0.8rem + 0.35vw), 1.25rem);
+}
+
+.cs-toc__link {
+  display: block;
+  /* the reference's rhythm: roughly 2.4x the type size between one entry
+     and the next, which is a lot of air by this site's standards and is
+     the single thing that makes the card read the way it does. Vertical
+     padding does the work, not a list gap, so the whole row - not just
+     the text - stays a click target even though nothing is painted
+     behind it any more. */
+  padding: 0.625rem 0.75rem;
+  border-radius: var(--radius-sm);
+  /* --text-secondary is the resting colour, which is the same value
+     .nav__links a fades TO on hover - a dimmed white rather than a grey
+     of its own, and a token, so it inverts with the theme. The card only
+     ever has one row at full --ink (the current section), so every other
+     row has to sit below it; starting them at full white would leave the
+     current one with nowhere to go. */
+  font-family: var(--font-body);
+  font-size: var(--text-toc);
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: color 0.18s ease;
+}
+
+/* Hover brightens toward --ink - the opposite direction to .nav__links a,
+   and deliberately so. The nav's links rest at full white, so dimming is
+   the only move available to them; these rest dimmed, so lifting is. Both
+   read as "this one is live" because both move AWAY from their resting
+   state, which is what the feedback actually has to say. */
+.cs-toc__link:hover,
+.cs-toc__link:focus-visible {
+  color: var(--ink);
+}
+
+/* same focus treatment as .cs-top */
+.cs-toc__link:focus-visible,
+.cs-toc__toggle:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* No fill behind the current row at all now - the contrast between full
+   --ink and the dimmed --text-secondary above does the marking on its
+   own, which is how a contents list in print would do it.
+
+   The weight stays. Brightness alone would put the whole signal in one
+   channel, and it is the channel that degrades first: on a dim laptop,
+   in sunlight, or for anyone with low vision, --ink against
+   --text-secondary can flatten out to nothing. Weight survives all
+   three, and it is what the reference shows too. (aria-current already
+   covers assistive tech; this is for eyes.) */
+.cs-toc__link.is-active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* collapsed-bar control: desktop has the whole card on screen already,
+   so the toggle only exists below the breakpoint (see the media query) */
+.cs-toc__toggle {
+  display: none;
+}
+
+/* ---------- below 1200px: the sidebar becomes a bar at the top ----------
+   Not the 56.25em the rest of this file collapses at. .cs-container's
+   side padding is 8.738vw, so at 900px the article column would be down
+   to roughly 500px while .cs-split is still a two-up grid — 250px
+   columns, with the media in them shrunk to match. 75em is the first
+   width where a ~200px sidebar still leaves the article comfortable.
+   Kept in em to match the unit this whole block uses. */
+@media (max-width: 75em) {
+  .cs-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* The bar is fixed to the top of the screen down here, so a section
+     reached from it lands with its heading tucked underneath: a
+     section's own padding-top is all the clearance there is, and at
+     390px that padding drops to 48px (see the 35em block) against a
+     bar whose bottom edge sits at 53px. scroll-margin-top is the
+     browser's own hook for exactly this, and this is the only rule in
+     the file that needs it - nothing else on the site stays fixed
+     while you scroll (.nav-wrap is absolute and scrolls away, which
+     is why no other anchor on any page compensates for anything). */
+  .cs-layout__body > section {
+    scroll-margin-top: 4.5rem;
+  }
+
+  /* the aside stops being the surface and becomes just a positioner;
+     .cs-toc__panel below picks the card treatment up instead */
+  .cs-toc {
+    position: fixed;
+    top: clamp(0.75rem, 2vh, 1.25rem);
+    left: 50%;
+    transform: translateX(-50%);
+    /* above .cs-top's 90 would fight the back-to-top button for the same
+       corner; below it, and far below .nav-wrap's 999, keeps the nav
+       clickable the whole way down */
+    z-index: 80;
+    width: min(24rem, calc(100vw - 2.5rem));
+    padding: 0;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    /* hidden until the reader is past the hero — same threshold and same
+       reasoning as .cs-top: a control pointing into the page has no job
+       on the first screen, and here it would sit on top of the title */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+  }
+
+  .cs-toc.is-past-hero {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .cs-toc__toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    width: 100%;
+    /* min-height, not more padding: the pill has to clear 44px for touch
+       (it measured 36) without growing the type or the bar's footprint. */
+    min-height: 44px;
+    padding: 0.625rem 1rem;
+    background: var(--chip-bg);
+    border: 0;
+    border-radius: var(--radius-pill);
+    box-shadow: none;
+    font-family: var(--font-body);
+    font-size: var(--text-nav-switch);
+    color: var(--ink);
+    cursor: pointer;
+    text-align: left;
+  }
+
+  .cs-toc__toggle-label {
+    font-weight: 600;
+    flex: none;
+  }
+
+  /* the current section's name, which is the actual reason to look at a
+     collapsed bar. It is the only part allowed to be long, so it gets
+     the leftover width and an ellipsis rather than wrapping the pill
+     onto a second line. */
+  .cs-toc__toggle-current {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--text-secondary);
+  }
+
+  .cs-toc__chev {
+    flex: none;
+    transition: transform 0.25s ease;
+  }
+
+  .cs-toc.is-open .cs-toc__chev {
+    transform: rotate(180deg);
+  }
+
+  .cs-toc__panel {
+    /* animating max-height rather than height: the list's real height
+       depends on how many sections the page has, which differs per case
+       study, so there is no single value to animate to */
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    background: var(--chip-bg);
+    border: 0;
+    border-radius: var(--radius-md);
+    transition: max-height 0.28s ease, opacity 0.2s ease, margin-top 0.28s ease;
+  }
+
+  .cs-toc.is-open .cs-toc__panel {
+    max-height: min(60vh, 26rem);
+    opacity: 1;
+    margin-top: 0.5rem;
+  }
+
+  .cs-toc__title {
+    margin: 0;
+    padding: 0.875rem 0.625rem 0.5rem;
+  }
+
+  .cs-toc__list {
+    max-height: min(calc(60vh - 3.5rem), 22rem);
+    padding: 0 0.5rem 0.75rem;
+  }
+
+  /* the collapsed pill stays at nav size - it is a control, not the list
+     - so --text-toc is pinned back down for the panel, which is much
+     wider than the desktop card and would otherwise take the 20rem
+     ceiling and look oversized on a phone. */
+  .cs-toc {
+    --text-toc: 1rem;
+  }
+
+  /* same 44px floor for the panel's rows, which came out at 38px. flex
+     centring rather than padding alone keeps the label optically centred
+     in the taller row whether it runs to one line or two. */
+  .cs-toc__link {
+    display: flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0.5rem 0.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-toc,
+  .cs-toc__link,
+  .cs-toc__panel,
+  .cs-toc__chev {
+    transition: none;
+  }
+}
+
 @media (max-width: 56.25em) {
   .cs-split,
   .cs-highlights-grid,

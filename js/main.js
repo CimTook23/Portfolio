@@ -1031,4 +1031,194 @@
       });
     });
   });
+
+  /* ---------- case study: table of contents ----------
+     The <aside class="cs-toc"> ships empty and hidden from the HTML; the
+     list is built here from the sections themselves, so the three case
+     studies share one implementation and adding or renaming a section
+     never needs a second edit. Every content section already carries a
+     semantic id and opens with an <h2 class="cs-heading">, which is all
+     the information a contents list needs.
+
+     Two deliberate scoping choices in the query below:
+       - `.cs-layout__body > section[id]` and not `section[id]`, because
+         `main` itself is `id="top"` and the footer has its own h2.
+       - `h2.cs-heading` and not `h2`, for the same reason — the footer's
+         "Let's c*nnect!" is a bare h2 and would otherwise turn up as an
+         entry pointing at nothing.
+
+     The links are plain <a href="#id">. Scrolling is already handled by
+     `html { scroll-behavior: smooth }` in style.css, exactly as it is for
+     .cs-jump__links and .cs-top, so there is no click handler here and
+     the list still navigates if the rest of this block ever throws. */
+  const toc = document.querySelector(".cs-toc");
+  if (toc) {
+    const sections = Array.prototype.slice
+      .call(document.querySelectorAll(".cs-layout__body > section[id]"))
+      // "Next project" is onward navigation to a different case study,
+      // not a part of this one — listing it in the contents of THIS page
+      // would be a link that leaves.
+      .filter((section) => section.id !== "next-project")
+      .filter((section) => section.querySelector("h2.cs-heading"));
+
+    if (sections.length > 1) {
+      const labelFor = (section) =>
+        section.dataset.toc ||
+        section.querySelector("h2.cs-heading").textContent.trim();
+
+      const panelId = "csTocPanel";
+
+      const toggle = document.createElement("button");
+      toggle.type = "button";
+      toggle.className = "cs-toc__toggle";
+      toggle.setAttribute("aria-expanded", "false");
+      toggle.setAttribute("aria-controls", panelId);
+      toggle.innerHTML =
+        '<span class="cs-toc__toggle-label">Contents</span>' +
+        '<span class="cs-toc__toggle-current"></span>' +
+        '<svg class="cs-toc__chev" width="14" height="14" viewBox="0 0 24 24" fill="none" ' +
+        'stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ' +
+        'aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>';
+
+      const panel = document.createElement("div");
+      panel.className = "cs-toc__panel";
+      panel.id = panelId;
+
+      const title = document.createElement("p");
+      title.className = "cs-toc__title";
+      title.textContent = "Table of contents";
+
+      const list = document.createElement("nav");
+      list.className = "cs-toc__list";
+      // main.js's eased-wheel handler calls preventDefault on every wheel
+      // event that is not inside a [data-native-scroll] subtree (see that
+      // listener above). Without this attribute, wheeling over a contents
+      // list tall enough to have its own scrollbar would scroll the page
+      // and leave the list stuck.
+      list.setAttribute("data-native-scroll", "");
+
+      const ol = document.createElement("ol");
+      const links = sections.map((section) => {
+        const li = document.createElement("li");
+        const a = document.createElement("a");
+        a.className = "cs-toc__link";
+        a.href = "#" + section.id;
+        a.textContent = labelFor(section);
+        li.appendChild(a);
+        ol.appendChild(li);
+        return a;
+      });
+
+      list.appendChild(ol);
+      panel.appendChild(title);
+      panel.appendChild(list);
+      toc.appendChild(toggle);
+      toc.appendChild(panel);
+      toc.removeAttribute("hidden");
+
+      const current = toggle.querySelector(".cs-toc__toggle-current");
+
+      /* ---- which entry is highlighted ----
+         A second, separate IntersectionObserver: the reveal observer
+         above unobserves each element the first time it fires, so it can
+         never report a section leaving or re-entering and cannot be
+         reused for this.
+
+         rootMargin shrinks the viewport to a band across its upper
+         middle — ignore the top 15% (a section that has only just poked
+         into view is not what you are reading yet) and the bottom 60%
+         (nor is one still well below the fold). Whichever sections
+         overlap that band, the FIRST in document order wins, which keeps
+         the highlight moving strictly downward as you scroll instead of
+         jumping ahead on a tall section.
+
+         When the band is empty — the gap between two sections, or the
+         very top and bottom of the page — the last known entry stays
+         lit rather than clearing, so the card never flickers to nothing. */
+      const visible = new Set();
+      let activeIndex = -1;
+
+      const setActive = (index) => {
+        if (index === activeIndex || index < 0) return;
+        if (activeIndex >= 0) {
+          links[activeIndex].classList.remove("is-active");
+          links[activeIndex].removeAttribute("aria-current");
+        }
+        activeIndex = index;
+        links[index].classList.add("is-active");
+        links[index].setAttribute("aria-current", "true");
+        current.textContent = links[index].textContent;
+      };
+
+      if ("IntersectionObserver" in window) {
+        const spy = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) visible.add(entry.target);
+              else visible.delete(entry.target);
+            });
+            for (let i = 0; i < sections.length; i++) {
+              if (visible.has(sections[i])) {
+                setActive(i);
+                break;
+              }
+            }
+          },
+          { rootMargin: "-15% 0px -60% 0px", threshold: 0 }
+        );
+        sections.forEach((section) => spy.observe(section));
+      }
+
+      // first paint, before any scrolling has happened
+      setActive(0);
+
+      /* ---- collapsed bar (below 75em) ----
+         Same open/close contract as the mobile nav dropdown above:
+         .is-open on the container, aria-expanded mirrored on the button,
+         and any link click closes it. The extra Escape and outside-click
+         handlers are here because this panel, unlike the nav, sits over
+         the article the reader is trying to get back to. */
+      const setOpen = (open) => {
+        toc.classList.toggle("is-open", open);
+        toggle.setAttribute("aria-expanded", String(open));
+      };
+
+      toggle.addEventListener("click", () => {
+        setOpen(!toc.classList.contains("is-open"));
+      });
+
+      links.forEach((link) => {
+        link.addEventListener("click", () => setOpen(false));
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && toc.classList.contains("is-open")) {
+          setOpen(false);
+          toggle.focus();
+        }
+      });
+
+      document.addEventListener("click", (e) => {
+        if (toc.classList.contains("is-open") && !toc.contains(e.target)) {
+          setOpen(false);
+        }
+      });
+
+      /* Below the breakpoint the bar is fixed to the top of the screen,
+         so on the first screen it would sit across the case study's
+         title. Same threshold as .cs-top for the same reason: a control
+         that navigates INTO the page has no job until you have started
+         reading it. Above the breakpoint the class is inert — the card
+         is a sticky column and is always visible. */
+      const syncPastHero = () => {
+        toc.classList.toggle(
+          "is-past-hero",
+          window.scrollY > window.innerHeight * 0.9
+        );
+      };
+      syncPastHero();
+      window.addEventListener("scroll", syncPastHero, { passive: true });
+      window.addEventListener("resize", syncPastHero);
+    }
+  }
 })();
