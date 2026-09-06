@@ -3620,13 +3620,23 @@ footer {
 
 .cs-heading {
   font-family: var(--font-display);
-  font-weight: 400;
+  /* 700, a real cut - the Google Fonts request in every page's head asks
+     for Inter 400;500;600;700, so this is the shipped Bold and not the
+     browser smearing the Regular into a fake one. Worth noting because
+     the OTHER section heading on the site, .section-head h2, cannot take
+     this: it is set in FS Mondwest, which is loaded as a single face, so
+     asking it for 700 would get exactly that synthetic smear. The two
+     heading styles diverge here for that reason, not by oversight. */
+  font-weight: 700;
   font-size: var(--text-h1);
   letter-spacing: -0.01em;
-  /* tighter than before — a divider reads as "attached" to its heading
-     when the gap is a small fraction of the heading's size, not a
-     fixed distance that stays huge even as the heading text shrinks */
-  margin-bottom: clamp(1rem, calc(0.6359rem + 1.553vw), 2.5rem);
+  /* 12-24px. A divider reads as "attached" to its heading when the gap
+     is a small fraction of the heading's size, and at 40px against a
+     64px heading it was not: the rule floated between the title and the
+     body rather than underlining the title. Halved, so the heading and
+     its rule read as one unit - which is what lets the (larger) gap
+     below the rule do the actual separating. See .cs-divider. */
+  margin-bottom: clamp(0.75rem, calc(0.486rem + 1.1268vw), 1.5rem);
 }
 
 /* "rise" scroll-in, matching the section headings on
@@ -3668,11 +3678,25 @@ footer {
    .filters). It uses the site's generic .reveal fade-and-rise instead. */
 
 /* hairline divider under every section title */
+/* 24-40px, down from 40-85px.
+
+   This was the same 40-85px clamp .cs-split__body used before it was
+   tightened, and it had the same problem: at 85px the heading block and
+   the content it introduces read as two unrelated things stacked up,
+   with the section's own 64px padding no longer dominating the spacing
+   inside it. On a 2560px monitor the run from heading to first line of
+   copy was 40 + 1 + 85 = 126px of mostly nothing.
+
+   The two gaps are deliberately unequal - 24px above the rule, 40px
+   below it. That ordering is the whole mechanism: the rule sits nearer
+   the heading than the body, so it reads as the heading's underline and
+   the larger gap beneath it becomes the real boundary. Equal gaps would
+   leave the rule floating between two blocks, belonging to neither. */
 .cs-divider {
   height: 1px;
   width: 100%;
   background: rgba(var(--overlay-rgb), 0.4);
-  margin-bottom: clamp(2.5rem, calc(1.8174rem + 2.913vw), 5.3125rem);
+  margin-bottom: clamp(1.5rem, calc(1.148rem + 1.5023vw), 2.5rem);
 }
 
 /* case-study body paragraphs now carry .hero__desc in the markup
@@ -3712,10 +3736,74 @@ footer {
    size matches .cs-para so callout copy reads the same as body copy. */
 .cs-callout,
 .cs-cta {
-  border-radius: 3.125rem;
-  padding: clamp(2rem, calc(1.4994rem + 2.136vw), 4.0625rem) clamp(1.5rem, calc(0.1044rem + 5.955vw), 7.25rem);
   font-size: var(--text-body);
   line-height: 1.55;
+}
+
+/* The two now split on radius AND padding. They only ever shared a rule
+   because they are both rounded boxes of text; they are not the same kind
+   of object, and one set of values could not be right for both.
+
+   .cs-cta is a pill BUTTON ("Visit the website here") - it carries
+   .btn/.btn-outline, its label is a few words, and wide end caps are what
+   make it read as a button. It keeps exactly what it had. */
+.cs-cta {
+  border-radius: 3.125rem;
+  padding: clamp(2rem, calc(1.4994rem + 2.136vw), 4.0625rem) clamp(1.5rem, calc(0.1044rem + 5.955vw), 7.25rem);
+}
+
+/* .cs-callout is a short block of COPY, and it was inheriting a button's
+   padding: up to 65px top and bottom and 116px left and right, on a box
+   holding one or two sentences. That is more frame than content - it
+   pushed the text into a narrow ribbon down the middle, and made a note
+   that belongs beside a paragraph outweigh the paragraph itself.
+
+   24-44px here, every endpoint on the 4pt scale (24/32 block, 32/44
+   inline), rising again above 1440 - see the media query below.
+
+   This is the point where the block padding passes the 24-32px gap that
+   separates the callout from the paragraph above it (.cs-split__body).
+   Inner spacing larger than outer normally dissolves a box - the eye
+   stops being able to tell where it ends - and that ordering is what
+   held this to 28px through the previous two passes.
+
+   It is safe to cross HERE, and only here, because the callout is not a
+   borderless block: it has a solid --chip-bg fill against a near-black
+   page, and a hard fill edge defines the boundary far more strongly than
+   any spacing ratio can. The ratio only has to do that work when there
+   is nothing else to do it. What stays true is the corner radius floor -
+   the inline padding still has to clear the 16px radius so the curve
+   never crowds the first character, and 32px clears it comfortably.
+
+   Wider than tall throughout: line-height already supplies vertical air
+   that the sides never get, so equal padding on four sides reads as
+   horizontally pinched. */
+.cs-callout {
+  border-radius: 1rem;
+  padding: clamp(1.5rem, calc(1.324rem + 0.7512vw), 2rem) clamp(2rem, calc(1.736rem + 1.1268vw), 2.75rem);
+}
+
+/* Past 1440px the callout was quietly getting tighter, not staying put.
+   --text-body has a second tier above this breakpoint (see the :root
+   media query) and grows 16px -> 22px, hitting its ceiling at 1920px -
+   but the padding above tops out AT 1440px, so the frame stopped while
+   the text inside kept growing. Measured as a ratio to its own type, the
+   inline padding fell from 2.25x at 1440 to 1.64x at 2560: the same box
+   that reads generously on a laptop reads pinched on a large monitor.
+
+   So the padding picks up the type's schedule exactly - grows from this
+   breakpoint, reaches its ceiling at 1920px, flat beyond - so it never
+   stalls while the type inside it is still growing. No seam at 1440:
+   32/44px is exactly where the rule above ends.
+
+   Both arms now move (32 -> 40 block, 44 -> 60 inline). The block arm
+   was previously pinned at 30px by .cs-split__body's 32px gap; see the
+   base rule above for why the callout's solid fill makes it safe to pass
+   that gap, where a borderless block could not. */
+@media (min-width: 1440px) {
+  .cs-callout {
+    padding: clamp(2rem, calc(0.5rem + 1.6667vw), 2.5rem) clamp(2.75rem, calc(-0.25rem + 3.3333vw), 3.75rem);
+  }
 }
 
 /* .cs-cta also carries .btn-outline, whose :hover state adds a faint
@@ -3988,10 +4076,22 @@ footer {
   margin-right: auto;
 }
 
+/* 24-32px, down from 40-85px.
+
+   Every .cs-split__body on the site is one tight prose group - a
+   subheading, its paragraph, and a callout that comments on it (there is
+   no arrangement where the children are unrelated). At 85px the callout
+   read as a separate block that happened to sit underneath, rather than
+   as part of the paragraph it belongs to: proximity is the only thing
+   grouping them, and that much air undoes it. This is now close to the
+   copy's own line-height, so the group holds together while the space
+   between whole sections (.cs-container section + section, plus each
+   section's 64px padding) still clearly dominates it - which is the
+   hierarchy that was inverted before. */
 .cs-split__body {
   display: flex;
   flex-direction: column;
-  gap: clamp(2.5rem, calc(1.8174rem + 2.913vw), 5.3125rem);
+  gap: clamp(1.5rem, calc(1.3634rem + 0.5825vw), 2rem);
   align-items: flex-start;
 }
 
