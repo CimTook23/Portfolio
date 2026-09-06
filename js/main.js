@@ -255,10 +255,37 @@
     let currentY = window.scrollY;
     let animating = false;
 
+    /* Set while something OTHER than the wheel owns the scroll — in
+       practice a fragment link: the hero's jump buttons, an entry in the
+       contents list, "Go back up".
+
+       Those move the page through the browser's own smooth scrolling,
+       and this loop knew nothing about it. Click one while a wheel tick
+       is still coasting and both are writing a scroll position on the
+       same frames; this one wins, because it rewrites every frame until
+       it reaches a target set before the click. The visible result is an
+       anchor that simply does not work — but only sometimes, which is
+       what made it look like a broken link rather than a scroll conflict.
+       Wait for the easing to settle first and the same link is fine.
+
+       So: hand the scroll over, and pick it up again from wherever the
+       page actually ended up on the next wheel tick. */
+    let suspended = false;
+
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest && e.target.closest('a[href^="#"]');
+      if (link) suspended = true;
+    });
+
     const maxScrollY = () =>
       document.documentElement.scrollHeight - window.innerHeight;
 
     const tick = () => {
+      if (suspended) {
+        animating = false;
+        return;
+      }
+
       currentY += (targetY - currentY) * EASE;
       const settled = Math.abs(targetY - currentY) < 0.5;
       if (settled) currentY = targetY;
@@ -285,6 +312,18 @@
         if (e.target.closest("[data-native-scroll]")) return;
 
         e.preventDefault();
+
+        /* Adopt the real scroll position before adding to it, whenever
+           this loop is not already mid-animation. Otherwise targetY is
+           whatever the last wheel gesture left behind, and anything that
+           moved the page since — an anchor jump, a scrollbar drag, a
+           Page Down, find-in-page — is undone by the first wheel tick
+           after it, snapping the reader back to where they used to be. */
+        if (suspended || !animating) {
+          suspended = false;
+          targetY = currentY = window.scrollY;
+        }
+
         targetY = Math.min(Math.max(targetY + delta, 0), maxScrollY());
 
         if (!animating) {
