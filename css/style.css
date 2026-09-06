@@ -77,6 +77,24 @@
   --overlay-rgb: 255, 255, 255;
 
   --ink: #ffffff;                 /* text/marks that sit on the page ground */
+  /* Running prose, one step down from --ink.
+
+     --ink is right for anything the eye should land on: a heading, the
+     current entry in a contents list, a word set in <strong>. It is too
+     much for a paragraph. At full white every line of body copy competes
+     with the heading above it, and a case study this long reads as one
+     undifferentiated block of maximum contrast.
+
+     Deliberately not --text-secondary. That token belongs to the nav and
+     the small labels around a component, and it is a light lavender
+     picked to sit against those surfaces; on paragraphs it tints the
+     whole page. This is a neutral cool grey instead, and it holds 5.8:1
+     against the page ground - past AA for body text, which --text-muted
+     (3.2:1) would not be.
+
+     See html[data-theme="light"] for the counterpart, and why it is not
+     this value inverted. */
+  --copy-ink: #8e9199;
   --chip-bg: #171717;             /* .tag / .cs-tag / .cs-callout fill */
   --chip-border: #727272;         /* the shared button + chip stroke */
   --media-backdrop: #0d1024;      /* letterbox behind project thumbnails */
@@ -274,6 +292,15 @@ html[data-theme="light"] {
   --overlay-rgb: 20, 22, 43;
 
   --ink: #14162b;
+  /* --copy-ink's counterpart, matched by CONTRAST rather than by hue.
+     Inverting #8e9199 lands near #6e6b66, which measures 5.8:1 on a dark
+     ground but only 4.9:1 on this one - the same nominal step away from
+     --ink reads noticeably fainter on a light page. This is picked to
+     hold ~5.9:1 against the lighter end of the --bg-top/--bg-bottom
+     gradient, so body copy sits the same distance below its headings in
+     both themes, and it keeps the palette's blue lean rather than the
+     warm grey a straight inversion produces. */
+  --copy-ink: #5f6377;
   --chip-bg: #e7eaf7;
   --chip-border: #a6abc6;
   --media-backdrop: #dce0f0;
@@ -3725,7 +3752,7 @@ footer {
   margin: 0;
   font-size: var(--text-body);
   line-height: 1.5em;
-  color: var(--ink);
+  color: var(--copy-ink);
   max-width: 62ch;
 }
 
@@ -4578,17 +4605,19 @@ footer {
      behind it any more. */
   padding: 0.625rem 0.75rem;
   border-radius: var(--radius-sm);
-  /* --text-secondary is the resting colour, which is the same value
-     .nav__links a fades TO on hover - a dimmed white rather than a grey
-     of its own, and a token, so it inverts with the theme. The card only
-     ever has one row at full --ink (the current section), so every other
+  /* The same --copy-ink the body paragraphs use, so the resting rows and
+     the prose they point at sit at one brightness. This used to be
+     --text-secondary, a light lavender borrowed from .nav__links a, and
+     against greyed body copy it read as the brighter of the two - the
+     contents list was competing with the article. The card still has
+     exactly one row at full --ink (the current section), so every other
      row has to sit below it; starting them at full white would leave the
      current one with nowhere to go. */
   font-family: var(--font-body);
   font-size: var(--text-toc);
   font-weight: 400;
   line-height: 1.35;
-  color: var(--text-secondary);
+  color: var(--copy-ink);
   text-decoration: none;
   transition: color 0.18s ease;
 }
