@@ -4,8 +4,11 @@
 // "DecryptText" interaction (random glyphs → staggered per-character
 // lock-in with an accent flash) — no framework, no build step, so it
 // drops straight into this static site. Applies to any element marked
-// `data-scramble`; runs once, over ~1.5s total, when the element first
-// scrolls into view.
+// `data-scramble`; runs once, when the element first scrolls into view.
+// On a multi-word title only the LAST word scrambles - the words before
+// it are in place from the first frame - and the duration is derived from
+// how many characters are actually animating, so titles resolve in
+// ~0.3-0.8s rather than a flat 1.5s.
 // ============================================================
 
 (function () {
@@ -15,7 +18,28 @@
   if (!targets.length) return;
 
   const GLYPHS = "#%&@$?!*+=/{}[]<>~^";
-  const DURATION = 1500; // ms — total time for the whole title to resolve
+  /* Pace is now per-character rather than per-title. DURATION used to be
+     the flat total for every title, which meant a long one and a short
+     one resolved in the same 1.5s at completely different speeds; with
+     only a last word animating, a 2-letter one like "FX" would have
+     crawled through two glyphs over a second and a half.
+
+     PER_CHAR sets the actual rhythm and the other two only bound it:
+     MIN_DURATION so the shortest words ("me", "FX") still register as an
+     effect rather than a flicker, DURATION as a ceiling nothing currently
+     reaches (it would take a 15-character word). Resolved times across
+     the site: "me"/"FX"/"WANG"/"Aira" 420ms, "Museum" 600ms, "c*nnect!"
+     800ms, "environment" 1100ms.
+
+     Both values were raised ~40% from 70/320 — the effect was reading as
+     over before it had registered, particularly on the short words that
+     were sitting on the floor. Raising PER_CHAR alone would not have
+     fixed those: at 2-4 characters they never reach n * PER_CHAR, so the
+     floor is the only number that moves them, and the two have to go up
+     together to keep the pacing continuous across word lengths. */
+  const PER_CHAR = 100; // ms per scrambled character — sets the pace
+  const MIN_DURATION = 420; // ms — floor, so 2-letter words still read as an effect
+  const DURATION = 1500; // ms — ceiling for an unusually long word
   const CYCLE_SPEED = 45; // ms per glyph flicker, per character
   const FLASH_MS = 380; // accent flash duration on lock-in
 
@@ -88,14 +112,33 @@
       el.dispatchEvent(new CustomEvent("scramble:done", { bubbles: true }));
     };
 
-    const chars = Array.from(text);
-    el.innerHTML = chars
-      .map((ch) =>
-        ch === " "
-          ? " "
-          : `<span class="scramble-char" data-final="${ch}" aria-hidden="true">${ch}</span>`
-      )
-      .join("");
+    /* ---- only the last word animates ----
+       Everything before the final space is written back as a plain text
+       node and is simply there from the first frame; only the last word
+       becomes per-character spans. Splitting on the LAST space rather
+       than tokenising means a title with any number of words needs no
+       special handling, and a single-word title falls out of the same
+       code path with an empty lead.
+
+       Built with DOM nodes instead of the innerHTML template this used
+       to use: the lead is page copy going straight back into the
+       document, and `<` or `&` in a future title would otherwise be
+       parsed as markup rather than shown. */
+    const lastSpace = text.lastIndexOf(" ");
+    const lead = lastSpace === -1 ? "" : text.slice(0, lastSpace + 1);
+    const tail = lastSpace === -1 ? text : text.slice(lastSpace + 1);
+
+    el.textContent = "";
+    if (lead) el.appendChild(document.createTextNode(lead));
+
+    Array.from(tail).forEach((ch) => {
+      const span = document.createElement("span");
+      span.className = "scramble-char";
+      span.dataset.final = ch;
+      span.setAttribute("aria-hidden", "true");
+      span.textContent = ch;
+      el.appendChild(span);
+    });
 
     const spans = Array.from(el.querySelectorAll(".scramble-char"));
     const n = spans.length;
@@ -107,10 +150,17 @@
       return;
     }
 
-    // Even spread across the full duration regardless of title length, so
-    // every title — short or long — finishes resolving at ~DURATION ms.
-    const stagger = n > 1 ? DURATION / n : 0;
-    const lockAt = spans.map((_, i) => i * stagger);
+    /* Length-derived duration, evenly staggered — so every title resolves
+       at the same per-character speed instead of the same total time.
+
+       lockAt is (i + 1) * stagger, not i * stagger. The old form locked
+       character 0 at elapsed 0, so the first letter of every title never
+       actually scrambled — invisible in a 23-character title, but half
+       the word in "FX". Now every character gets at least one stagger
+       step of flicker, and the last one lands exactly on `duration`. */
+    const duration = Math.min(DURATION, Math.max(MIN_DURATION, n * PER_CHAR));
+    const stagger = duration / n;
+    const lockAt = spans.map((_, i) => (i + 1) * stagger);
     const nextFlickerAt = new Array(n).fill(0);
     const locked = new Array(n).fill(false);
 
