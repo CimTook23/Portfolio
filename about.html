@@ -11,6 +11,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>About — Jaydon</title>
+<meta name="description" content="About Jaydon — product designer working in interaction, visual, and brand design." />
 <link rel="icon" href="assets/images/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png" />
@@ -18,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=37" />
+<link rel="stylesheet" href="css/style.css?v=59" />
 </head>
 <body>
 
@@ -45,8 +46,11 @@
       </button>
     </div>
 
+    <!-- no .is-active / aria-current on either option: About me belongs to
+         neither side of the Work/Play switch, so the pill stays unlit here
+         (see .nav__switch-opt.is-active in style.css for the lit state) -->
     <div class="nav__switch">
-      <a class="nav__switch-opt is-active" href="index.html" aria-current="page">Work</a>
+      <a class="nav__switch-opt" href="index.html">Work</a>
       <a class="nav__switch-opt" href="digital-media.html">Play</a>
     </div>
 
@@ -66,61 +70,52 @@
 </div>
 
 <main>
-  <section class="page-hero container container--wide">
-    <a class="breadcrumb" href="index.html">← Back home</a>
-    <span class="eyebrow">About me</span>
+  <!-- The only section on this page besides the footer. It is sized to
+       exactly the space left below the nav (main.js -> sizeAboutHero),
+       and every piece inside is placed against that box rather than laid
+       out in flow — so the composition holds its shape at any viewport
+       instead of reflowing part by part, and never needs a scrollbar.
+       See .about-hero in style.css for how the placement works. -->
+  <section class="about-hero">
+    <div class="about-hero__grid" aria-hidden="true"></div>
 
-    <div class="about-hero-content">
-      <h1 class="hero__title reveal" data-scramble>About me</h1>
-
-      <p class="hero__desc reveal">
-        Is a product designer interested in using interaction design in his <strong>UI</strong> to
-        create a enjoyable <strong>UX</strong>. Outside of side quests and breakdancing, he often
-        finds himself:
-      </p>
-
-      <div class="hero__stage reveal">
-        <a class="btn btn-outline hero__btn hero__btn--left" href="index.html#case-studies">Building experiences ↓</a>
-        <a class="btn btn-gradient hero__btn hero__btn--right" href="digital-media.html">Designing digital media →</a>
-
-        <img class="hero__character" src="assets/images/meditate-character.png" alt="Illustration of Jaydon meditating" />
-
-        <button class="hero__circle hero__circle--left" type="button" aria-label="More coming soon"></button>
-        <button class="hero__circle hero__circle--right" type="button" aria-label="More coming soon"></button>
+    <div class="about-hero__inner container container--wide">
+      <div class="about-hero__intro">
+        <h1 class="hero__title about-hero__title" data-scramble>Heyy...</h1>
+        <p class="about-hero__lede">What do you want to know</p>
       </div>
-    </div>
-  </section>
 
-  <section class="container">
-    <div class="split-panel glass reveal">
-      <div>
-        <h2>A bit more about me</h2>
-        <p>
-          Placeholder bio. Talk about your background, the kind of problems you like solving,
-          the tools you reach for, and what makes your creative process yours. This is also a
-          good spot to mention side quests — breakdancing, motion graphics, whatever makes you, you.
-        </p>
-        <a class="btn btn-gradient" href="mailto:wang.jaydon1@gmail.com">Get in touch →</a>
+      <!-- Every stage piece sits in its own .about-hero__slot. The slot
+           owns the position (and the -50% centering transform); the child
+           owns the wiggle animation and its hover. One transform each, so
+           they can't overwrite one another the way a single element
+           carrying both would. -->
+      <div class="about-hero__slot about-hero__slot--character">
+        <img class="about-hero__character" src="assets/images/meditate-character.png"
+             width="577" height="779" fetchpriority="high" decoding="async"
+             alt="Illustration of Jaydon meditating" />
       </div>
-      <div class="contact-card glass">
-        <div class="contact-card__row">
-          <span class="contact-card__icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6L12 13L21 6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.6"/></svg>
-          </span>
-          <div>
-            <strong>Email</strong>
-            <span>wang.jaydon1@gmail.com</span>
-          </div>
-        </div>
-        <div class="contact-card__row">
-          <span class="contact-card__icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 20 15 20 9.5C20 6 17 3.5 14 3.5C12.5 3.5 12 4.5 12 4.5C12 4.5 11.5 3.5 10 3.5C7 3.5 4 6 4 9.5C4 15 12 21 12 21Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
-          </span>
-          <div>
-            <strong>Based in</strong>
-            <span>Waterloo, ON, CA</span>
-          </div>
-        </div>
+
+      <!-- The three discs are placeholders: the art (record, sunflower,
+           bin) isn't in assets/images yet, so they render as empty glass
+           and don't navigate — same as the pair they replace. Drop an
+           <img loading="lazy" decoding="async"> inside each one when the files land. -->
+      <div class="about-hero__slot about-hero__slot--disc-top">
+        <button class="about-hero__disc" type="button" aria-label="More coming soon"></button>
+      </div>
+      <div class="about-hero__slot about-hero__slot--disc-left">
+        <button class="about-hero__disc" type="button" aria-label="More coming soon"></button>
+      </div>
+      <div class="about-hero__slot about-hero__slot--disc-right">
+        <button class="about-hero__disc" type="button" aria-label="More coming soon"></button>
+      </div>
+
+      <!-- buttons, not links: neither destination exists yet -->
+      <div class="about-hero__slot about-hero__slot--action-left">
+        <button class="btn about-hero__action" type="button" aria-label="Biography — coming soon">Biography</button>
+      </div>
+      <div class="about-hero__slot about-hero__slot--action-right">
+        <button class="btn about-hero__action" type="button" aria-label="My design ethos — coming soon">My design ethos</button>
       </div>
     </div>
   </section>
@@ -137,7 +132,7 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=37"></script>
-<script src="js/scramble-text.js?v=37"></script>
+<script src="js/main.js?v=59"></script>
+<script src="js/scramble-text.js?v=59"></script>
 </body>
 </html>

@@ -88,13 +88,13 @@
      Deliberately not --text-secondary. That token belongs to the nav and
      the small labels around a component, and it is a light lavender
      picked to sit against those surfaces; on paragraphs it tints the
-     whole page. This is a neutral cool grey instead, and it holds 5.8:1
-     against the page ground - past AA for body text, which --text-muted
-     (3.2:1) would not be.
+     whole page. This is a cool blue-grey instead, and it holds 5.7:1
+     against the page ground (6.5:1 against the gradient's black end) -
+     past AA for body text, which --text-muted (3.2:1) would not be.
 
      See html[data-theme="light"] for the counterpart, and why it is not
      this value inverted. */
-  --copy-ink: #8e9199;
+  --copy-ink: #81929d;
   --chip-bg: #171717;             /* .tag / .cs-tag / .cs-callout fill */
   --chip-border: #727272;         /* the shared button + chip stroke */
   --media-backdrop: #0d1024;      /* letterbox behind project thumbnails */
@@ -293,9 +293,10 @@ html[data-theme="light"] {
 
   --ink: #14162b;
   /* --copy-ink's counterpart, matched by CONTRAST rather than by hue.
-     Inverting #8e9199 lands near #6e6b66, which measures 5.8:1 on a dark
-     ground but only 4.9:1 on this one - the same nominal step away from
-     --ink reads noticeably fainter on a light page. This is picked to
+     Inverting the dark value lands in the warm greys, which measure the
+     same on a dark ground but only ~4.9:1 on this one - the same nominal
+     step away from --ink reads noticeably fainter on a light page. This
+     is picked to
      hold ~5.9:1 against the lighter end of the --bg-top/--bg-bottom
      gradient, so body copy sits the same distance below its headings in
      both themes, and it keeps the palette's blue lean rather than the
@@ -1003,7 +1004,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   background: rgba(168, 85, 247, 0.18);
 }
 
-/* no-fill glass — hero circles, and (below) the callout / CTA pills and
+/* no-fill glass — the About hero's discs, and (below) the callout / CTA pills and
    takeaway cards: every glass-surface component on the site that ISN'T
    a button or a tag (those each moved to their own distinct formula —
    buttons up in .btn, tags down by .tag) shares this one formula:
@@ -1018,14 +1019,15 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    .cs-callout and .cs-takeaway-card (the "My takeaways"/"The next
    steps"/"What I learned" cards — same component, different heading
    copy per case study) still share this base (position/isolation/color)
-   but get their own flat fill + no stroke + no glass right below,
-   unlike .hero__circle/.cs-quote, which keep the original look. .cs-cta
+   but get their own flat fill + no stroke + no glass right below, and
+   .cs-quote now joins them there. .about-hero__disc is what still keeps
+   the original glass look. .cs-cta
    (the "Visit the website here."-style callouts that are actually
    links) is deliberately excluded from that flat treatment too: it
    already carries .btn/.btn-outline and gets the sitewide button
    treatment from there instead, which per this request is exactly what
    every callout WITH a link keeps. */
-.hero__circle,
+.about-hero__disc,
 .cs-callout,
 .cs-takeaway-card,
 .cs-quote {
@@ -1047,7 +1049,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    still show through regardless of the fill's opacity, so it has to be
    switched off outright, not just covered up). */
 .cs-callout,
-.cs-takeaway-card {
+.cs-takeaway-card,
+.cs-quote {
   background: var(--chip-bg);
   border: none;
   backdrop-filter: none;
@@ -1074,7 +1077,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   -webkit-backdrop-filter: blur(10px) saturate(180%);
 }
 
-.hero__circle:hover,
+.about-hero__disc:hover,
 .filter-pill:hover,
 .nav__switch:hover {
   background: rgba(var(--overlay-rgb), 0.08);
@@ -1374,10 +1377,10 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 
 .hero__desc {
   /* the reserved --text-h3 (1.375rem) style — this is the placement for
-     it. .page-hero .hero__desc (About page — different copy, "Is a
-     product designer...") is a separate, more specific rule that still
-     sets its own font-size, so this only actually reaches the homepage
-     paragraph, not both.
+     it. The About page used to carry a second, more specific
+     .page-hero .hero__desc override; that page is a single-screen hero
+     now (see .about-hero) and this class no longer appears on it, so the
+     rule reaches the homepage paragraph and nothing else.
 
      The --hero-fit multiplier is back (it was dropped when the title's
      was — see .hero__title for why that no longer applies). This class
@@ -1386,7 +1389,11 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      font-size there anyway. */
   font-size: calc(var(--text-h3) * var(--hero-fit));
   line-height: 1.5em;
-  color: var(--ink);
+  /* --copy-ink, the running-prose grey (see its own :root comment) —
+     the same colour .cs-para already used, so every paragraph on the
+     site that is not inside a button or a callout now reads as one
+     voice. */
+  color: var(--copy-ink);
 }
 
 /* homepage only (see .hero__intro .hero__title above) — bottom row,
@@ -1460,68 +1467,6 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
 }
 
-/* ---------- hero stage: character art + surrounding buttons ---------- */
-
-.hero__stage {
-  position: relative;
-  width: clamp(320px, calc(-68.35px + 103.56vw), 1920px);
-  margin: 64px auto 0;
-}
-
-.hero__character {
-  width: clamp(220px, calc(3.01px + 57.864vw), 1114px);
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.5));
-}
-
-/* font-size intentionally not overridden here — inherits --text-body
-   from .btn; this variant only changes position/padding */
-.hero__btn {
-  position: absolute;
-  top: 11%;
-  z-index: 2;
-  /* was its own fluid clamp() — now the same flat 0.938rem/1.875rem
-     every other button on the site uses (see .btn) */
-  padding: 0.938rem 1.875rem;
-}
-
-.hero__btn--left {
-  left: 0;
-  animation: wiggle 9s ease-in-out infinite;
-  animation-delay: 0s;
-}
-
-.hero__btn--right {
-  right: 0;
-  animation: wiggle 10.4s ease-in-out infinite;
-  animation-delay: 0.6s;
-}
-
-.hero__circle {
-  position: absolute;
-  top: 48%;
-  width: clamp(64px, calc(13.272px + 13.528vw), 273px);
-  height: clamp(64px, calc(13.272px + 13.528vw), 273px);
-  border-radius: 50%;
-  z-index: 2;
-  cursor: pointer;
-  padding: 0;
-}
-
-.hero__circle--left {
-  left: 12%;
-  animation: wiggle 7.6s ease-in-out infinite;
-  animation-delay: 1.1s;
-}
-
-.hero__circle--right {
-  right: 12%;
-  animation: wiggle 9.8s ease-in-out infinite;
-  animation-delay: 0.3s;
-}
-
 /* irregular After-Effects-style wiggle — x/y drift only, no rotation */
 @keyframes wiggle {
   0% { transform: translate(0, 0); }
@@ -1539,54 +1484,10 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__btn--left,
-  .hero__btn--right,
-  .hero__circle--left,
-  .hero__circle--right {
-    animation: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
   .project-card__media,
   .project-card__media.is-flipping-in,
   .project-card__media.is-flipped-in {
     transition: none;
-  }
-}
-
-@media (max-width: 640px) {
-  .hero__stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 22px;
-  }
-
-  .hero__btn,
-  .hero__circle {
-    position: static;
-  }
-
-  .hero__character {
-    order: 1;
-    width: min(70%, 300px);
-  }
-
-  .hero__btn--left {
-    order: 2;
-  }
-
-  .hero__btn--right {
-    order: 3;
-  }
-
-  .hero__circle--left {
-    order: 4;
-  }
-
-  .hero__circle--right {
-    order: 5;
   }
 }
 
@@ -1975,7 +1876,11 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 }
 
 .project-card__body p {
-  color: var(--ink);
+  /* --copy-ink, the running-prose grey (see its own :root comment) —
+     the same colour .cs-para already used, so every paragraph on the
+     site that is not inside a button or a callout now reads as one
+     voice. */
+  color: var(--copy-ink);
   font-size: var(--text-body);
   line-height: 1.5em;
   /* was 60ch, which capped this narrower than the card itself (and so
@@ -1983,75 +1888,6 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      run the full width of .project-card__media instead, wrapping onto
      fewer lines for the same copy */
   max-width: 100%;
-}
-
-/* ---------- about / contact strip ---------- */
-
-.split-panel {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 32px;
-  border-radius: var(--radius-lg);
-  padding: 64px;
-}
-
-.split-panel h2 {
-  font-family: var(--font-hero);
-  /* see .hero__title for why — FS Mondwest's own space glyph is
-     essentially zero-width */
-  word-spacing: 0.18em;
-  font-weight: 400;
-  font-size: calc(var(--text-h1) * var(--font-hero-scale));
-  /* was unset ("normal", ≈1em for this font) — see .hero__title for
-     why FS Mondwest needs an explicit, tighter ratio */
-  line-height: 0.71;
-  margin-bottom: 20px;
-}
-
-.split-panel p {
-  color: var(--text-secondary);
-  font-size: var(--text-body);
-  line-height: 1.5em;
-  margin-bottom: 32px;
-  max-width: 500px;
-}
-
-.contact-card {
-  border-radius: var(--radius-md);
-  padding: 36px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  justify-content: center;
-}
-
-.contact-card__row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.contact-card__icon {
-  width: clamp(34px, calc(31.087px + 0.777vw), 46px);
-  height: clamp(34px, calc(31.087px + 0.777vw), 46px);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(var(--overlay-rgb), 0.06);
-  border: 1px solid rgba(var(--overlay-rgb), 0.1);
-  flex-shrink: 0;
-}
-
-.contact-card__row span {
-  font-size: var(--text-caption);
-  color: var(--text-secondary);
-}
-
-.contact-card__row strong {
-  display: block;
-  font-size: var(--text-body);
-  color: var(--text-primary);
 }
 
 /* ---------- footer ---------- */
@@ -2072,10 +1908,13 @@ footer {
      next block of the same page. */
   margin-top: clamp(4rem, calc(1.888rem + 9.014vw), 10rem);
   background: var(--slab-bg);
-  /* text-to-edge distance top and bottom — 320px (20rem) floor,
+  /* text-to-edge distance top and bottom — 240px (15rem) floor,
      never less regardless of viewport, growing a bit further on very
-     large screens. Left/right keep the previous, smaller clamp. */
-  padding-block: clamp(20rem, calc(18.5437rem + 6.214vw), 26rem);
+     large screens. Left/right keep the previous, smaller clamp.
+     Every arm is the old value x 0.75, so the band is shorter but
+     ramps across exactly the same 375px-1920px window it always did
+     rather than changing shape partway. */
+  padding-block: clamp(15rem, calc(13.9078rem + 4.66vw), 19.5rem);
   padding-inline: clamp(3rem, calc(2.3932rem + 2.589vw), 5.5rem);
 }
 
@@ -2857,36 +2696,398 @@ footer {
   line-height: 1.5em;
 }
 
-/* the moved homepage hero content (title/paragraph/character/buttons) —
-   overrides the generic .page-hero h1/p styling above with the original
-   hero typography, and centers it the way it was on the homepage */
-.about-hero-content {
-  text-align: center;
-  margin-top: 48px;
+/* ---------- About: the single-screen hero ----------
+
+   The whole About page above the footer. Two rules carry the entire
+   thing:
+
+   1. The section is exactly as tall as the space below the nav — no
+      taller, no shorter — so the page never scrolls.
+   2. Every piece inside is absolutely placed as a PERCENTAGE of that
+      box and sized off one shared unit (--u below). The percentages
+      keep the arrangement; --u keeps the pieces in proportion to it.
+      So a short window, a wide one and a tall one all render the same
+      composition at a different size, rather than each reflowing into a
+      different layout.
+
+   This deliberately does NOT use --hero-fit. That machinery exists
+   because the homepage/case-study heroes are sized BY their own content,
+   which makes the fit a fixed point only JS can solve (see solveFit in
+   main.js). Nothing here is content-sized: the box is the viewport and
+   the pieces are placed in %, so the ratio is known up front and plain
+   CSS can express it. main.js only hands over the measured height. */
+.about-hero {
+  position: relative;
+  /* the safety net if a piece ever outgrows its slot — the composition
+     is built not to need it, but a clip is a better failure here than a
+     scrollbar on a page that is supposed to be one screen */
+  overflow: hidden;
+
+  /* main.js (sizeAboutHero) overwrites this with the real space below
+     the measured nav. The calc() is the pre-JS/no-JS fallback and reuses
+     --nav-h's own 130px default, the same way `main`'s padding-top does.
+     Kept as a variable rather than set straight on `height` because --u
+     below has to read the same number. */
+  --about-h: calc(100vh - var(--nav-h, 130px));
+
+  /* ---- the composition's one scale unit ----
+     1u is 1% of the reference layout's width, and the min() gives it a
+     second, height-driven arm. 53.5 is that reference window's own
+     width-to-height ratio below the nav (1.869:1) expressed against the
+     same 1%: on that window the two arms are equal and 1u is exactly
+     1vw. Any SHORTER window makes the height arm win, and then the
+     title, discs, character and buttons all shrink by one shared
+     factor — which is what stops a wide-but-short laptop window from
+     rendering the pieces at full size and colliding them. */
+  --u: min(1vw, calc(var(--about-h) / 53.5));
+
+  height: var(--about-h);
+  /* overrides the generic section{padding-block: 64px} — the box IS the
+     viewport here, so any padding would push the composition down out of
+     the space it was just measured against */
+  padding-block: 0;
 }
 
-.page-hero .hero__title {
-  font-family: var(--font-hero);
-  /* see .hero__title for why — FS Mondwest's own space glyph is
-     essentially zero-width */
-  word-spacing: 0.18em;
-  font-weight: 400;
-  font-size: calc(var(--text-title) * var(--font-hero-scale));
-  /* was 1.2 under PP Mondwest — see .hero__title for why FS Mondwest
-     needs its own ratio (0.91) to read the same */
-  line-height: 0.91;
-  margin-bottom: 0;
-  letter-spacing: normal;
-  /* same white glow as JAYDON WANG (see .hero__intro .hero__title) */
+/* diagonal hairlines, the same pair of 20deg/-20deg repeating gradients
+   the Play hero uses (.dm-hero__grid) rather than the orthogonal
+   .hero__grid. No negative left/right overhang needed here: this section
+   is already full page width, so inset: 0 reaches both edges on its own.
+
+   The spacing is in --u rather than the Play hero flat 200px, so the
+   pattern is part of the composition and not a fixed-size texture laid
+   under it — a wide window would otherwise crowd many more crossings
+   behind the same artwork than the reference has. */
+.about-hero__grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(
+      20deg,
+      rgba(var(--overlay-rgb), 0.09) 0px,
+      rgba(var(--overlay-rgb), 0.09) 1px,
+      transparent 1px,
+      transparent calc(17 * var(--u))
+    ),
+    repeating-linear-gradient(
+      -20deg,
+      rgba(var(--overlay-rgb), 0.09) 0px,
+      rgba(var(--overlay-rgb), 0.09) 1px,
+      transparent 1px,
+      transparent calc(17 * var(--u))
+    );
+}
+
+/* the box every percentage below resolves against: .container--wide's
+   width (so the title lines up with the nav logo's own gutter) by the
+   section's full height */
+.about-hero__inner {
+  position: relative;
+  height: 100%;
+  z-index: 1;
+}
+
+/* top is where the title's INK starts, not where its box does — the
+   negative margin on .about-hero__title below cancels the difference
+   (see there), so this number can be read straight off the reference
+   composition.
+
+   left lines this block up with the Play page's title and paragraph
+   (.dm-hero__content), which are NOT on the same grid as anything else
+   on the site: they sit at a flat 200px indent inside a .container--wide
+   that lives inside .dm-hero__stage, a fixed 2540px canvas the page then
+   scales down by 100cqw/2540px. So the museum's real X is
+   (half its gutter + 200) canvas units at that scale — reproduced here
+   exactly rather than approximated, then with this element's own
+   container inset subtracted back off, since .about-hero__inner already
+   starts one inset in. (Chrome resolves length / length in calc() to a
+   plain number, which is what makes the canvas scale expressible here at
+   all — the same division .dm-hero__stage's --stage-scale relies on.)
+
+   That inset is a max() of two things, not just the gutter:
+   .container--wide is min(100% - gutter, 2600px), so past ~2710px wide
+   the 2600px cap wins and the real inset becomes (100vw - 2600px)/2
+   instead. The museum never hits that cap — its .container--wide sits
+   inside the 2540px canvas, where 2540 - gutter is always under 2600 —
+   so on a very wide monitor its title is genuinely further left than
+   this container starts, and this resolves to a negative left to reach
+   it. Without the max() arm the title landed 300px right of the museum
+   at 3440px wide.
+
+   Deliberately NOT matched: the Play stage also carries --stage-fit and
+   re-centres itself horizontally when a window is too short for its 3D
+   model, which throws that title several hundred px right. That is a
+   consequence of fitting the model, not the designed position, and
+   copying it would make this title lurch sideways as the window height
+   changes. This tracks the width-driven position, which is what the
+   museum renders at every normal window size. */
+.about-hero__intro {
+  position: absolute;
+  left: calc(
+    (clamp(48px, 6vw, 110px) / 2 + 200px) * (100vw / 2540px)
+    - max(clamp(48px, 6vw, 110px) / 2, (100vw - 2600px) / 2)
+  );
+  top: 7.9%;
+  /* Under the discs and buttons rather than over them (was 3, above
+     everything) — this is the layer separation the indent needs. The
+     block does not actually collide with any of them at the sizes
+     measured (1280x500 through 3840x2160, and the phone sizes), but it
+     is shrink-to-fit around whatever the title says, so the margin is
+     not guaranteed by anything; if it ever does reach one, the disc
+     should be the thing on top. Hit-testing follows paint order, so
+     this ordering also settles clicks — an interactive element can
+     never end up behind this text. Deliberately no pointer-events:
+     none on top of that: the z-index already does the job, and
+     switching it off would cost the ability to select the text for
+     nothing. */
+  z-index: 1;
+  text-align: left;
+}
+
+/* overrides .hero__title's own font-size (--text-title x --hero-fit,
+   i.e. viewport-WIDTH-driven only) with the shared unit, so the title
+   shrinks with the rest of the composition on a short window instead of
+   holding desktop size over a scaled-down stage. Everything else about
+   the face — FS Mondwest, the 0.18em word-spacing its zero-width space
+   glyph needs, weight 400, the 0.91 line-height — is inherited from
+   .hero__title unchanged. */
+.about-hero__title {
+  font-size: calc(12.3 * var(--u));
+  /* FS Mondwest's line box opens with a big slab of empty space above
+     the letters — measured on this exact rule (canvas font metrics vs
+     the glyphs' actual ink) at 0.27em between the top of the box and the
+     top of the H. Same fix, and the same reason, as the -0.1em on
+     .hero__intro .hero__title, which cancels the equivalent dead air
+     BELOW its own letters. Cancelling it here is what lets
+     .about-hero__intro's own top be the ink position rather than a
+     number tuned by eye at one font size — em-based, so it holds as --u scales
+     the title. */
+  margin: -0.27em 0 0;
+  /* the same white glow the other FS Mondwest titles carry (see
+     .hero__intro .hero__title) */
   filter: drop-shadow(0 0 17px var(--hero-glow));
 }
 
-.page-hero .hero__desc {
-  max-width: 1100px;
-  margin: 30px auto 0;
-  font-size: var(--text-body);
-  line-height: 1.5em;
-  color: var(--ink);
+.about-hero__lede {
+  margin: calc(1.2 * var(--u)) 0 0;
+  /* floored so the line stays legible once --u is height-bound on a
+     short window — it is the only real sentence on the page */
+  font-size: max(15px, calc(1.35 * var(--u)));
+  line-height: 1.4;
+  /* --copy-ink, the running-prose grey (see its own :root comment) —
+     the same colour .cs-para already used, so every paragraph on the
+     site that is not inside a button or a callout now reads as one
+     voice. */
+  color: var(--copy-ink);
+}
+
+/* One slot per stage piece. The slot owns the position and the -50%
+   centering transform; its child owns the wiggle and the hover.
+   Splitting them across two elements is what lets both run: a single
+   element carrying the centering AND the animation would have the
+   animation overwrite the centering outright (animations beat plain
+   declarations), which is also why the old stage's buttons never
+   actually grew on hover. */
+.about-hero__slot {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+}
+
+/* Horizontal placement is an offset in --u from the CENTRE line, not a
+   percentage of the box. The two axes are not symmetrical here: --u is
+   height-bound on any window wider than the reference 1.869:1 (which is
+   most of them), so percentages across the width would keep pushing the
+   pieces apart on a wide monitor while --u kept them the same size — the
+   composition pulls itself open and the character is left stranded in
+   the middle of it. Offsets in --u make the arrangement rigid: it scales
+   as one thing and stays centred on the character, and extra width just
+   becomes margin either side.
+
+   Vertical placement stays in percentages, because that axis IS the
+   thing being fitted — these are the proportions the hero is drawn at,
+   measured off the reference composition. */
+.about-hero__slot--disc-top     { left: 50%; margin-left: 0;                       top: 15.2%; }
+.about-hero__slot--disc-left    { left: 50%; margin-left: calc(-19.8 * var(--u));  top: 43.2%; }
+.about-hero__slot--disc-right   { left: 50%; margin-left: calc(19.8 * var(--u));   top: 43.2%; }
+.about-hero__slot--action-left  { left: 50%; margin-left: calc(-26 * var(--u));    top: 68.4%; }
+.about-hero__slot--action-right { left: 50%; margin-left: calc(26 * var(--u));     top: 68.4%; }
+
+/* top edge, not centre — the character is the one piece whose height is
+   read off --u rather than off the box, so anchoring its TOP is what
+   keeps its head clear of the two side discs at every scale */
+.about-hero__slot--character {
+  left: 50%;
+  top: 33.2%;
+  transform: translate(-50%, 0);
+  z-index: 1;
+}
+
+.about-hero__character {
+  display: block;
+  /* 23.25u — once --u is height-bound this resolves to 43.5% of the
+     section's height, the proportion the composition is drawn at */
+  height: calc(23.25 * var(--u));
+  width: auto;
+  filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.5));
+}
+
+/* the glass surface comes from the shared no-fill rule further up (see
+   ".about-hero__disc, .cs-callout, ..."); this only sets the geometry.
+
+   max(44px, ...) is the touch-target floor, not a design choice: 7.25u
+   drops under 44px once --u falls below ~6, which a short landscape
+   window reaches (measured 46px at 900x400) while the desktop layout is
+   still in force. Above that the floor is inert and the disc scales with
+   the composition exactly as before. */
+.about-hero__disc {
+  display: block;
+  width: max(44px, calc(7.25 * var(--u)));
+  height: max(44px, calc(7.25 * var(--u)));
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+}
+
+/* the one place on the site where a button is NOT the flat sitewide
+   0.938rem/1.875rem spec (see .btn): these two are part of the
+   composition rather than chrome around it, so they scale with
+   everything else in it. Floored the same way .about-hero__lede is. */
+.about-hero__action {
+  font-size: max(13px, calc(1.35 * var(--u)));
+  padding: calc(1.15 * var(--u)) calc(3.6 * var(--u));
+  white-space: nowrap;
+  /* same touch-target floor as the disc above. The padding is what goes
+     first here: with the font already on its 13px floor, a short window
+     rendered these 33px tall at 900x400 and 40px at 760x380. */
+  min-height: 44px;
+}
+
+/* The site styles :focus-visible in two places (.nav__links a and the
+   case-study contents list) and leaves everything else on the browser
+   default. These five sit on a dark glass ground where that default is
+   easy to lose, and they are the only way to reach this page by
+   keyboard, so they take the same explicit ring the contents list uses
+   (see .cs-toc__link:focus-visible). */
+.about-hero__disc:focus-visible,
+.about-hero__action:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* staggered so the five pieces never drift in step with one another */
+.about-hero__slot--disc-top     .about-hero__disc   { animation: wiggle 8.2s ease-in-out 0.4s infinite; }
+.about-hero__slot--disc-left    .about-hero__disc   { animation: wiggle 7.6s ease-in-out 1.1s infinite; }
+.about-hero__slot--disc-right   .about-hero__disc   { animation: wiggle 9.8s ease-in-out 0.3s infinite; }
+.about-hero__slot--action-left  .about-hero__action { animation: wiggle 9s ease-in-out 0s infinite; }
+.about-hero__slot--action-right .about-hero__action { animation: wiggle 10.4s ease-in-out 0.6s infinite; }
+
+/* Deliberately written with the same two-class shape as the five rules
+   above, and placed after them. A bare .about-hero__disc here (which is
+   where this rule used to live, up by the keyframes) is one class less
+   specific than .about-hero__slot--disc-top .about-hero__disc and simply
+   loses to it — the wiggle went on running for anyone who had asked for
+   reduced motion. Equal specificity plus later source order is what
+   actually switches it off. */
+@media (prefers-reduced-motion: reduce) {
+  .about-hero__slot .about-hero__disc,
+  .about-hero__slot .about-hero__action {
+    animation: none;
+  }
+}
+
+/* Below this width the desktop arrangement runs out of room: the two
+   buttons stop shrinking (their font-size hits its floor) while the
+   +/-26u offsets holding them apart keep shrinking, so they close in on
+   the character. Measured, that crosses over at roughly 400px wide — the
+   breakpoint sits well clear of it.
+
+   What changes here is the ARRANGEMENT, not the promise: this is still
+   exactly one screenful. The pieces re-lay into a column — title, the
+   three discs in a row, the character, the two buttons — and the
+   character's row is the grid's only 1fr, so it absorbs whatever height
+   is left over and the composition fits by construction rather than by
+   tuning. */
+@media (max-width: 768px) {
+  .about-hero__inner {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    /* the 1fr is the character's row — see above */
+    grid-template-rows: auto auto 1fr auto auto;
+    row-gap: clamp(10px, 2.4vh, 26px);
+    justify-items: center;
+    align-items: center;
+    padding-block: clamp(10px, 2.4vh, 26px);
+  }
+
+  .about-hero__intro {
+    position: static;
+    grid-column: 1 / -1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  .about-hero__title {
+    /* --u is a bare 1vw down here (the height arm can't win on a portrait
+       phone), which would render this at ~47px on a 390px screen — under
+       the site's own --text-title floor. Back to the sitewide title size,
+       capped so a short phone in landscape doesn't hand the title more
+       height than the character has left. */
+    font-size: min(calc(var(--text-title) * var(--font-hero-scale)), 13vh);
+    margin: 0;
+  }
+
+  .about-hero__lede {
+    margin-top: 6px;
+    font-size: var(--text-body);
+  }
+
+  .about-hero__slot {
+    position: static;
+    transform: none;
+    margin-left: 0;
+  }
+
+  .about-hero__slot--disc-left  { grid-column: 1; grid-row: 2; }
+  .about-hero__slot--disc-top   { grid-column: 2; grid-row: 2; }
+  .about-hero__slot--disc-right { grid-column: 3; grid-row: 2; }
+
+  /* the flex box is what lets the character centre itself inside
+     whatever height the 1fr row ends up with; min-height: 0 is what
+     lets that row actually shrink below the image's intrinsic size */
+  .about-hero__slot--character {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+    align-self: stretch;
+    width: 100%;
+  }
+
+  .about-hero__slot--action-left  { grid-column: 1 / -1; grid-row: 4; }
+  .about-hero__slot--action-right { grid-column: 1 / -1; grid-row: 5; }
+
+  /* height: 100% against the 1fr row, max-width so a wide-but-short
+     phone in landscape can't let it grow past the screen instead */
+  .about-hero__character {
+    height: 100%;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+  }
+
+  .about-hero__disc {
+    width: min(20vw, 84px);
+    height: min(20vw, 84px);
+  }
+
+  .about-hero__action {
+    font-size: var(--text-body);
+    padding: clamp(9px, 1.4vh, 15px) 1.875rem;
+  }
 }
 
 .breadcrumb {
@@ -3119,11 +3320,6 @@ footer {
     text-align: left;
   }
 
-  .split-panel {
-    grid-template-columns: 1fr;
-    padding: 40px 30px;
-  }
-
   .case-meta {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -3285,6 +3481,14 @@ footer {
 }
 
 .cs-hero {
+  /* The meta band's column gutter, hoisted up to the hero so TWO things
+     can share one definition: the band itself (see .cs-hero__meta) and
+     the hero card, which centres itself over the band's third column and
+     needs the gutter to work out where that column actually is. Left on
+     .cs-hero__meta alone the card would have to hardcode a guess at the
+     grid, and the two would drift apart the moment this value changed. */
+  --cs-meta-gap: calc(clamp(2rem, calc(1.4544rem + 2.33vw), 4.5rem) * var(--hero-fit));
+
   position: relative;
   /* Column flex so the meta band can be pushed to the bottom edge with
      margin-top: auto (see .cs-hero__meta). main.js sets an inline
@@ -3367,6 +3571,226 @@ footer {
     );
   mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 88%, transparent 100%);
+}
+
+/* =========================================================
+   Case-study hero cards
+   =========================================================
+   Every case study gets one piece of its own work floating behind
+   its hero, turning slowly in 3D. Aira's is the app's welcome
+   screen; Faculty of Environment's is the ENVoices programs card.
+   Everything they have in common lives here — placement, the
+   turntable, the spin, the in-view pause — and a per-study modifier
+   supplies only what actually differs between them:
+
+     --cs-hero-card-w       how wide the card sits
+     --cs-hero-card-radius  corner rounding, for art that isn't
+                            already cut to shape
+
+   Adding the third case study's card should be a modifier and two
+   <img> tags, nothing more.
+
+   Absolutely positioned, and that is the point rather than a
+   convenience: the hero is a flex column whose spacing is tuned
+   against --hero-fit, so a card in normal flow would push the title,
+   tags and meta band around and change the first screen. Out of flow
+   it costs the layout nothing — moving it, resizing it, or deleting
+   it leaves every other element exactly where it was.
+
+   z-index 0 puts it behind .cs-hero__top (z-index: 1), so a title
+   long enough to reach it simply passes in front. It shares that 0
+   with .hero__grid and wins on source order alone (it is written
+   after it in the markup), which is what keeps it in front of the
+   hairline grid without a z-index arms race.
+
+   pointer-events: none is what makes it inert to the cursor — no
+   hover, no tilt-to-pointer like .project-card__media on the
+   homepage, and it can never intercept a click meant for the text
+   sitting over it. */
+.cs-hero__card {
+  /* neutral defaults; each modifier overrides what its own art needs */
+  --cs-hero-card-w: clamp(9rem, 20vw, 24rem);
+  --cs-hero-card-radius: 0px;
+
+  position: absolute;
+  /* 40%, not 50%: the hero's bottom fifth belongs to .cs-hero__meta
+     (the Role / Timeline / Skills band), and a card centred on the
+     whole hero hangs into it. Sitting the card slightly high centres
+     it on the title half instead and leaves the band clear. */
+  top: 40%;
+  /* Centred over the meta band's THIRD column — the one headed "Skills"
+     — rather than sitting at some offset from the right edge.
+
+     This is an alignment, not a number. .cs-hero__meta is a
+     repeat(3, 1fr) grid across this same box, so its last track — the
+     Skills one — is (100% - 2 gutters) / 3 wide, and the calc below
+     places the card three quarters of a track in from the right edge.
+     That is a quarter-track left of the column's exact centre: dead
+     centre sat the art further right than the composition wanted, and
+     this still lands the card well inside the column it belongs over.
+     Written as (100% - 2 gutters) / 4 because 0.75 x track reduces to
+     exactly that.
+
+     Because it is derived from --cs-meta-gap (the band's own gutter,
+     hoisted onto .cs-hero for exactly this), the card follows the band
+     automatically if that spacing is ever retuned — including through
+     --hero-fit, which scales the gutter on short windows.
+
+     Anchoring the card's own CENTRE also fixes something the old
+     right-edge offset could not: Aira's card is portrait and ENVoices'
+     is square, so at a shared `right` they lined up by their edges and
+     their centres landed in different places. Now both sit on the same
+     line whatever their shape.
+
+     right: auto is stated rather than left to the initial value on
+     purpose: a box with BOTH left and right resolved is stretched
+     between them instead of sized by its own width, so this is the
+     guard against a future modifier reaching for the right edge. */
+  left: calc(100% - (100% - 2 * var(--cs-meta-gap)) / 4);
+  right: auto;
+  width: var(--cs-hero-card-w);
+  /* -50% on BOTH axes now: X centres the card on that column, Y keeps
+     the vertical centring the top: 40% above depends on. */
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  pointer-events: none;
+  /* the vanishing point for the spin below. It lives here, on the
+     wrapper, because an element cannot be its own 3D perspective
+     root — the same split .project-card / .project-card__media uses
+     on the homepage. Keeping the wrapper's translateY(-50%) here
+     also leaves the spinner's transform free to be nothing but
+     rotation — the wrapper owns translate(-50%, -50%), so a keyframe
+     can never clobber the centring. */
+  perspective: 1200px;
+}
+
+/* Why each width is a min() of two arms.
+
+   Width is the only size worth setting, because it is the only one
+   that does anything: the <img> inside is width: 100% / height: auto,
+   so the picture's height falls out of it and a height on the wrapper
+   would be ignored.
+
+   So the first arm is the width the composition wants (a share of the
+   page, capped so the card can't outgrow the title on an ultrawide
+   monitor) and the second is a HEIGHT budget converted into a width
+   through that card's own aspect ratio. On a short window the second
+   arm wins and the card shrinks to stay clear of the meta band, which
+   a purely width-driven value could not do — vw knows nothing about
+   how much vertical room is left.
+
+   That conversion is why the two numbers look unrelated. Aira's art
+   is 402:882, so a ~50vh budget is 0.4558 x 50vh ~= 23vh of width.
+   ENVoices' is square, so the same budget converts 1:1 and its arm
+   can be far larger before it binds — correct, because a square is
+   much shorter than the portrait card at any given width. */
+.cs-hero__card--aira {
+  --cs-hero-card-w: min(clamp(7rem, 16vw, 22rem), 23vh);
+}
+
+/* square art with hard edges of its own, so unlike Aira's pre-cut PNG
+   this one needs its corners put on in CSS */
+.cs-hero__card--envoices {
+  --cs-hero-card-w: min(clamp(9rem, 20vw, 27rem), 40vh);
+  --cs-hero-card-radius: 27px;
+}
+
+/* The turntable. Its own element rather than the <img>, because a
+   full 360 has to show something on the way round: half of every
+   revolution has the card's BACK toward the viewer, and an image on
+   its own has no back — it would either vanish (backface-visibility:
+   hidden) or show itself mirrored, reading backwards.
+
+   So this holds two copies of the picture, one facing each way, and
+   spins the pair as one rigid object. preserve-3d is what keeps the
+   two faces in the same 3D space as they turn; without it the
+   browser flattens them into the parent's plane and the back face's
+   rotateY(180deg) collapses to nothing. */
+.cs-hero__card-spin {
+  position: relative;
+  transform-style: preserve-3d;
+  animation: cs-hero-card-spin 7.5s linear infinite;
+  animation-play-state: paused;
+}
+
+/* JS (see "in-view animations" in main.js) adds this only while the
+   card is on screen AND the tab is visible; scrolled past the hero,
+   the spin costs nothing. */
+.cs-hero__card.is-running .cs-hero__card-spin {
+  animation-play-state: running;
+  will-change: transform;
+}
+
+.cs-hero__card-face {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* 0 for art already cut to its own shape with transparent corners
+     (Aira's PNG), a real radius for art that arrives as a hard-edged
+     rectangle (the ENVoices GIF). border-radius clips a replaced
+     element's own painting, so no overflow: hidden is needed here —
+     and adding one would flatten the 3D. */
+  border-radius: var(--cs-hero-card-radius);
+  /* each face is drawn only while it actually points at the viewer,
+     so the two never bleed through one another mid-turn */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* the second copy, turned to face the other way. Absolute so it
+   stacks on the first instead of sitting under it — the front face
+   is the one in flow, and it alone gives .cs-hero__card-spin its
+   height. Same src, so this costs no extra download. */
+.cs-hero__card-face--back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  transform: rotateY(180deg);
+}
+
+/* The turn itself: a fixed clockwise tilt that never changes, with a
+   continuous rotateY carrying it all the way round. rotateY (not
+   rotate/Z) is what makes the near edge travel toward the viewer and
+   the far edge away — the card turns THROUGH the screen plane rather
+   than spinning flat against it, which is what reads as 3D. It also
+   means the card passes edge-on twice a revolution, thinning to a
+   sliver at 90 and 270; that is the geometry being honest, not a
+   glitch.
+
+   linear, not ease-in-out: on a loop that ends where it began, any
+   easing puts a visible hesitation at the seam. Constant speed is
+   the only timing that hides the restart.
+
+   The rotate(7deg) is repeated in both stops rather than being set
+   once on the element: a transform is a single property, so a
+   keyframe that named only rotateY would drop the tilt for the whole
+   animation. */
+@keyframes cs-hero-card-spin {
+  from {
+    transform: rotate(7deg) rotateY(0deg);
+  }
+  to {
+    transform: rotate(7deg) rotateY(360deg);
+  }
+}
+
+/* Reduced motion: keep the card and its tilt, drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .cs-hero__card-spin,
+  .cs-hero__card.is-running .cs-hero__card-spin {
+    animation: none;
+    transform: rotate(7deg);
+    will-change: auto;
+  }
+
+  /* with nothing turning, the back copy is dead weight sitting
+     behind the front one — and on a browser that ignores
+     backface-visibility it could show through */
+  .cs-hero__card-face--back {
+    display: none;
+  }
 }
 
 /* Was a wrapping ROW: title-col on the left, .cs-hero__meta as a narrow
@@ -3502,7 +3926,7 @@ footer {
      drifting row. At 2–4.5rem the gutter is reliably the largest
      horizontal gap in the band, which is what makes proximity do the
      grouping work. */
-  gap: calc(clamp(2rem, calc(1.4544rem + 2.33vw), 4.5rem) * var(--hero-fit));
+  gap: var(--cs-meta-gap);
   min-width: 0;
   /* Bottom-aligned rather than a fixed 10–21rem push. A hard number
      could only ever be correct at one viewport height: it put the band
@@ -3539,7 +3963,11 @@ footer {
 }
 
 .cs-hero__meta-item p {
-  color: var(--ink);
+  /* --copy-ink, the running-prose grey (see its own :root comment) —
+     the same colour .cs-para already used, so every paragraph on the
+     site that is not inside a button or a callout now reads as one
+     voice. */
+  color: var(--copy-ink);
   /* was --text-caption (11px at 1440). Against a --text-h2 label of
      ~43px that is a 3.9:1 step; the reference reads closer to 2.9:1, and
      as a full-width band rather than a cramped sidebar this text has the
@@ -3583,7 +4011,26 @@ footer {
      asking it for 700 would get exactly that synthetic smear. The two
      heading styles diverge here for that reason, not by oversight. */
   font-weight: 700;
-  font-size: var(--text-h1);
+  /* Doubled: 128px against --text-h1's own 64px ceiling, on the same
+     schedule that token uses (its slope arm x2, its 1440px ceiling x2)
+     rather than a calc(var(--text-h1) * 2), which would double the 32px
+     FLOOR too and put a 64px heading on a 390px phone.
+
+     The constraint on going further is the column, not the viewport.
+     This heading sits in .cs-layout__body, which the contents rail
+     leaves 883px wide at a 1440px window against 1792px at 2560px.
+     Measured across all 22 headings on the site, 128px keeps every
+     one-word and most two-word headings on a single line there; past
+     ~160px even "The mission" wraps, and "Marketing: Social media
+     campaigns" reaches four lines.
+
+     The ramp below 1440px is gentler than a straight doubling of the
+     token's own slope, which reached 65px on a 390px phone - enough to
+     wrap "The mission" and push the longest heading to four lines in a
+     347px column. This passes through 72px at 768px instead and floors
+     at 44px, so the phone end grows about 1.4x while the desktop end is
+     the full 2x asked for. */
+  font-size: clamp(2.75rem, calc(8px + 8.333vw), 8rem);
   letter-spacing: -0.01em;
   /* 12-24px. A divider reads as "attached" to its heading when the gap
      is a small fraction of the heading's size, and at 40px against a
@@ -3658,7 +4105,7 @@ footer {
    (class="hero__desc cs-para") so they're literally the same class as
    the homepage's "Enjoys working in product..." paragraph, not just a
    numeric match — this rule is that context's override, same pattern as
-   .page-hero .hero__desc and .dm-hero__desc elsewhere in this file:
+   .dm-hero__desc elsewhere in this file:
    - font-size/line-height are re-declared flat so this copy is never
      touched by --hero-fit, which .hero__desc's own font-size multiplies
      by. --hero-fit used to exist ONLY inside .hero, which made the var()
@@ -3773,7 +4220,11 @@ footer {
 .cs-caption {
   font-size: var(--text-caption);
   line-height: 1.5em;
-  color: var(--ink);
+  /* --copy-ink, the running-prose grey (see its own :root comment) —
+     the same colour .cs-para already used, so every paragraph on the
+     site that is not inside a button or a callout now reads as one
+     voice. */
+  color: var(--copy-ink);
   margin-top: 0.875rem;
   max-width: 60ch;
 }
@@ -3782,9 +4233,17 @@ footer {
   font-style: italic;
 }
 
+/* The caption's own heading — "Brand guidelines", "WCMIS", "Student and
+   advisor approval". display: block makes it its own line, so it reads
+   as a title rather than a bolded first phrase, and it takes --ink while
+   .cs-caption itself takes --copy-ink: that colour step is what
+   separates the two, the same way .hero__desc strong is set against its
+   own paragraph. Without it the heading inherits the paragraph grey and
+   weight alone has to carry the distinction. */
 .cs-caption strong {
   display: block;
   font-weight: 700;
+  color: var(--ink);
   margin-bottom: 0.375rem;
 }
 
@@ -4069,6 +4528,105 @@ footer {
   aspect-ratio: 1 / 1;
 }
 
+/* =========================================================
+   Event marquee (Ground FX)
+   =========================================================
+   A continuously travelling strip of event photos, sitting between
+   the hero and the row of jump links. Images only — the section it
+   used to live in (heading, divider, caption) is gone.
+
+   The seam. The track holds its items TWICE (see the markup), and
+   the keyframe moves it by exactly -50% of its own width — so at the
+   end of a cycle copy two is sitting pixel-for-pixel where copy one
+   started and the reset is invisible. That only holds if the two
+   halves are truly identical in width, which is why the spacing
+   lives on each item's margin-inline-end rather than on a flex
+   `gap`: a gap would add one extra span BETWEEN the halves that
+   isn't repeated inside them, and -50% would land half a gap off
+   and visibly jump once per loop.
+
+   translate3d, not left/margin: transform is composited, so the
+   whole strip animates off the main thread with no layout or paint
+   per frame. */
+.cs-marquee {
+  --cs-marquee-gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  --cs-marquee-item: clamp(11rem, 26vw, 24rem);
+  /* the strip's only spacing is the gap down to the jump links it sits
+     above — the section's own padding-block handles the hero side. Same
+     clamp as .cs-jump__links' gap, so the strip, the row of buttons and
+     the space between them are all on one scale. */
+  margin-block-end: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  overflow: hidden;
+  /* the strip runs the full width of the page container, so without
+     this it would collide hard with both edges; the mask fades the
+     first and last few percent out instead, which also sells the
+     "this continues past the frame" read */
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 5%, #000 95%, transparent 100%);
+}
+
+.cs-marquee__track {
+  display: flex;
+  /* max-content, so the track is as wide as all eight tiles laid out
+     in a line rather than being squeezed into the container's width —
+     the percentage the keyframe translates by is a percentage of THIS */
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: cs-marquee-travel 44s linear infinite;
+  /* default is paused: the strip does not animate until the JS
+     observer confirms it is actually on screen (and the tab is
+     visible). If the JS never runs, a static strip is the graceful
+     degradation. */
+  animation-play-state: paused;
+}
+
+.cs-marquee__item {
+  flex: 0 0 var(--cs-marquee-item);
+  width: var(--cs-marquee-item);
+  margin-inline-end: var(--cs-marquee-gap);
+}
+
+.cs-marquee.is-running .cs-marquee__track {
+  animation-play-state: running;
+  /* only promoted to its own layer while it is genuinely moving —
+     a permanent will-change would hold the memory for a compositor
+     layer on every page view, including the ones that never scroll
+     this far */
+  will-change: transform;
+}
+
+/* let a reader stop the strip on a photo they want to look at, and
+   never scroll a tile out from under keyboard focus */
+.cs-marquee.is-running:hover .cs-marquee__track,
+.cs-marquee.is-running:focus-within .cs-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes cs-marquee-travel {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Reduced motion: no travel at all. The strip becomes a plain
+   swipeable/scrollable row instead of a dead frame showing only the
+   first few photos — [data-native-scroll] (see main.js) exempts it
+   from the page's eased wheel takeover so it scrolls natively. */
+@media (prefers-reduced-motion: reduce) {
+  .cs-marquee {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .cs-marquee.is-running .cs-marquee__track,
+  .cs-marquee__track {
+    animation: none;
+    will-change: auto;
+  }
+}
+
 /* Marketing: three-up (same shape as guidelines, own class so
    copy/spacing can diverge later without fighting specificity) */
 .cs-marketing-grid {
@@ -4218,37 +4776,48 @@ footer {
   /* same size as the paragraph text */
   font-size: var(--text-body);
   line-height: 1.5em;
-  color: var(--ink);
+  /* and the same colour as it too (--copy-ink) — this sits on the page
+     ground, not inside a callout or a card, so it follows the sitewide
+     paragraph colour. The 600 weight above is what still reads it as the
+     lead-in to the list below rather than another line of body copy. */
+  color: var(--copy-ink);
   margin: 0;
 }
 
 /* quote / testimonial cards — feedback from advisor / students. Same
-   dark glass formula as every other white-stroke component now (was
-   previously a flat light-lavender pill that broke from the page's
-   dark theme entirely). A thin accent bar on the left plus a distinct
-   quote/attribution split reads as a proper testimonial card instead
-   of a single run-on bolded line. Padding is sized for these short
-   quotes specifically, not inherited from the long-copy .cs-callout
-   padding, which left a lot of dead space next to a right-aligned
-   short line. */
+   same flat #171717 callout surface as .cs-callout and
+   .cs-takeaway-card (see the shared rule up by .btn), with that
+   component's radius and padding too, so a quote reads as the same kind
+   of object as every other boxed aside on the page rather than its own
+   one-off.
+
+   It used to be dark glass with a 3px --accent bar down the left edge —
+   the only place the accent colour was painted into the page's own
+   layout rather than into a transient state (it survives in ::selection,
+   the :focus-visible rings and the scramble flash), and the reason the
+   padding was asymmetric (the extra left inset was clearing the bar). Bar and asymmetry both gone; the bold/muted split
+   between the quote and its attribution is what marks this as a
+   testimonial now, which is the same two-level relationship
+   .cs-caption strong / .cs-caption already uses elsewhere on the
+   page. */
 .cs-quote {
-  position: relative;
-  border-radius: var(--radius-lg);
-  padding: clamp(2rem, calc(1.818rem + 0.777vw), 2.75rem) clamp(1.75rem, calc(1.6286rem + 0.518vw), 2.25rem) clamp(2rem, calc(1.818rem + 0.777vw), 2.75rem) clamp(2.25rem, calc(2.1286rem + 0.518vw), 2.75rem);
+  border-radius: 1rem;
+  padding: clamp(1.5rem, calc(1.324rem + 0.7512vw), 2rem) clamp(2rem, calc(1.736rem + 1.1268vw), 2.75rem);
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  gap: 0.375rem;
 }
 
-.cs-quote::before {
-  content: "";
-  position: absolute;
-  top: 1.75rem;
-  bottom: 1.75rem;
-  left: clamp(0.875rem, calc(0.8143rem + 0.259vw), 1.125rem);
-  width: 3px;
-  border-radius: var(--radius-pill);
-  background: var(--accent);
+/* .cs-callout's own second padding tier, repeated for the card that now
+   shares its base padding — see that rule for why the tier exists at
+   all. It cannot simply be added to .cs-callout's media query: that
+   block sits earlier in the file than the rule above, and at equal
+   specificity the later rule wins, so the tier would be declared and
+   then silently overridden. */
+@media (min-width: 1440px) {
+  .cs-quote {
+    padding: clamp(2rem, calc(0.5rem + 1.6667vw), 2.5rem) clamp(2.75rem, calc(-0.25rem + 3.3333vw), 3.75rem);
+  }
 }
 
 .cs-quote__text {
@@ -4258,11 +4827,19 @@ footer {
   color: var(--ink);
 }
 
+/* --copy-ink, not --text-secondary. Two reasons: it is the sitewide
+   colour for the quieter of two stacked lines (see .cs-caption, whose
+   bold --ink heading over --copy-ink body this card now mirrors), and
+   --text-secondary was failing outright in light mode — that token is a
+   light lavender picked for the nav's own surfaces, and it measured
+   1.83:1 against --chip-bg on the light theme, i.e. all but invisible
+   on the very surface this card was about to adopt. --copy-ink holds
+   5.6:1 dark / 5.0:1 light against that fill. */
 .cs-quote__attribution {
   font-size: var(--text-caption);
   font-weight: 500;
   line-height: 1.5em;
-  color: var(--text-secondary);
+  color: var(--copy-ink);
 }
 
 /* My takeaways */
@@ -4305,24 +4882,16 @@ footer {
   align-items: flex-start;
 }
 
-/* icon "badge" instead of a bare glyph — a bare emoji sitting flush
-   against the card's edge reads cramped; containing it in its own
-   softly-tinted, rounded box (the same restrained .glass surface used
-   for secondary panels elsewhere) gives it padding on every side, a
-   clear boundary, and a fixed footprint so the gap to the heading
-   below stays consistent no matter how much the emoji glyph itself
-   varies in visual weight. */
+/* bare glyph, no badge — the emoji carries itself at this size, and a
+   box around it only competed with the card's own rounded edge. The
+   fixed line-height (rather than a fixed width/height) is what keeps
+   the footprint consistent: every card's glyph occupies exactly the
+   same vertical band, so the gap down to the heading stays level
+   across a row no matter how much the glyph varies in visual weight. */
 .cs-takeaway-card__emoji {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(3.25rem, calc(3.1286rem + 0.518vw), 3.75rem);
-  height: clamp(3.25rem, calc(3.1286rem + 0.518vw), 3.75rem);
+  display: block;
   margin-bottom: clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem);
-  border-radius: var(--radius-sm);
-  background: var(--surface-bg);
-  border: 1px solid var(--surface-border);
-  font-size: clamp(1.5rem, calc(1.4393rem + 0.259vw), 1.75rem);
+  font-size: clamp(2.75rem, calc(2.6286rem + 0.518vw), 3.25rem);
   line-height: 1;
 }
 

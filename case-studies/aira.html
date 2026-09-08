@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=37" />
+<link rel="stylesheet" href="../css/style.css?v=59" />
 </head>
 <body>
 
@@ -70,6 +70,29 @@
   <!-- ================= HERO ================= -->
   <section class="cs-hero">
     <div class="hero__grid" aria-hidden="true"></div>
+
+    <!-- Decorative Aira welcome screen, swaying in 3D behind the hero.
+         Positioned absolutely, so it contributes nothing to layout —
+         the title, tags and meta band sit exactly where they did with
+         it absent, and a long title simply passes in front of it
+         (.cs-hero__top carries z-index: 1, this carries 0).
+         aria-hidden + empty alt: it repeats what the case study already
+         says in words, and pointer-events: none keeps it from reacting
+         to (or swallowing) the cursor. Written after .hero__grid on
+         purpose — both sit at z-index 0, so source order is what puts
+         the card in front of the hairline grid. -->
+    <div class="cs-hero__card cs-hero__card--aira" data-inview-anim aria-hidden="true">
+      <!-- two copies, one facing each way: the card turns a full 360,
+           so half of every revolution has its back to the viewer and a
+           single image would either vanish or read mirrored. Same src
+           both times, so the second face costs no extra download. -->
+      <div class="cs-hero__card-spin">
+        <img class="cs-hero__card-face" src="../assets/images/aira-hero-card.png" alt=""
+             width="402" height="882" decoding="async" fetchpriority="low" />
+        <img class="cs-hero__card-face cs-hero__card-face--back" src="../assets/images/aira-hero-card.png" alt=""
+             width="402" height="882" decoding="async" fetchpriority="low" />
+      </div>
+    </div>
 
     <div class="cs-hero__top">
       <!-- tags moved in here, right under the title, instead of sitting
@@ -175,7 +198,7 @@
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
-              <img src="../assets/images/aira-problem.png" alt="Illustration of a kid wearing a face mask, feeling under the weather" />
+              <img src="../assets/images/aira-problem.png" alt="Illustration of a kid wearing a face mask, feeling under the weather" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -192,7 +215,7 @@
           before they become emergencies. Those gaps aren't just inconvenient — they're what send preventable cases
           to the ER.</p>
         <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
-          <img src="../assets/images/aira-persona.png" alt="Alex persona research document — a 16-year-old newcomer student with asthma, her challenges, goals, risks, and applicable paramedical benefits" />
+          <img src="../assets/images/aira-persona.png" alt="Alex persona research document — a 16-year-old newcomer student with asthma, her challenges, goals, risks, and applicable paramedical benefits" loading="lazy" decoding="async" />
         </div>
       </section>
 
@@ -206,7 +229,7 @@
         <div class="cs-guidelines-grid reveal">
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/aira-pain-clarity.png" alt="Illustration of a confused girl with three blank documents floating over her head, representing scattered medical records" />
+              <img src="../assets/images/aira-pain-clarity.png" alt="Illustration of a confused girl with three blank documents floating over her head, representing scattered medical records" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>Clarity</strong>Medical information is scattered across different
               documents, making it hard for Alex to see her own history in one clear picture — which chips away at
@@ -214,7 +237,7 @@
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/aira-pain-understanding.png" alt="Illustration of a girl using an inhaler, unsure what her symptoms mean" />
+              <img src="../assets/images/aira-pain-understanding.png" alt="Illustration of a girl using an inhaler, unsure what her symptoms mean" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>Understanding</strong>Alex struggles to read her own asthma reactions and
               decide what to actually do about them, which leads to delayed care or trips to the ER that didn't need
@@ -222,7 +245,7 @@
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/aira-pain-support.png" alt="Illustration of a girl staring in confusion at a sticky note dosage reminder and a page of test results" />
+              <img src="../assets/images/aira-pain-support.png" alt="Illustration of a girl staring in confusion at a sticky note dosage reminder and a page of test results" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>Support</strong>Newcomer families run into real barriers to health
               literacy and care access — dense medical language and an unfamiliar system make it hard for families
@@ -245,7 +268,7 @@
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
-              <img src="../assets/images/aira-rough-prototypes.png" alt="Hand-drawn workshop and app sketches from the Crazy Eights ideation sprint" />
+              <img src="../assets/images/aira-rough-prototypes.png" alt="Hand-drawn workshop and app sketches from the Crazy Eights ideation sprint" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -261,7 +284,7 @@
           it solved before it earned a place in the app. That discipline is what let us organize everything into
           three clear tabs in our site map.</p>
         <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
-          <img src="../assets/images/aira-framework.png" alt="Aira site map — Home, Medical history, and Support tabs branching from onboarding, with their respective sub-features" />
+          <img src="../assets/images/aira-framework.png" alt="Aira site map — Home, Medical history, and Support tabs branching from onboarding, with their respective sub-features" loading="lazy" decoding="async" />
         </div>
         <p class="cs-caption cs-caption--italic reveal">Every feature on this map was matched to a challenge before
           it made the cut — no orphaned ideas.</p>
@@ -425,7 +448,7 @@
           <p class="cs-caption cs-caption--italic" style="margin-top: 0; margin-bottom: clamp(1.5rem, 3vw, 2.25rem); max-width: none;">We
             also had to pick a mascot. I campaigned hard for a dragon. We ended up with a balloon.</p>
           <div class="cs-wide-media">
-            <img src="../assets/images/aira-sketches.png" alt="Rough mascot sketches — clouds, a balloon character, lungs, and a toothbrush, exploring Aira's visual identity" />
+            <img src="../assets/images/aira-sketches.png" alt="Rough mascot sketches — clouds, a balloon character, lungs, and a toothbrush, exploring Aira's visual identity" loading="lazy" decoding="async" />
           </div>
         </div>
       </section>
@@ -436,7 +459,7 @@
         <div class="cs-divider reveal"></div>
 
         <a class="case-banner cs-next-project reveal" href="ground-fx.html" aria-label="Next project — Ground FX">
-          <img src="../assets/images/ground-fx-thumb.png" alt="Ground FX — breakdancing event branding and motion graphics" />
+          <img src="../assets/images/ground-fx-thumb.png" alt="Ground FX — breakdancing event branding and motion graphics" loading="lazy" decoding="async" />
         </a>
       </section>
     </div>
@@ -455,7 +478,7 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=37"></script>
-<script src="../js/scramble-text.js?v=37"></script>
+<script src="../js/main.js?v=59"></script>
+<script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>

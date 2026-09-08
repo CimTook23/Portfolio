@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=37" />
+<link rel="stylesheet" href="../css/style.css?v=59" />
 </head>
 <body>
 
@@ -111,6 +111,60 @@
        10-21rem block of empty space to hold them at the bottom.
        That space now belongs to .cs-hero__meta instead. -->
   <section class="cs-jump">
+    <!-- Event photos, running as a marquee above the jump links: no
+         heading, no caption, just the images. The track holds the four
+         photos TWICE — the animation translates it by exactly -50%, so
+         the moment the first set has fully left the frame the second set
+         is sitting precisely where the first began and the loop is
+         seamless. No .reveal on it, so the strip is never mid-fade while
+         it scrolls. JS (see "in-view animations" in main.js) adds .is-running only
+         while the strip is on screen and the tab is visible — off screen
+         the animation is paused and costs nothing. -->
+    <div class="cs-marquee" data-inview-anim data-native-scroll>
+      <ul class="cs-marquee__track" role="list">
+        <li class="cs-marquee__item">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-1.png" alt="A breaker mid-flare during a battle at Ground FX" loading="lazy" decoding="async" />
+          </div>
+        </li>
+        <li class="cs-marquee__item">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-2.png" alt="A breaker frozen mid-air during a battle at Ground FX" loading="lazy" decoding="async" />
+          </div>
+        </li>
+        <li class="cs-marquee__item">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-3.png" alt="A breaker performing inside a circle of dancers and judges at Ground FX" loading="lazy" decoding="async" />
+          </div>
+        </li>
+        <li class="cs-marquee__item">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-4.png" alt="A dancer striking a freestyle pose in front of the UW Breakers banner at Ground FX" loading="lazy" decoding="async" />
+          </div>
+        </li>
+        <li class="cs-marquee__item" aria-hidden="true">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-1.png" alt="" loading="lazy" decoding="async" />
+          </div>
+        </li>
+        <li class="cs-marquee__item" aria-hidden="true">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-2.png" alt="" loading="lazy" decoding="async" />
+          </div>
+        </li>
+        <li class="cs-marquee__item" aria-hidden="true">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-3.png" alt="" loading="lazy" decoding="async" />
+          </div>
+        </li>
+        <li class="cs-marquee__item" aria-hidden="true">
+          <div class="cs-square">
+            <img src="../assets/images/gfx-wordmark-4.png" alt="" loading="lazy" decoding="async" />
+          </div>
+        </li>
+      </ul>
+    </div>
+
     <div class="cs-jump__links reveal">
       <a class="btn btn-outline" href="#team">See the team ↓</a>
       <a class="btn btn-outline" href="#promo">See the promo ↓</a>
@@ -157,7 +211,7 @@
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
-              <img src="../assets/images/gfx-intro-me.jpg" alt="Jaydon at the Ground FX event, pointed out by an arrow labeled 'Me' among the crowd watching a battle" />
+              <img src="../assets/images/gfx-intro-me.jpg" alt="Jaydon at the Ground FX event, pointed out by an arrow labeled 'Me' among the crowd watching a battle" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -207,29 +261,6 @@
         </div>
       </section>
 
-      <!-- ================= HIGHLIGHTS ================= -->
-      <section id="highlights">
-        <h2 class="cs-heading reveal">Highlights</h2>
-        <div class="cs-divider reveal"></div>
-
-        <div class="cs-guidelines-grid reveal" style="grid-template-columns: repeat(4, 1fr);">
-          <div class="cs-square">
-            <img src="../assets/images/gfx-wordmark-1.png" alt="A breaker mid-flare during a battle at Ground FX" />
-          </div>
-          <div class="cs-square">
-            <img src="../assets/images/gfx-wordmark-2.png" alt="A breaker frozen mid-air during a battle at Ground FX" />
-          </div>
-          <div class="cs-square">
-            <img src="../assets/images/gfx-wordmark-3.png" alt="A breaker performing inside a circle of dancers and judges at Ground FX" />
-          </div>
-          <div class="cs-square">
-            <img src="../assets/images/gfx-wordmark-4.png" alt="A dancer striking a freestyle pose in front of the UW Breakers banner at Ground FX" />
-          </div>
-        </div>
-        <p class="cs-caption cs-caption--italic reveal">Battles, crews, and the SLC Lower Atrium packed for a full
-          day of breaking.</p>
-      </section>
-
       <!-- ================= THE TEAM ================= -->
       <section id="team">
         <h2 class="cs-heading reveal">The team</h2>
@@ -242,42 +273,42 @@
         <div class="cs-guidelines-grid reveal">
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/gfx-mc.png" alt="The Ground FX MC hosting the event" />
+              <img src="../assets/images/gfx-mc.png" alt="The Ground FX MC hosting the event" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>MC</strong>The master of ceremonies orchestrates the event. This year we
               invited Switch B, who recently did sports commentary for the 2024 Summer Olympics.</p>
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/gfx-dj.png" alt="The Ground FX DJ at the decks" />
+              <img src="../assets/images/gfx-dj.png" alt="The Ground FX DJ at the decks" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>DJ</strong>The music man of the event, dictating the tunes and beats the
               dancers battled to.</p>
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/gfx-judges.png" alt="The panel of judges scoring a battle" />
+              <img src="../assets/images/gfx-judges.png" alt="The panel of judges scoring a battle" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>Judges</strong>Three veteran dancers who determined the winner of each
               battle.</p>
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/gfx-workshop-hosts.png" alt="A workshop host teaching a breaking technique" />
+              <img src="../assets/images/gfx-workshop-hosts.png" alt="A workshop host teaching a breaking technique" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>Workshop hosts</strong>Before the main event we hosted an advanced
               breaking workshop and an intro-to-breaking workshop for women and LGBTQIA2+ dancers.</p>
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/gfx-dance-crews.png" alt="A local dance crew performing an intermission set" />
+              <img src="../assets/images/gfx-dance-crews.png" alt="A local dance crew performing an intermission set" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>Dance crews</strong>Local crews like UWhiphop and UWstreetdance, along
               with other university breaking clubs, performed exhibitions between battles.</p>
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
-              <img src="../assets/images/gfx-vendors.png" alt="A vendor table selling streetwear and shoes" />
+              <img src="../assets/images/gfx-vendors.png" alt="A vendor table selling streetwear and shoes" loading="lazy" decoding="async" />
             </div>
             <p class="cs-caption"><strong>Vendors</strong>External and internal vendors selling shoes, street
               fashion, and hats alongside the battles.</p>
@@ -300,7 +331,7 @@
           managed a detailed budget covering artist compensation, media coverage, venue reservations, prizes,
           merchandise, and A/V — then pitched WUSA and Artist Endowment Funds to secure it.</div>
         <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
-          <img src="../assets/images/gfx-setup.png" alt="Testing the projector and lighting setup ahead of Ground FX" />
+          <img src="../assets/images/gfx-setup.png" alt="Testing the projector and lighting setup ahead of Ground FX" loading="lazy" decoding="async" />
         </div>
       </section>
 
@@ -331,7 +362,7 @@
           <div>
             <div class="cs-square cs-video-tile" data-yt-id="Xm_MzOONDlM">
               <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX teaser video">
-                <img src="../assets/images/gfx-action.png" alt="Ground FX teaser video thumbnail" />
+                <img src="../assets/images/gfx-action.png" alt="Ground FX teaser video thumbnail" loading="lazy" decoding="async" />
                 <span class="cs-video-tile__play" aria-hidden="true">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
                 </span>
@@ -343,7 +374,7 @@
           <div>
             <div class="cs-square cs-video-tile" data-yt-id="Qx8zIcAz8n8">
               <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX official announcement">
-                <img src="../assets/images/gfx-branding-1.png" alt="Ground FX official announcement post thumbnail" />
+                <img src="../assets/images/gfx-branding-1.png" alt="Ground FX official announcement post thumbnail" loading="lazy" decoding="async" />
                 <span class="cs-video-tile__play" aria-hidden="true">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
                 </span>
@@ -354,7 +385,7 @@
           <div>
             <div class="cs-square cs-video-tile" data-yt-id="C7CwaG9Y6kw">
               <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX logo rendition">
-                <img src="../assets/images/gfx-branding-2.png" alt="Second Ground FX logo rendition video thumbnail" />
+                <img src="../assets/images/gfx-branding-2.png" alt="Second Ground FX logo rendition video thumbnail" loading="lazy" decoding="async" />
                 <span class="cs-video-tile__play" aria-hidden="true">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
                 </span>
@@ -387,10 +418,10 @@
           <div class="cs-split__media">
             <div class="cs-highlights-grid" style="margin-top: 0;">
               <div class="cs-square">
-                <img src="../assets/images/gfx-merch.png" alt="Ground FX merchandise lineup" />
+                <img src="../assets/images/gfx-merch.png" alt="Ground FX merchandise lineup" loading="lazy" decoding="async" />
               </div>
               <div class="cs-square">
-                <img src="../assets/images/gfx-shirt.jpg" alt="Ground FX branded t-shirt" />
+                <img src="../assets/images/gfx-shirt.jpg" alt="Ground FX branded t-shirt" loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -413,10 +444,10 @@
           <div class="cs-split__media">
             <div class="cs-highlights-grid" style="margin-top: 0;">
               <div class="cs-square">
-                <img src="../assets/images/gfx-branding-1.png" alt="Ground FX graffiti-inspired branding exploration" />
+                <img src="../assets/images/gfx-branding-1.png" alt="Ground FX graffiti-inspired branding exploration" loading="lazy" decoding="async" />
               </div>
               <div class="cs-square">
-                <img src="../assets/images/gfx-branding-2.png" alt="A second Ground FX branding exploration" />
+                <img src="../assets/images/gfx-branding-2.png" alt="A second Ground FX branding exploration" loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -459,7 +490,7 @@
         <div class="cs-divider reveal"></div>
 
         <a class="case-banner cs-next-project reveal" href="faculty-of-environment.html" aria-label="Next project — Faculty of Environment">
-          <img src="../assets/images/faculty-of-environment-thumb.png" alt="Faculty of Environment — Waterloo ENVoices campaign artwork" />
+          <img src="../assets/images/faculty-of-environment-thumb.png" alt="Faculty of Environment — Waterloo ENVoices campaign artwork" loading="lazy" decoding="async" />
         </a>
       </section>
     </div>
@@ -478,7 +509,7 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=37"></script>
-<script src="../js/scramble-text.js?v=37"></script>
+<script src="../js/main.js?v=59"></script>
+<script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>

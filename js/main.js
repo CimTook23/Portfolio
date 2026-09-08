@@ -315,7 +315,7 @@
         targetY = window.scrollY;
         currentY = window.scrollY;
       }
-    });
+    }, { passive: true });
   }
 
   /* ---------- heroes: fit the space below the nav, never crop ----------
@@ -672,7 +672,25 @@
     dmHero.style.height = `${STAGE_HEIGHT * stageScale * fit + syncNavHeight()}px`;
   };
 
-  if (hero || csHero || dmHero) {
+  /* The About hero is the whole page above the footer. Unlike the three
+     above it never needs solveFit: nothing inside it is measured against
+     its own content — every piece is placed as a percentage of this box
+     and sized off --u (see .about-hero) — so all this has to do is hand
+     CSS the real space below the nav.
+
+     Worth doing in JS anyway rather than leaving the stylesheet's
+     calc(100vh - var(--nav-h)) fallback to it: on a mobile browser 100vh
+     is the address-bar-less height, which is taller than what is
+     actually on screen, and this section is supposed to be exactly one
+     screenful. window.innerHeight is the honest number. */
+  const aboutHero = document.querySelector(".about-hero");
+
+  const sizeAboutHero = () => {
+    if (!aboutHero) return;
+    aboutHero.style.setProperty("--about-h", availableBelowNav() + "px");
+  };
+
+  if (hero || csHero || dmHero || aboutHero) {
     const sizeHeroes = () => {
       /* first: the nav's height feeds main's padding, which moves every
          hero's top edge. Solving a hero against a stale offset would be
@@ -681,6 +699,7 @@
       sizeHomepageHero();
       sizeCaseStudyHero();
       sizePlayHero();
+      sizeAboutHero();
     };
 
     /* Several of the triggers below routinely fire in the SAME frame as
@@ -846,6 +865,52 @@
 
       revealEls.forEach((el) => observer.observe(el));
     }
+  }
+
+  /* ---------- in-view animations: only animate what is on screen ----------
+     Two things on the site run infinite CSS animations: Ground FX's
+     photo marquee (.cs-marquee) and Aira's swaying hero card
+     (.cs-hero__card). Left alone, the browser keeps ticking and
+     compositing them for the whole life of the page — including the
+     ~90% of a long case study where they are nowhere near the
+     viewport, and including while the tab is in the background.
+
+     So both ship PAUSED in the CSS, and this adds .is-running only
+     when two things are true: the element intersects the viewport, and
+     the tab is visible. Any element that wants this contract just
+     carries data-inview-anim and pauses its own animation by default
+     — no per-feature wiring here. The rootMargin starts it a little
+     before it arrives so it is never caught standing still on entry,
+     and prefers-reduced-motion never starts anything at all (each
+     feature's CSS says what it does instead). */
+  const inViewAnims = document.querySelectorAll("[data-inview-anim]");
+
+  if (inViewAnims.length && !prefersReduced && "IntersectionObserver" in window) {
+    // an element is animated only when it is BOTH on screen and in a
+    // visible tab — tracked per element so the visibilitychange handler
+    // below can restore exactly the ones that were running
+    const onScreen = new Set();
+
+    const sync = () => {
+      const awake = !document.hidden;
+      inViewAnims.forEach((el) => {
+        el.classList.toggle("is-running", awake && onScreen.has(el));
+      });
+    };
+
+    const animObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) onScreen.add(entry.target);
+          else onScreen.delete(entry.target);
+        });
+        sync();
+      },
+      { rootMargin: "200px 0px" }
+    );
+
+    inViewAnims.forEach((el) => animObserver.observe(el));
+    document.addEventListener("visibilitychange", sync);
   }
 
   /* ---------- lazy-load in-view videos ----------
