@@ -50,6 +50,42 @@
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   if (prefersReducedMotion) return; // static rest pose — no cursor-driven motion at all
 
+  /* ---- cursor position is recorded from the moment this file runs ----
+
+     initHeadTracking() below does not run until <model-viewer> fires its
+     load event, and that is deliberately late: the element's bundle is not
+     even requested until the hero's title animation finishes (see the
+     deferral script at the bottom of digital-media.html). Until then the
+     visitor is looking at the poster image, which cannot track anything.
+
+     The bug this fixes is what happened AFTER that wait. targetYaw and
+     targetPitch were only ever written inside the mousemove handler, and
+     that handler was installed inside initHeadTracking — so the model
+     could finish loading with the cursor sitting somewhere well off to
+     one side and the head would stay in its neutral rest pose, looking
+     straight ahead, until the visitor happened to move the mouse AGAIN.
+     Arriving on the page, watching the head ignore a stationary cursor,
+     and then seeing it snap to attention on the next twitch is exactly
+     the "it takes a second before it follows" symptom.
+
+     So the listener moves out here, where it is attached while the page
+     is still parsing, and it only records coordinates. initHeadTracking
+     picks up whatever the cursor was already doing the moment it is
+     ready — see aimAtPointer() and its call at the end of that function. */
+  let pointerX = null;
+  let pointerY = null;
+  let onPointerMove = null;
+
+  window.addEventListener(
+    "mousemove",
+    (e) => {
+      pointerX = e.clientX;
+      pointerY = e.clientY;
+      if (onPointerMove) onPointerMove();
+    },
+    { passive: true }
+  );
+
   function findHeadBone(el) {
     const visited = new Set();
 
@@ -176,23 +212,27 @@
       requestAnimationFrame(tick);
     }
 
-    window.addEventListener(
-      "mousemove",
-      (e) => {
-        const rect = (stage || modelViewer).getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
+    /* Reads the stored pointer rather than an event object, so the same
+       code serves a live mousemove and the catch-up call at the end of
+       this function. No-ops until the cursor has been somewhere: with no
+       reading to aim at, the rest pose is the right pose. */
+    function aimAtPointer() {
+      if (pointerX === null) return;
 
-        const nx = Math.max(-1, Math.min(1, (e.clientX - cx) / (rect.width / 2)));
-        const ny = Math.max(-1, Math.min(1, (e.clientY - cy) / (rect.height / 2)));
+      const rect = (stage || modelViewer).getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
 
-        targetYaw = nx * (MAX_YAW_DEG * Math.PI / 180);
-        targetPitch = ny * (MAX_PITCH_DEG * Math.PI / 180);
-        lastMoveTime = performance.now();
-        ensureRunning();
-      },
-      { passive: true }
-    );
+      const nx = Math.max(-1, Math.min(1, (pointerX - cx) / (rect.width / 2)));
+      const ny = Math.max(-1, Math.min(1, (pointerY - cy) / (rect.height / 2)));
+
+      targetYaw = nx * (MAX_YAW_DEG * Math.PI / 180);
+      targetPitch = ny * (MAX_PITCH_DEG * Math.PI / 180);
+      lastMoveTime = performance.now();
+      ensureRunning();
+    }
+
+    onPointerMove = aimAtPointer;
 
     if (media && "IntersectionObserver" in window) {
       const io = new IntersectionObserver(
@@ -208,6 +248,13 @@
       // always-visible rather than a tracking effect that never starts
       isVisible = true;
     }
+
+    /* Catch up to wherever the cursor already is. Safe to call before the
+       observer above has reported in: ensureRunning() declines to start a
+       loop while isVisible is still false, and the observer's own callback
+       calls it again once the model is on screen — by which point these
+       targets are already set, so the head animates straight to them. */
+    aimAtPointer();
   }
 
   if (modelViewer.loaded) {

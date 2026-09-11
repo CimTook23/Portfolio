@@ -18,15 +18,53 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=59" />
+<link rel="stylesheet" href="css/style.css?v=77" />
 <!-- the 3D model's poster (see <model-viewer> below) — preloaded so it's
      ready the instant the custom element upgrades, instead of the poster
      itself being the thing you wait on. This is what makes the head show
      up immediately instead of an empty gap before the real model loads. -->
 <link rel="preload" as="image" href="assets/images/me-head-poster.webp" fetchpriority="high" />
-<!-- <model-viewer> is NOT loaded here any more — see the deferral script
+<!-- <model-viewer> is NOT executed here any more — see the deferral script
      at the bottom of this page for why. The poster preloaded above is
-     what fills the hero until it arrives. -->
+     what fills the hero until it arrives.
+
+     Its BYTES are fetched here all the same, and the distinction is the
+     whole point. What the deferral exists to keep out of the hero's
+     entrance animation is main-thread work — parsing and executing ~1MB
+     of module, upgrading the custom element, decoding textures, compiling
+     shaders. A preload does none of that: it warms the HTTP cache and
+     stops there, so the script tag the deferral script injects on
+     scramble:done resolves against a finished download instead of opening
+     a fresh cross-origin connection at exactly the moment the visitor is
+     waiting on it. preconnect covers the DNS + TLS handshake to unpkg for
+     the same reason.
+
+     crossorigin is required, not decorative: module scripts are always
+     fetched in CORS mode, so a preload without it is a different request
+     and the browser would download the bundle twice. -->
+<link rel="preconnect" href="https://unpkg.com" crossorigin />
+
+<!-- Instagram's embed pipeline, warmed but NOT started — same split as the
+     model-viewer hints above. The three reels in the Jaydon MP4 grid are
+     each a full Instagram page in an iframe, and what costs is the iframe
+     work, which is still gated on scrolling near the grid (see the
+     observer at the bottom of this page). What is NOT gated is the DNS +
+     TLS handshake to three separate Instagram origins and the download of
+     embed.js itself, none of which touches the main thread. Paying for
+     them up front means the observer's script tag resolves against a warm
+     connection and a cached file instead of starting from cold at the one
+     moment the visitor is about to look at the grid.
+
+     No crossorigin on the preload, deliberately: embed.js is injected as a
+     plain classic script with no crossorigin attribute, so it is fetched
+     in no-cors mode, and a preload that specified crossorigin would be a
+     different request and download the file twice. (The unpkg preload
+     above needs the opposite for the opposite reason - it is a module.) -->
+<link rel="preconnect" href="https://www.instagram.com" />
+<link rel="preconnect" href="https://static.cdninstagram.com" />
+<link rel="preconnect" href="https://scontent.cdninstagram.com" />
+<link rel="preload" as="script" href="https://www.instagram.com/embed.js" />
+<link rel="preload" as="script" crossorigin href="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js" />
 </head>
 <body>
 
@@ -361,7 +399,7 @@
 
 <script src="js/main.js?v=59"></script>
 <script src="js/scramble-text.js?v=59"></script>
-<script src="js/head-track.js?v=59"></script>
+<script src="js/head-track.js?v=60"></script>
 <!-- powers the Jaydon MP4 .instagram-media blockquotes above — Instagram's
      own script, not ours; it finds every blockquote with that class and
      replaces it with the real embedded player.
@@ -409,9 +447,24 @@
           }
         }
       },
-      // a screenful of lead time, so the embeds have started resolving by
-      // the time the section is actually reached
-      { rootMargin: "800px 0px" }
+      /* Lead time, so the embeds have finished resolving by the time the
+         section is actually reached rather than starting when it is.
+
+         800px was the old value and it was not the "screenful" it was
+         described as: measured at 1271px tall it is 0.63 of a viewport,
+         which at any normal scrolling speed put the grid on screen while
+         Instagram was still building the three iframes - three empty
+         boxes, then a pop-in. The iframes measured 519/529/537ms on a warm
+         load, so the lead has to cover roughly half a second of work plus
+         the scroll itself.
+
+         1500px is a little under 1.2 viewports here, nearly double the
+         old lead. The ceiling on it is page load: the grid starts 3573px
+         down the document, i.e. 2302px below the fold on this viewport,
+         and a margin that reached it would fire instantly and undo the
+         whole point of deferring this. 1500 keeps ~800px of slack against
+         that, so it still cannot trigger before the visitor scrolls. */
+      { rootMargin: "1500px 0px" }
     );
     io.observe(grid);
   })();
