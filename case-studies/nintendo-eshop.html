@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<script>
+  /* applied before first paint so the page never flashes the wrong
+     theme on load — the actual toggle logic lives in js/main.js */
+  if (localStorage.getItem("theme") === "light") {
+    document.documentElement.dataset.theme = "light";
+  }
+</script>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Revamping the Nintendo eShop — Case Study — Jaydon</title>
+<link rel="icon" href="../assets/images/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16.png" />
+<link rel="apple-touch-icon" href="../assets/images/favicon-180.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="../css/style.css?v=77" />
+</head>
+<body>
+
+<div class="nav-wrap">
+  <header class="nav container container--wide">
+    <!-- logo + theme switch share the grid's first column so the bar
+         stays a single row; see .nav__brand in style.css -->
+    <div class="nav__brand">
+      <a class="nav__logo" href="../index.html" aria-label="Jaydon — home">
+        <span class="nav__logo-badge"><img src="../assets/images/nav-avatar.png" alt="" /></span>
+      </a>
+      <!-- light/dark switch. The CSS for this (.nav__theme-toggle and the
+           sun/moon icon swap) already existed but no page ever rendered the
+           button, so the theme could only be reached by hand-editing
+           localStorage. -->
+      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="false">
+        <svg class="nav__theme-icon nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.4v2.3M12 19.3v2.3M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.3M19.3 12h2.3M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+        </svg>
+        <svg class="nav__theme-icon nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1Z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="nav__switch">
+      <a class="nav__switch-opt is-active" href="../index.html" aria-current="page">Work</a>
+      <a class="nav__switch-opt" href="../digital-media.html">Play</a>
+    </div>
+
+    <ul class="nav__links" id="navLinks">
+      <li><a href="../about.html">About me</a></li>
+      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
+    </ul>
+
+
+    <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M1 4H17M1 9H17M1 14H17" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </header>
+</div>
+
+<main class="cs-container" id="top">
+
+  <!-- ================= HERO =================
+       No .cs-hero__card here (same as Ground FX) — the spinning card is
+       optional, and there's no artwork for it yet. Adding one later is
+       self-contained: copy the block out of aira.html, swap the src, and
+       add a --eshop width/radius modifier next to --aira in style.css. -->
+  <section class="cs-hero">
+    <div class="hero__grid" aria-hidden="true"></div>
+
+    <div class="cs-hero__top">
+      <!-- tags moved in here, right under the title, instead of sitting
+           after the whole title+meta row — see aira.html's copy of this
+           comment for why. -->
+      <div class="cs-hero__title-col">
+        <h1 class="cs-hero__title reveal" data-scramble>Revamping the Nintendo eShop</h1>
+
+        <div class="cs-hero__tags reveal">
+          <span class="cs-tag">Personal project</span>
+          <span class="cs-tag">2026</span>
+          <span class="cs-tag">UX/UI</span>
+          <span class="cs-tag">Product Design</span>
+        </div>
+      </div>
+
+      <!-- "Type" where the other three case studies say "Role": this one
+           is self-directed, so what belongs up front is what kind of
+           project it is, not who I was on a team. Same component. -->
+      <div class="cs-hero__meta reveal">
+        <div class="cs-hero__meta-item">
+          <span>Type</span>
+          <p>App design, personal project</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Timeline</span>
+          <p>5 day design sprint</p>
+        </div>
+        <div class="cs-hero__meta-item">
+          <span>Skills</span>
+          <p>UXR, UI redesign, Figma, research.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= JUMP LINKS =================
+       Lifted out of .cs-hero and given its own section: these are
+       navigation into the page, not part of the hero's statement,
+       and keeping them inside meant the hero had to reserve a
+       10-21rem block of empty space to hold them at the bottom.
+       That space now belongs to .cs-hero__meta instead. -->
+  <section class="cs-jump">
+    <div class="cs-jump__links reveal">
+      <a class="btn btn-outline" href="#background">See the problem ↓</a>
+      <a class="btn btn-outline" href="#iterations">See the solution ↓</a>
+    </div>
+  </section>
+
+  <!-- ================= CONTENT + TABLE OF CONTENTS =================
+       Everything from here to the end of the case study sits in a two
+       column grid: the article on the left, a sticky table of contents
+       on the right. The hero and the jump links stay OUTSIDE it and keep
+       the full page width - .cs-hero's background grid breaks out to
+       100vw (see .cs-hero .hero__grid in style.css) and that trick only
+       lands correctly while its containing block is still centred in the
+       viewport, which a narrowed left column is not.
+
+       The <aside> ships empty and hidden on purpose; main.js reads the
+       section ids and headings below and builds the list from them, so
+       adding or renaming a section here needs no edit there. If the
+       script never runs the aside stays hidden and the page reads
+       exactly as it did before the sidebar existed. -->
+  <div class="cs-layout">
+    <aside class="cs-toc" id="csToc" aria-label="On this page" hidden></aside>
+
+    <div class="cs-layout__body">
+      <!-- ================= BACKGROUND ================= -->
+      <section id="background" data-toc="Background info">
+        <h2 class="cs-heading reveal">Background information</h2>
+        <div class="cs-divider reveal"></div>
+
+        <!-- heading left, prose right — the two-column opening the design
+             calls for. Both children sit directly in the grid; the gap
+             between them is the .cs-split gutter, and below 56.25em they
+             stack in source order. -->
+        <div class="cs-lede reveal">
+          <h3 class="cs-subheading">What's the problem</h3>
+          <p class="hero__desc cs-para">The Nintendo eShop is Nintendo's official digital
+            storefront for its game consoles. On both versions of the Nintendo Switch, it's where players browse,
+            purchase, download, and update digital games. Over the summer I decided to revisit some of my favourite
+            Switch games, which led me to the homepage of the <strong>eShop</strong> that led me down a very
+            interesting rabbit hole. I learned that Nintendo's shop had developed a reputation as one of the most
+            frustrating storefronts around, especially when it came to game discovery. With the sheer volume of
+            low-quality and repetitive titles, it had increasingly become the "Wild West" for Nintendo gamers
+            trying to discover new games.</p>
+        </div>
+
+        <div class="cs-guidelines-grid reveal">
+          <div class="cs-guideline-item">
+            <div class="cs-square">
+              <img src="../assets/images/eshop-guideline-reviews.png" alt="A grid of eShop listings for near-identical budget Christmas games — each showing only a title, date and price, with no rating or review anywhere on the card" loading="lazy" decoding="async" />
+            </div>
+            <p class="cs-caption"><strong>No filter, no reviews</strong>The Recent section, one of the primary ways
+              users discover new games, offers no filtering options, leaving small indie titles at the mercy of
+              their chronological release order. There's also no review system at all: no star ratings, no written
+              reviews, nothing. A buyer has to go in blind every time.</p>
+          </div>
+          <div class="cs-guideline-item">
+            <div class="cs-square">
+              <img src="../assets/images/eshop-guideline-clones.png" alt="Two near-identical masked cartoon heads side by side — the hand-drawn original captioned &quot;Who even are you&quot; and a crude low-poly copy of it answering &quot;I'm literally you bro :D&quot;" loading="lazy" decoding="async" />
+            </div>
+            <p class="cs-caption"><strong>Flipped assets</strong>Nintendo's submission process also lacks effective
+              checks against existing games. That lets direct clones, asset flips, and copied concepts reach the
+              eShop without ever being flagged before release.</p>
+          </div>
+          <div class="cs-guideline-item">
+            <div class="cs-square">
+              <img src="../assets/images/eshop-guideline-slop.png" alt="The Animal Crossing logo ringed by knockoff wordmarks in the same typeface — Village Critter, Creature Crawling, Mammal Walking — captioned &quot;stop copying me&quot;" loading="lazy" decoding="async" />
+            </div>
+            <p class="cs-caption"><strong>Non-stop slop</strong>One account alone has published nearly 80 games
+              since February 2023, feeding a storefront where low-effort releases overwhelm legitimate ones. With
+              New &amp; Recent relying on a flat chronological list, every game gets the same visibility — which
+              makes finding a quality release among the shovelware genuinely hard.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= RESEARCH ================= -->
+      <section id="research">
+        <h2 class="cs-heading reveal">Research</h2>
+        <div class="cs-divider reveal"></div>
+
+        <h3 class="cs-subheading reveal">What does content regulation look like on other platforms?</h3>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Valve rewrote Steam's AI disclosure rules over the
+          past two years. Every developer now completes a Steamworks Content Survey before release, separating
+          content generated during development from content generated live during play
+          (<a href="https://www.videogameschronicle.com/" target="_blank" rel="noopener">Video Games Chronicle</a>,
+          <a href="https://www.gamedeveloper.com/" target="_blank" rel="noopener">Game Developer</a>). The result
+          appears on the store page as a plain label, roughly the same visual weight as a mature-content flag.
+          Disclosing isn't penalized — not disclosing eventually is: a June 2026 update blocks a release outright if
+          a developer skips the required metadata tagging.</p>
+
+        <!-- half-width, so the comparison board sits at the size it was
+             drawn at rather than being blown across the full column; the
+             screening-process diagram below it is the one that needs the
+             whole width. The empty column beside it is intentional. -->
+        <div class="cs-highlights-grid reveal">
+          <div>
+            <div class="cs-square cs-media-placeholder"></div>
+            <p class="cs-caption">What the other storefronts are doing.</p>
+          </div>
+        </div>
+
+        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+        <p class="cs-caption cs-caption--italic reveal">Nintendo's eShop screening process, start to finish.</p>
+
+        <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">AI disclosure works differently
+          on every platform — and some disclosures stay strictly between the publisher and the creator.</div>
+
+        <div class="cs-split cs-split--reverse reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">One constraint</h3>
+            <p class="hero__desc cs-para">Nintendo actually used to have a star rating system, and removed it over
+              its own values. Why has never been disclosed, but you can assume it was the same reason YouTube
+              removed the visible dislike count: protecting creators from dislike mobs. Rest in peace to a very
+              short-lived feature. It begs two questions.</p>
+            <div class="cs-callout">How do we leverage the power of user feedback while still working inside
+              Nintendo's expectations?</div>
+            <div class="cs-callout">How do we indicate game quality without a rating system?</div>
+          </div>
+          <div class="cs-split__media">
+            <!-- --wide, not the 1:1 square: the console bleeds to both
+                 left and right edges of this capture, so a square tile
+                 would crop 222px off each side and cut through the
+                 Joy-Cons. At 1129:711 the crop is 37px off the top and
+                 bottom, which stays inside the sheet's own backdrop. -->
+            <div class="cs-square cs-square--wide">
+              <img src="../assets/images/eshop-current-page.png" alt="The eShop game details page as it stands today, shown on a Switch — box art, screenshots, price and Continue button, with no ratings, reviews or disclosure anywhere on it" loading="lazy" decoding="async" />
+            </div>
+            <p class="cs-caption cs-caption--italic">How the page looks right now.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= LAYING IT ALL OUT ================= -->
+      <section id="principles" data-toc="Design principles">
+        <h2 class="cs-heading reveal">Laying it all out</h2>
+        <div class="cs-divider reveal"></div>
+
+        <h3 class="cs-subheading reveal">Who should we be thinking of?</h3>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">I built two personas mapping out their wants and
+          desires. Looking at the AI final boss's motivations helped me decide which parts of the storefront to
+          regulate; looking at the game explorer's told me how to adjust the store design to fit what she's
+          actually trying to do.</p>
+
+        <!-- the plain 1:1 .cs-square, not --wide: both persona sheets are
+             square (1125x1128 and 1119x1128), and the 1129:711 tile would
+             have cropped "Motivations and goals" clean off the bottom of
+             each one. At 1:1 object-fit: cover takes nothing. -->
+        <div class="cs-highlights-grid reveal">
+          <div class="cs-square">
+            <img src="../assets/images/eshop-persona-sammy.png" alt="Slop Boss Sammy persona — a green slime running a one-person &quot;studio&quot;, asking how to leverage AI for eShop income, with his motivations and goals listed underneath" loading="lazy" decoding="async" />
+          </div>
+          <div class="cs-square">
+            <img src="../assets/images/eshop-persona-gina.png" alt="Gameplayer Gina persona — an indie-game buyer asking how she is supposed to tell which listings are duplicates or low effort, with her motivations and frustrations listed underneath" loading="lazy" decoding="async" />
+          </div>
+        </div>
+        <p class="cs-caption cs-caption--italic reveal">Slop Boss Sammy and Gameplayer Gina.</p>
+
+        <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">The current system benefits
+          those like Sammy and is built against those like Gina. Evaluating that gap is how I knew what to focus
+          on.</div>
+
+        <h3 class="cs-subheading reveal">Which experiences need adjustment</h3>
+        <!-- numbered rather than emoji-topped: these are three ordered
+             parts of one storefront, not three unrelated lessons, so the
+             index is what's worth reading at the top of the card. Same
+             .cs-takeaway-card otherwise — see .cs-takeaway-card__index. -->
+        <div class="cs-takeaways-grid reveal">
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__index" aria-hidden="true">01</span>
+            <div class="cs-takeaway-card__text">
+              <h3>The AI disclosure process</h3>
+              <p>The process for developers is strict in all the wrong ways — long and tedious where it doesn't
+                matter, and absent where it does. Checks for AI, asset flips, and low-quality flips are nowhere to
+                be found, which is what lets the flood of low-effort work onto the page.</p>
+            </div>
+          </div>
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__index" aria-hidden="true">02</span>
+            <div class="cs-takeaway-card__text">
+              <h3>The review system</h3>
+              <p>Nintendo users have no way to communicate with each other on the shop at all. That guts quality
+                control, and it's the step with the highest payoff for the least implementation effort.</p>
+            </div>
+          </div>
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__index" aria-hidden="true">03</span>
+            <div class="cs-takeaway-card__text">
+              <h3>The recent homepage</h3>
+              <p>Recent is the first thing users see when exploring for new games, but its lack of filters and
+                sorting forces players to dig for hidden gems instead of having them surfaced.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-split reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">Feature prioritization</h3>
+            <p class="hero__desc cs-para">Flag AI-made content and let players decide what to do with that
+              information. Valve has rewritten its own disclosure rules more than once trying to define the line —
+              a Nintendo version shouldn't pretend that line is simple.</p>
+            <div class="cs-callout">Red marks the features I decided to actually try out.</div>
+          </div>
+          <div class="cs-split__media">
+            <!-- square tile, not --wide: the matrix is 1:1 and its axis
+                 labels sit right on the top and bottom edges, which the
+                 1129:711 tile would have cropped away. -->
+            <div class="cs-square">
+              <img src="../assets/images/eshop-priority-matrix.png" alt="Impact-versus-effort matrix. High impact, low effort: written reviews, like feature, AI disclosure badge, blurb showing how AI was used, filter system, category sorting button. High impact, high effort: quality badges, asset and code AI scan. Low impact: collapse by publisher, show average playtime, game preview screen, games sorted by genre, demo-available badge. Red dots mark the features taken forward, grey the ones set aside." loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= FIRST ITERATIONS ================= -->
+      <section id="iterations" data-toc="First iterations">
+        <h2 class="cs-heading reveal">User experience: first iterations</h2>
+        <div class="cs-divider reveal"></div>
+
+        <h3 class="cs-subheading reveal">Quality indicators</h3>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Without using a rating system.</p>
+
+        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+
+        <div class="cs-split cs-split--reverse reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">Game details page</h3>
+            <p class="hero__desc cs-para">Placeholder copy — two directions for the same page: one that states the
+              disclosure outright, one that folds it into the existing badge language. Both leave the buy flow
+              untouched, since whatever lands here is the last screen before a purchase.</p>
+          </div>
+          <div class="cs-split__media">
+            <!-- same toggle the Faculty of Environment process section
+                 uses, with --landscape on the frame: both options are
+                 single wide captures rather than tall scrolling pages,
+                 so the frame takes their ratio and each fills it exactly.
+                 The panels keep data-native-scroll anyway — it costs
+                 nothing here and stays correct if a taller render
+                 replaces one of these later. -->
+            <div class="cs-validation-toggle" data-cs-toggle>
+              <button type="button" class="filter-pill is-active" data-cs-toggle-target="option-a">Option 1</button>
+              <button type="button" class="filter-pill" data-cs-toggle-target="option-b">Option 2</button>
+            </div>
+            <div class="cs-scroll-frame cs-scroll-frame--landscape">
+              <div class="cs-scroll-panel is-active" data-cs-toggle-panel="option-a" data-native-scroll>
+                <img src="../assets/images/eshop-details-option-1.png" alt="Game details page, option 1 — the redesigned Nintendo eShop product page with the AI disclosure stated outright" loading="lazy" decoding="async" />
+              </div>
+              <div class="cs-scroll-panel" data-cs-toggle-panel="option-b" data-native-scroll>
+                <img src="../assets/images/eshop-details-option-2.png" alt="Game details page, option 2 — the same product page with the disclosure folded into the existing badge language" loading="lazy" decoding="async" />
+              </div>
+            </div>
+            <p class="cs-caption cs-caption--italic">The first iterations.</p>
+          </div>
+        </div>
+
+        <div class="cs-split reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">The discovery</h3>
+            <p class="hero__desc cs-para">Placeholder copy — where the redesigned Recent page gets walked through:
+              the filters, the sorting, and how a curated shelf sits above the flat chronological list rather than
+              replacing it.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-square cs-media-placeholder"></div>
+          </div>
+        </div>
+
+        <h3 class="cs-subheading reveal">Let's play</h3>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Placeholder copy — three tasks I put the prototype
+          through to check whether any of this actually helps someone shopping.</p>
+
+        <div class="cs-takeaways-grid reveal">
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__index" aria-hidden="true">01</span>
+            <div class="cs-takeaway-card__text">
+              <h3>Find the right game among duplicates</h3>
+              <p>Placeholder copy describing the task and what it was meant to expose.</p>
+            </div>
+          </div>
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__index" aria-hidden="true">02</span>
+            <div class="cs-takeaway-card__text">
+              <h3>Find the "quality" game with 0 AI usage</h3>
+              <p>Placeholder copy describing the task and what it was meant to expose.</p>
+            </div>
+          </div>
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__index" aria-hidden="true">03</span>
+            <div class="cs-takeaway-card__text">
+              <h3>Write a review</h3>
+              <p>Placeholder copy describing the task and what it was meant to expose.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+      </section>
+
+      <!-- ================= FINAL ITERATIONS ================= -->
+      <section id="final" data-toc="Final iterations">
+        <h2 class="cs-heading reveal">Final iterations</h2>
+        <div class="cs-divider reveal"></div>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Placeholder copy — the finished screens, and what
+          changed between them and the first pass.</p>
+        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+      </section>
+
+      <!-- ================= IMPACT ================= -->
+      <section id="impact">
+        <h2 class="cs-heading reveal">Impact</h2>
+        <div class="cs-divider reveal"></div>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Placeholder copy — what the redesign changes for
+          players like Gina, what it costs publishers like Sammy, and what I'd want to measure if this ever
+          shipped.</p>
+
+        <div class="cs-takeaways-grid reveal">
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__emoji" aria-hidden="true">🎮</span>
+            <div class="cs-takeaway-card__text">
+              <h3>Users' side</h3>
+              <p>Placeholder copy on what changes for the person browsing the shop.</p>
+            </div>
+          </div>
+          <div class="cs-takeaway-card">
+            <span class="cs-takeaway-card__emoji" aria-hidden="true">🏷️</span>
+            <div class="cs-takeaway-card__text">
+              <h3>Publishers' side</h3>
+              <p>Placeholder copy on what changes for the people submitting games.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= NEXT PROJECT ================= -->
+      <section id="next-project">
+        <h2 class="cs-heading reveal">Next project</h2>
+        <div class="cs-divider reveal"></div>
+
+        <a class="case-banner cs-next-project reveal" href="aira.html" aria-label="Next project — Aira">
+          <img src="../assets/images/aira-thumb.gif" alt="Aira app — screens showing appointment tracker, air quality index, and health tracker" loading="lazy" decoding="async" />
+        </a>
+      </section>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <h2 class="reveal" data-scramble>Let's c*nnect!</h2>
+    <div class="footer-links">
+      <a class="btn" href="https://www.linkedin.com/in/jaydon-wang-26b677220/" target="_blank" rel="noopener">Linkedin</a>
+      <a class="btn" href="mailto:wang.jaydon1@gmail.com">Email</a>
+    </div>
+    <p>© 2026 Jaydon. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="../js/main.js?v=59"></script>
+<script src="../js/scramble-text.js?v=59"></script>
+</body>
+</html>

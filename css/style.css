@@ -4003,34 +4003,26 @@ footer {
 
 .cs-heading {
   font-family: var(--font-display);
-  /* 700, a real cut - the Google Fonts request in every page's head asks
-     for Inter 400;500;600;700, so this is the shipped Bold and not the
-     browser smearing the Regular into a fake one. Worth noting because
-     the OTHER section heading on the site, .section-head h2, cannot take
-     this: it is set in FS Mondwest, which is loaded as a single face, so
-     asking it for 700 would get exactly that synthetic smear. The two
-     heading styles diverge here for that reason, not by oversight. */
-  font-weight: 700;
-  /* Doubled: 128px against --text-h1's own 64px ceiling, on the same
-     schedule that token uses (its slope arm x2, its 1440px ceiling x2)
-     rather than a calc(var(--text-h1) * 2), which would double the 32px
-     FLOOR too and put a 64px heading on a 390px phone.
+  /* 400, a real cut - the Google Fonts request in every page's head asks
+     for Inter 400;500;600;700, so this is the shipped Regular. At the
+     size below the heading no longer needs Bold to hold the top of the
+     section; the scale does that work, and Regular keeps it from
+     competing with the body copy's own weight. */
+  font-weight: 400;
+  /* The whole previous ramp divided by 1.5 - floor, slope arm and
+     ceiling alike - so the curve keeps its shape and only its scale
+     changes: 85px at the 1440px ceiling against the old 128px, 48px at
+     768px, floored at 29px.
 
-     The constraint on going further is the column, not the viewport.
-     This heading sits in .cs-layout__body, which the contents rail
-     leaves 883px wide at a 1440px window against 1792px at 2560px.
-     Measured across all 22 headings on the site, 128px keeps every
-     one-word and most two-word headings on a single line there; past
-     ~160px even "The mission" wraps, and "Marketing: Social media
-     campaigns" reaches four lines.
-
-     The ramp below 1440px is gentler than a straight doubling of the
-     token's own slope, which reached 65px on a 390px phone - enough to
-     wrap "The mission" and push the longest heading to four lines in a
-     347px column. This passes through 72px at 768px instead and floors
-     at 44px, so the phone end grows about 1.4x while the desktop end is
-     the full 2x asked for. */
-  font-size: clamp(2.75rem, calc(8px + 8.333vw), 8rem);
+     Shrinking only relieves the constraint that set the old ceiling,
+     which was the column and not the viewport. Measured all 22 headings
+     on the site against .cs-layout__body at the width the contents rail
+     leaves it at a 1440px window (883px): at 128px they broke 14 one-
+     line / 7 two-line / 1 three-line, and at 85px they break 18 / 4 / 0.
+     "Marketing: Social media campaigns" is the longest and the one that
+     was three lines; it is two now. So four headings still wrap, but
+     none worse than the old ceiling already wrapped them. */
+  font-size: clamp(1.8333rem, calc(5.333px + 5.5553vw), 5.3333rem);
   letter-spacing: -0.01em;
   /* 12-24px. A divider reads as "attached" to its heading when the gap
      is a small fraction of the heading's size, and at 40px against a
@@ -4179,8 +4171,29 @@ footer {
 
    Wider than tall throughout: line-height already supplies vertical air
    that the sides never get, so equal padding on four sides reads as
-   horizontally pinched. */
+   horizontally pinched.
+
+   text-align: center is about that padding LOOKING equal, which it did
+   not, even though the shorthand below has always set both sides to the
+   same value. The copy is left-aligned and it wraps, so the longest line
+   stops wherever the break falls and the leftover rag sits on the right
+   as apparent padding: measured at 2560, a 60px inline pad rendered as
+   60px of space on the left against 91px on the right for "The circled
+   area needed to change...", and 105px for "The creative content of my
+   work...". Centring is what actually equalises the two, because it
+   splits each line's slack instead of dumping all of it on one side.
+
+   Not solvable by shrink-wrapping the box to the text instead: a text
+   node's max-content width is the whole string on ONE line, so
+   width: fit-content resolves to the full column here and changes
+   nothing. CSS has no "width of the longest line after wrapping".
+
+   One callout already carried style="text-align:center" inline ("Feel
+   free to scroll through") - that inline rule is now redundant but is
+   left in place because it also sets width, and this rule agrees with
+   it rather than fighting it. */
 .cs-callout {
+  text-align: center;
   border-radius: 1rem;
   padding: clamp(1.5rem, calc(1.324rem + 0.7512vw), 2rem) clamp(2rem, calc(1.736rem + 1.1268vw), 2.75rem);
 }
@@ -4247,6 +4260,28 @@ footer {
   margin-bottom: 0.375rem;
 }
 
+/* Inline citations inside running prose (e.g. the Steam sources in the
+   eShop case study's research section). The global `a` reset strips
+   text-decoration — right for the nav, cards and buttons, where the box
+   itself signals the link, but in a paragraph it leaves a citation
+   indistinguishable from the sentence around it. Underline restored,
+   colour deliberately not changed: --ink alone would out-shout the
+   paragraph, and a blue would be the only hue on the page. The offset
+   keeps the rule off the descenders. Scoped to prose (.cs-para and
+   .cs-caption) so no button or card link is caught by it. */
+.cs-para a,
+.cs-caption a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 0.2s ease;
+}
+
+.cs-para a:hover,
+.cs-caption a:hover {
+  color: var(--ink);
+}
+
 /* guideline captions sit noticeably below their image, not flush */
 .cs-guideline-item .cs-caption,
 .cs-marketing-grid .cs-caption {
@@ -4295,6 +4330,27 @@ footer {
   display: block;
 }
 
+/* Marks a media slot whose artwork isn't in the repo yet, so a layout can
+   be reviewed before the images land. It fills the box with the same
+   #d9d9d9 that .cs-square and .cs-wide-media already sit on while their
+   image loads, so an empty slot reads as a reserved space rather than as
+   a hole in the page.
+
+   The second rule is only for .cs-wide-media, which deliberately forces
+   no aspect-ratio of its own (the image's proportions are what give the
+   box its height) and would otherwise collapse to zero while empty.
+   Every .cs-square variant already carries a ratio and needs none of it.
+
+   Delete the class from the element when the real image goes in —
+   nothing else about the slot has to change. */
+.cs-media-placeholder {
+  background: #d9d9d9;
+}
+
+.cs-wide-media.cs-media-placeholder {
+  aspect-ratio: 16 / 9;
+}
+
 /* small heading inside a .cs-split__body (e.g. "Clarity", "Understanding")
    labeling which part of a multi-part section a block belongs to — real
    type hierarchy instead of a small pill/tag component, since a tag reads
@@ -4306,6 +4362,45 @@ footer {
   font-weight: 400;
   font-size: var(--text-h2);
   letter-spacing: -0.01em;
+}
+
+/* A .cs-subheading standing directly in a section rather than inside a
+   .cs-split__body. Every subheading on the site used to live in a split,
+   where that flex container's gap did the spacing — which is why the
+   component itself carries no margin at all. Out here it has no such
+   parent and .cs-para is margin: 0, so the heading sat flush on top of
+   its own paragraph.
+
+   Below it takes .cs-split__body's gap, so a subheading sits exactly as
+   far from its paragraph as it does inside a split. */
+.cs-layout__body > section > .cs-subheading {
+  margin-bottom: clamp(1.5rem, calc(1.3634rem + 0.5825vw), 2rem);
+}
+
+/* A subheading that OPENS a section gets no margin here on purpose. The
+   distance from the heading and its rule down to the first block is
+   .cs-divider's own margin-bottom, and every section on every case study
+   uses it — Aira's "Pain points" divider sits exactly that far above its
+   first paragraph, Ground FX's above its first .cs-split. A section that
+   happens to open with a subheading (or a .cs-lede) is the same moment
+   in the page and has to measure the same, or this one case study starts
+   its sections lower than the other three.
+
+   Only a subheading arriving PARTWAY DOWN a section takes a margin: it
+   is a break inside the section rather than the top of one, and there is
+   no divider above it doing the spacing. That is the rule below.
+
+   It is one of the few gaps on the site that deliberately does not top
+   out at 1440px — every other clamp reaches its ceiling there and then
+   flat-lines, which left a 2560px window with a 1440px window's spacing
+   inside a body column a third wider, exactly where these breaks stopped
+   reading as breaks. So it keeps climbing: 160px at 1440, 224px at 2560,
+   with the floor unchanged below.
+
+   Margin, not padding: it collapses with the previous sibling's
+   margin-bottom to whichever is larger, so the gap is exactly this. */
+.cs-layout__body > section > :not(.cs-divider) + .cs-subheading {
+  margin-top: clamp(6rem, calc(4.857rem + 5.714vw), 14rem);
 }
 
 /* Marketing's 3 video tiles — a thumbnail with a play-button overlay
@@ -4389,6 +4484,17 @@ footer {
   overflow: hidden;
 }
 
+/* The 1:1 above is right for the Faculty of Environment's prototypes,
+   which are tall full-page captures the reader scrolls down inside the
+   frame. The eShop case study's two game-detail options are single
+   landscape screens instead: in a square frame each would paint across
+   the top 58% and leave a dead band under it with nothing to scroll to.
+   This takes the captures' own 1920:1115 so a panel fills the frame
+   exactly, and the toggle above it behaves the same either way. */
+.cs-scroll-frame--landscape {
+  aspect-ratio: 1920 / 1115;
+}
+
 .cs-scroll-panel {
   position: absolute;
   inset: 0;
@@ -4453,12 +4559,56 @@ footer {
   margin-bottom: 1.75rem;
 }
 
-/* text + image split — Introduction, The mission, Process */
-.cs-split {
+/* text + image split — Introduction, The mission, Process
+
+   The gap ceiling roughly doubles, 48px -> 96px. An even 1fr 1fr split
+   with the old gap made the two halves read as one continuous band:
+   the media got exactly as much width as the prose and started a couple
+   of dozen pixels after it, so nothing marked it as a separate thing.
+
+   The media is NOT the half that pays for the wider gap. It holds the
+   exact width it had under the old layout, which is what a track of
+   calc((100% - <the old gap>) / 2) reproduces: percentages in
+   grid-template-columns resolve against the grid's own content box, so
+   this is the same "half the row, less the old gutter" arithmetic the
+   1fr 1fr rule did, restated as an explicit width that the new gap
+   cannot eat into. That is why the old clamp is kept below as a variable
+   rather than deleted — it is still what sizes every image and video
+   here, and changing it changes their size.
+
+   The body track absorbs the difference instead (920px -> 873 at 2560).
+   It can afford to: .cs-para caps its own measure at 62ch, which lands
+   near 860px, so the paragraphs wrap identically to before and only the
+   full-width callout under them gives up the ~47px. */
+/* .cs-lede rides along on all of it: a section-opening heading in the
+   left track with its prose in the right, which is the eShop case
+   study's "What's the problem". Geometrically it IS a split — same two
+   tracks, same gap, same collapse at 56.25em — so it shares the rule
+   rather than restating the arithmetic. It gets its own class because
+   the right-hand track holds body copy, not a media tile: writing it as
+   .cs-split__media would quietly redefine what that element means
+   everywhere else. Its children need no classes of their own; the
+   heading and the paragraph are the two tracks. */
+.cs-split,
+.cs-lede {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  /* the gutter the media was originally sized against - see above */
+  --media-sizing-gap: clamp(1.5rem, calc(1.1359rem + 1.553vw), 3rem);
+  grid-template-columns: minmax(0, 1fr) calc((100% - var(--media-sizing-gap)) / 2);
+  gap: clamp(2rem, calc(0.8rem + 3.2vw), 6rem);
   align-items: start;
+}
+
+/* The reverse variant puts the media first with order: -1, so it lands in
+   the FIRST track — the tracks have to swap with it or the flipped blocks
+   would hand the image the body's track and squeeze the prose into the
+   fixed one. Three of the site's fifteen splits are reverse (two in Aira,
+   one in Ground FX), so this is not hypothetical. Equal specificity with
+   the .cs-split rule above and declared after it, so it wins for those
+   blocks; the 56.25em collapse to a single column is declared later still
+   and beats both. */
+.cs-split--reverse {
+  grid-template-columns: calc((100% - var(--media-sizing-gap)) / 2) minmax(0, 1fr);
 }
 
 /* when several .cs-split blocks are stacked back-to-back in the same
@@ -4466,8 +4616,30 @@ footer {
    otherwise sit flush against each other — the previous block's media
    touching the next block's subheading — since .cs-split itself carries
    no vertical margin. Only fires between siblings, so a single .cs-split
-   used on its own (Introduction, Ideation, etc.) is unaffected. */
-.cs-split + .cs-split {
+   used on its own (Introduction, Ideation, etc.) is unaffected.
+
+   The second selector is that same case with something other than a
+   split in front: a .cs-split opening a sub-block partway down a
+   section, under a callout or a grid (the eShop case study does this
+   three times). It reads as the same kind of break and takes the same
+   gap. Both selectors deliberately skip a split that opens its section —
+   the first because there is no preceding split, the second via
+   :not(.cs-divider) — since there the divider's own margin-bottom has
+   already set the distance, and adding to it would drop the first block
+   out of line with every other section on the site. */
+.cs-split + .cs-split,
+.cs-layout__body > section > :not(.cs-divider) + .cs-split {
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
+
+/* Whatever follows a .cs-lede gets that same sub-block gap. A lede is a
+   section's opening statement — heading and prose across the full row —
+   so the block after it is always the start of the section's real
+   content, never a continuation of the paragraph above. The tighter
+   "intro copy -> grid" spacing that a stacked paragraph takes reads as
+   too close here, because the lede is a two-column band rather than a
+   single column of text and its lower edge is the whole row's. */
+.cs-layout__body > section > .cs-lede + * {
   margin-top: clamp(3rem, 6vw, 5rem);
 }
 
@@ -4895,6 +5067,22 @@ footer {
   line-height: 1;
 }
 
+/* the numbered counterpart of the slot above (see "Which experiences
+   need adjustment" in the eShop case study). It sits in the same place
+   in the card and carries the same bottom margin — so a row can mix
+   numbered and emoji-topped cards and every heading still lands on the
+   same line — but it reads as an index, not an illustration, so it takes
+   body size in --copy-ink rather than 3rem in --ink. Tabular figures
+   keep 01/02/03 optically identical in width down the row. */
+.cs-takeaway-card__index {
+  display: block;
+  margin-bottom: clamp(1.25rem, calc(1.1286rem + 0.518vw), 1.75rem);
+  font-size: var(--text-body);
+  line-height: 1;
+  color: var(--copy-ink);
+  font-variant-numeric: tabular-nums;
+}
+
 .cs-takeaway-card__text {
   display: flex;
   flex-direction: column;
@@ -4929,15 +5117,18 @@ footer {
    at 20rem it stays a sidebar at every width, and the article column
    absorbs all the extra space instead.
 
-   The 18vw middle arm is what actually sets the balance: the sidebar
-   takes close to a fifth of the page and the article gives up the same
-   amount, which is the point — the article was running to nearly a
-   thousand pixels of measure on a laptop, well past a comfortable
-   reading width, while the contents list was narrow enough that
-   ordinary section headings wrapped onto a second line. */
+   The 13vw middle arm sets the balance. It was 18vw — close to a fifth
+   of the page — back when the card was set at body-copy scale and its
+   longest entry needed that room. At --text-nav-switch it does not:
+   measured every label the three case studies actually render (the long
+   headings carry short data-toc overrides, so "Marketing: Social media
+   campaigns" ships as "Marketing"), the widest is "Promotional media" at
+   115px of ink. Against the card's inner padding below that wants 179px,
+   so the 11.5rem floor still clears it with slack and nothing wraps.
+   Every pixel given up here lands in the article track. */
 .cs-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(13rem, 18vw, 20rem);
+  grid-template-columns: minmax(0, 1fr) clamp(11.5rem, 13vw, 13rem);
   /* minmax(0, 1fr), not plain 1fr: a grid track's default min-width is
      auto, which refuses to shrink below its widest content. Several
      sections in here hold wide media and non-wrapping rows, and with a
@@ -4977,12 +5168,16 @@ footer {
    the article still starts flush with the hero's left edge above it. The
    surplus becomes gutter between the two, as in the reference layout.
 
-   112rem leaves the article as wide as it can go while still keeping a
-   deliberate gutter: at 2560 the three parts land on 1792 / 138 / 320,
-   where 138 still reads as a gap rather than as the column edge. Taking
-   it any further collapses the gutter to the designed 72px and the cap
-   stops doing anything at all on this monitor. Below about 2500px it
-   never engages and the grid is the track sizing alone.
+   118rem, up from 112rem. The cap is why narrowing the sidebar above is
+   not enough on a big monitor: at 2560 the article TRACK was already
+   1858px and the element was sitting at 112rem = 1792 inside it, so the
+   space the card gave back would have become gutter and the article
+   would not have moved at all. Raising the cap in step is what actually
+   widens the column here — 1792 to 1888 at 2560, with the gutter landing
+   near the 72px the gap itself uses so it still reads as deliberate
+   rather than as the column edge. Below about 2500px the cap never
+   engages and the grid is the track sizing alone, where the article
+   picks up the sidebar's ~72px directly.
 
    Worth knowing when tuning this number: it is not purely a media
    control. .cs-para's own max-width is 62ch, but ch resolves against that
@@ -4996,7 +5191,7 @@ footer {
    No justify-self is needed: a stretched grid item that hits a max-width
    is placed at the start of its track on its own. */
 .cs-layout__body {
-  max-width: 112rem;
+  max-width: 118rem;
 }
 
 /* .cs-container section + section can't reach across the new wrapper —
@@ -5015,12 +5210,34 @@ footer {
    nothing. Shrinking it to its content height gives it the full column
    to travel down.
 
-   top is a plain viewport offset with no nav compensation, matching
-   every other anchor on the site: .nav-wrap is absolute, not fixed (see
-   its own rule), so it scrolls away and never overlays the card. */
+   top centres the card in the viewport rather than parking it near the
+   top. Sticky pins against the element's TOP edge, so centring means
+   offsetting 50vh by half the card's own height — and CSS cannot read
+   that height, so 11.125rem (178px) is measured rather than guessed:
+   the rows are a uniform 30px and the cards run 342px at eight entries
+   (Faculty of Environment, Ground FX) and 372px at nine (Aira), so 178
+   is half of the midpoint and every case study lands within ~8px of
+   true centre.
+
+   The trailing 4rem lifts it 64px off true centre, which lands the card
+   near 45% of the viewport height. Kept as its own term rather than
+   folded into the 11.125rem so the two stay readable independently: the
+   first is measured from the card and should only change if the rows or
+   the padding do, the second is taste and can be tuned freely.
+
+   The max() is the short-window fallback. On a viewport too short to
+   centre a card this tall, the centring arm collapses toward zero or
+   goes negative, which would push the card under the top of the screen;
+   the old clamp is the floor that catches it, and the list's own
+   max-height takes over the overflow from there.
+
+   Either arm is a plain viewport offset with no nav compensation,
+   matching every other anchor on the site: .nav-wrap is absolute, not
+   fixed (see its own rule), so it scrolls away and never overlays the
+   card. */
 .cs-toc {
   position: sticky;
-  top: clamp(1.5rem, 5vh, 3rem);
+  top: max(clamp(1.5rem, 5vh, 3rem), calc(50vh - 11.125rem - 4rem));
   align-self: start;
   /* A flat panel, not one of the site's glass controls: solid fill, no
      stroke, no inner glow, no backdrop blur. --chip-bg IS #171717 (see
@@ -5028,13 +5245,24 @@ footer {
      card legible in light mode, where the same token resolves to #e7eaf7
      and the text tokens below invert with it. A hardcoded #171717 would
      leave dark-on-dark text on a white page.
-     Vertical padding is unchanged; only the sides come in. */
+     Padding is deliberately NOT scaled down in step with the type. It
+     was briefly cut to 14-18 / 12-16px on the reasoning that padding
+     should track font size; that was wrong for this card. What the
+     padding does here is separate the list from the card's edge, and
+     that job is set by the CARD, not by the type — a 13px list inside a
+     tight box reads as cramped, not as small. These sit just under the
+     originals (20-28 / 18-26px, set around 20px text) so the box still
+     came down overall, with the inset now the most generous thing in it.
+
+     The inline value is what the sidebar floor below has to clear: at
+     22px a side plus the rows' own 10px, the 11.5rem floor leaves 131px
+     of line against a 115px widest label. */
   background: var(--chip-bg);
   border: 0;
   border-radius: var(--radius-md);
+  padding-block: clamp(1.125rem, calc(1.014rem + 0.470vw), 1.5rem);
+  padding-inline: clamp(1rem, calc(0.890rem + 0.470vw), 1.375rem);
   box-shadow: none;
-  padding-block: clamp(1.25rem, calc(0.886rem + 1.553vw), 1.75rem);
-  padding-inline: clamp(1.125rem, calc(0.761rem + 1.553vw), 1.625rem);
 }
 
 /* Typography borrowed wholesale from .nav__links a (About me / Resume /
@@ -5048,8 +5276,8 @@ footer {
      the whole card reads as a single list whose first line happens to be
      bold. margin-bottom therefore matches .cs-toc__link's padding-block
      rather than being a heading margin of its own. */
-  margin: 0 0 0.625rem;
-  padding-inline: 0.75rem;
+  margin: 0 0 0.375rem;
+  padding-inline: 0.625rem;
   font-family: var(--font-body);
   font-size: var(--text-toc);
   font-weight: 700;
@@ -5082,14 +5310,21 @@ footer {
 }
 
 /* --text-toc is declared here rather than in :root because nothing else
-   on the site uses it: it is the one size that has to stay in proportion
-   to the CARD, not to the page. The card's own width is clamp(13rem,
-   18vw, 20rem), so the type tracks the same viewport arm and the two
-   scale together - a fixed size would look correct at one width only.
-   The 20px ceiling is set by the longest label any case study has
-   ("Information architecture", Aira) against the narrowest card. */
+   on the site uses it, and it now resolves to --text-nav-switch: the
+   card is set at exactly the size of the nav's own links (About me /
+   Resume / Contact), 13px at 900px and up.
+
+   This used to be its own clamp(17px, .., 20px), scaled to the CARD
+   rather than to the page on the reasoning that the type should track
+   the sidebar's 18vw width arm. Sharing the nav's token drops it about
+   1.5x and gives up that proportionality on purpose - the contents list
+   is navigation, and it now reads at the same size as the site's other
+   navigation instead of at body-copy scale, where it competed with the
+   article it points at. The 20px ceiling that the longest label
+   ("Information architecture", Aira) used to set is no longer the
+   binding constraint at this size. */
 .cs-toc {
-  --text-toc: clamp(1.0625rem, calc(0.8rem + 0.35vw), 1.25rem);
+  --text-toc: var(--text-nav-switch);
 }
 
 .cs-toc__link {
@@ -5099,8 +5334,11 @@ footer {
      the single thing that makes the card read the way it does. Vertical
      padding does the work, not a list gap, so the whole row - not just
      the text - stays a click target even though nothing is painted
-     behind it any more. */
-  padding: 0.625rem 0.75rem;
+     behind it any more. Trimmed 10/12px -> 6/10px alongside the type:
+     the ratio the rhythm is actually built on is padding against TYPE
+     size, and at 13px the old 10px kept rows at 38px, which read as
+     gaps in a list rather than as the list. 6px lands them near 30px. */
+  padding: 0.375rem 0.625rem;
   border-radius: var(--radius-sm);
   /* The same --copy-ink the body paragraphs use, so the resting rows and
      the prose they point at sit at one brightness. This used to be
@@ -5172,8 +5410,8 @@ footer {
    overflow never scrolls it out of reach on a short window. */
 .cs-toc__top {
   display: block;
-  margin-top: 0.5rem;
-  padding: 0.75rem 0.75rem 0.25rem;
+  margin-top: 0.375rem;
+  padding: 0.5rem 0.625rem 0.125rem;
   border-top: 1px solid rgba(var(--overlay-rgb), 0.12);
   font-family: var(--font-body);
   font-size: var(--text-toc);
@@ -5336,10 +5574,14 @@ footer {
     padding: 0 0.5rem 0.75rem;
   }
 
-  /* the collapsed pill stays at nav size - it is a control, not the list
-     - so --text-toc is pinned back down for the panel, which is much
-     wider than the desktop card and would otherwise take the 20rem
-     ceiling and look oversized on a phone. */
+  /* The panel keeps 16px, which is now BIGGER than the desktop card's
+     type rather than smaller than it - this override predates the card
+     dropping to nav size and its direction has flipped. It stays: the
+     panel's rows are touch targets on a phone, where 13px is under the
+     16px that keeps a tap label comfortably readable, and the panel has
+     the full page width to spend rather than a 13-20rem sidebar. The
+     collapsed pill above is left at --text-nav-switch because it is a
+     control, not a list. */
   .cs-toc {
     --text-toc: 1rem;
   }
@@ -5377,6 +5619,7 @@ footer {
 
 @media (max-width: 56.25em) {
   .cs-split,
+  .cs-lede,
   .cs-highlights-grid,
   .cs-validation-copy,
   .cs-takeaways-grid,
