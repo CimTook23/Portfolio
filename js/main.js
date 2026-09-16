@@ -964,6 +964,18 @@
 
         const filter = pill.dataset.filter;
 
+        /* Hiding cards used to make the page shorter, so the browser had
+           to move the scroll position (clamping it, or re-anchoring on
+           whatever was left) and the screen jumped. Holding the list at
+           its current height keeps the page the same length, so the
+           scroll position never has a reason to change — the matching
+           cards just close up at the top of the list. Released on "All",
+           which is the full list's natural height anyway. */
+        if (projectGrid) {
+          projectGrid.style.minHeight =
+            filter === "all" ? "" : `${projectGrid.getBoundingClientRect().height}px`;
+        }
+
         projectCards.forEach((card) => {
           // a card can belong to more than one category (comma-separated,
           // e.g. Ground FX is both "marketing" and "event-coordination")

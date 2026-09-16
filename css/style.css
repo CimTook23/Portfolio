@@ -1436,6 +1436,23 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   position: relative;
   display: flex;
   justify-content: center;
+  /* pulls the laptop up toward the title on request. Because this is a
+     real margin on a grid row (not a transform), the row below follows:
+     the paragraph rides up by the same amount and the pair keeps its
+     own spacing, with the slack handed to .hero__intro's trailing 1fr
+     row. Expressed against --hero-stack-gap rather than as a fixed px
+     so it stays proportional as that gap scales with the viewport and
+     --hero-fit — tightened on request from -0.7 to -1.5, so it now eats
+     the whole row-gap and half as much again on top of it. That sounds
+     like an overlap and isn't: the multiplier runs against the LAYOUT
+     gap, while what reads as the gap on screen is the distance from the
+     title's glyphs down to the laptop's raised right corner, and the
+     title's line box leaves a deep band of empty space under its
+     baseline that no letter occupies. Measured in the browser, this
+     still leaves clear air at that tightest point. Push much past -1.5
+     and it closes — that corner is what runs out of room first, not
+     anything the box model can see (see .hero__computer for the tilt). */
+  margin-top: calc(var(--hero-stack-gap) * -1.5);
 }
 
 /* replaces the old two-headshot pairing (a photo + a cartoon face) with
@@ -1464,6 +1481,17 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      match-every-page size. */
   height: calc(clamp(220px, calc(181px + 10.31vw), 420px) * var(--hero-fit));
   width: auto;
+  /* tilted counter-clockwise so the laptop leans toward the left side
+     of the stack instead of sitting perfectly square between the title
+     and the paragraph. Rotation doesn't change the layout box, so the
+     corners swing past it by roughly (width / 2) * sin(angle) — at this
+     size that's ~35px top and bottom against a --hero-stack-gap of only
+     14-36px, which is why the angle stays small: any steeper and the
+     top-right corner starts biting into JAYDON WANG's baseline. The
+     drop-shadow rotates with the element (filter is resolved in the
+     element's own space, before transform); at 6deg the offset lands
+     ~1.3px off true vertical, which is not perceptible. */
+  transform: rotate(-6deg);
   filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.45));
 }
 
@@ -1727,6 +1755,10 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 .project-grid {
   flex: 0 1 50%;
   min-width: 0;
+  /* filtering hides cards in here; without this the browser's scroll
+     anchoring nudges the page to follow whichever card it was tracking,
+     which reads as the screen jumping (see project filtering in main.js) */
+  overflow-anchor: none;
   display: flex;
   flex-direction: column;
   gap: 72px;
@@ -2579,6 +2611,13 @@ footer {
   aspect-ratio: 1129 / 711;
 }
 
+/* true 16:9, for screen recordings (e.g. the eShop discovery demo) —
+   --wide's 1129:711 is close but not equal, and cover would shave the
+   sides off a UI capture */
+.cs-square.cs-square--16x9 {
+  aspect-ratio: 16 / 9;
+}
+
 /* portrait variant of .cs-square (matches .cs-video-tile's 711:1206
    ratio) for the Shorts/Reels-style clips in these two galleries */
 .cs-square.cs-square--portrait {
@@ -3205,13 +3244,30 @@ footer {
 
 /* ---------- reveal-on-scroll ---------- */
 
-.reveal {
+/* Case-study pages opt out of the generic fade-and-rise entirely (body
+   .case-study, set on all four) — their content is in place from the
+   first paint. Section headings are the exception and keep animating:
+   .cs-heading.reveal below overrides both of these anyway with a rise
+   and no fade, which is a different effect and was asked to stay.
+
+   The opt-out is written as :where(), whose argument contributes NOTHING
+   to specificity, so both selectors still weigh exactly what they did as
+   bare .reveal / .reveal.is-visible. That matters: the per-component
+   overrides further down (.cs-heading.reveal, .project-card.reveal) are
+   plain two-class selectors that only win by sitting later in the
+   cascade, and a real descendant selector here would outweigh them and
+   quietly put the rise back on the homepage's project cards.
+
+   main.js is untouched — the observer still runs and still adds
+   .is-visible on these pages. Nothing reads it there now, but the card
+   flip-in it also drives is hung off the same callback. */
+:where(body:not(.case-study)) .reveal {
   opacity: 0;
   transform: translateY(24px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
 
-.reveal.is-visible {
+:where(body:not(.case-study)) .reveal.is-visible {
   opacity: 1;
   transform: translateY(0);
 }
@@ -3693,6 +3749,15 @@ footer {
 .cs-hero__card--envoices {
   --cs-hero-card-w: min(clamp(9rem, 20vw, 27rem), 40vh);
   --cs-hero-card-radius: 27px;
+}
+
+/* the eShop Switch, 1400:598 (~2.34:1) — far wider than it is tall, so
+   its height arm converts generously (~40vh of height ~= 94vh of width)
+   and the width arm is what binds almost everywhere. Kept narrower than
+   its share of the page would allow so the long two-line title doesn't
+   run too far across it. Pre-cut PNG-style art: radius stays 0. */
+.cs-hero__card--eshop {
+  --cs-hero-card-w: min(clamp(12rem, 30vw, 42rem), 90vh);
 }
 
 /* The turntable. Its own element rather than the <img>, because a

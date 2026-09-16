@@ -18,9 +18,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=77" />
+<link rel="stylesheet" href="../css/style.css?v=80" />
 </head>
-<body>
+<body class="case-study">
 
 <div class="nav-wrap">
   <header class="nav container container--wide">
@@ -67,13 +67,23 @@
 
 <main class="cs-container" id="top">
 
-  <!-- ================= HERO =================
-       No .cs-hero__card here (same as Ground FX) — the spinning card is
-       optional, and there's no artwork for it yet. Adding one later is
-       self-contained: copy the block out of aira.html, swap the src, and
-       add a --eshop width/radius modifier next to --aira in style.css. -->
+  <!-- ================= HERO ================= -->
   <section class="cs-hero">
     <div class="hero__grid" aria-hidden="true"></div>
+
+    <!-- Decorative Switch showing the redesigned Recent Releases page,
+         spinning in 3D behind the hero — the same component as Aira's and
+         Faculty of Environment's cards (see aira.html for the full notes),
+         with the --eshop modifier for its wide landscape width. WebP with
+         alpha, already cut to the console's shape, so no corner radius. -->
+    <div class="cs-hero__card cs-hero__card--eshop" data-inview-anim aria-hidden="true">
+      <div class="cs-hero__card-spin">
+        <img class="cs-hero__card-face" src="../assets/images/eshop-hero-card.webp" alt=""
+             width="1400" height="598" decoding="async" fetchpriority="low" />
+        <img class="cs-hero__card-face cs-hero__card-face--back" src="../assets/images/eshop-hero-card.webp" alt=""
+             width="1400" height="598" decoding="async" fetchpriority="low" />
+      </div>
+    </div>
 
     <div class="cs-hero__top">
       <!-- tags moved in here, right under the title, instead of sitting
@@ -197,29 +207,34 @@
         <h2 class="cs-heading reveal">Research</h2>
         <div class="cs-divider reveal"></div>
 
-        <h3 class="cs-subheading reveal">What does content regulation look like on other platforms?</h3>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">Valve rewrote Steam's AI disclosure rules over the
-          past two years. Every developer now completes a Steamworks Content Survey before release, separating
-          content generated during development from content generated live during play
-          (<a href="https://www.videogameschronicle.com/" target="_blank" rel="noopener">Video Games Chronicle</a>,
-          <a href="https://www.gamedeveloper.com/" target="_blank" rel="noopener">Game Developer</a>). The result
-          appears on the store page as a plain label, roughly the same visual weight as a mature-content flag.
-          Disclosing isn't penalized — not disclosing eventually is: a June 2026 update blocks a release outright if
-          a developer skips the required metadata tagging.</p>
-
-        <!-- half-width, so the comparison board sits at the size it was
-             drawn at rather than being blown across the full column; the
-             screening-process diagram below it is the one that needs the
-             whole width. The empty column beside it is intentional. -->
-        <div class="cs-highlights-grid reveal">
-          <div>
-            <div class="cs-square cs-media-placeholder"></div>
-            <p class="cs-caption">What the other storefronts are doing.</p>
+        <!-- same image-left / copy-right split as "One constraint" below.
+             .cs-wide-media rather than a .cs-square tile: the table is
+             1398:955, and any fixed ratio would crop a row or a column off
+             it — this box just follows the image's own proportions. -->
+        <div class="cs-split cs-split--reverse reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">What does content regulation look like on other platforms?</h3>
+            <p class="hero__desc cs-para">Valve rewrote Steam's AI disclosure rules over the past two years. Every
+              developer now completes a Steamworks Content Survey before release, separating content generated
+              during development from content generated live during play
+              (<a href="https://www.videogameschronicle.com/" target="_blank" rel="noopener">Video Games Chronicle</a>,
+              <a href="https://www.gamedeveloper.com/" target="_blank" rel="noopener">Game Developer</a>). The result
+              appears on the store page as a plain label, roughly the same visual weight as a mature-content flag.
+              Disclosing isn't penalized — not disclosing eventually is: a June 2026 update blocks a release
+              outright if a developer skips the required metadata tagging.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-wide-media">
+              <img src="../assets/images/eshop-storefront-comparison.webp" alt="Table comparing storefronts. Steam: AI disclosure required, has reviews, covers real-time and pre-generated AI, release is blocked if tagging is skipped. Microsoft Store (Xbox): disclosure required, reviews, covers all generated content (art, audio, text, code), untagged AI is dropped from search. Apple App Store: disclosure required, reviews, covers live AI content rather than shipped assets, enforced by a metadata declaration plus an in-app reporting tool. PlayStation Store: no AI disclosure, has reviews. Google Play: disclosure required, reviews, scoped to sensitive categories rather than games generally." width="1398" height="955" loading="lazy" decoding="async" />
+            </div>
+            <p class="cs-caption cs-caption--italic">What the other storefronts are doing.</p>
           </div>
         </div>
 
-        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
-        <p class="cs-caption cs-caption--italic reveal">Nintendo's eShop screening process, start to finish.</p>
+        <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+          <img src="../assets/images/eshop-research-opinions.webp" alt="Board titled &quot;What does the uwgame dev club think about the eShop?&quot; with four quotes: the AI-generated games are so obvious it's unclear how they got past Nintendo; there's a filter option, but not in the Recent tab where it's needed most; the shop is an endless sea of slop that isn't worth the hassle for an indie developer to publish on; and a wish to tell the good stuff apart from the heaps of garbage" width="1800" height="799" loading="lazy" decoding="async" />
+        </div>
+        <p class="cs-caption cs-caption--italic reveal">What the UW Game Dev Club thinks about the eShop.</p>
 
         <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">AI disclosure works differently
           on every platform — and some disclosures stay strictly between the publisher and the creator.</div>
@@ -277,8 +292,13 @@
         <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">The current system benefits
           those like Sammy and is built against those like Gina. Evaluating that gap is how I knew what to focus
           on.</div>
+      </section>
 
-        <h3 class="cs-subheading reveal">Which experiences need adjustment</h3>
+      <!-- ================= WHICH EXPERIENCES NEED ADJUSTMENT ================= -->
+      <section id="adjustments" data-toc="Experiences to adjust">
+        <h2 class="cs-heading reveal">Which experiences need adjustment</h2>
+        <div class="cs-divider reveal"></div>
+
         <!-- numbered rather than emoji-topped: these are three ordered
              parts of one storefront, not three unrelated lessons, so the
              index is what's worth reading at the top of the card. Same
@@ -338,7 +358,9 @@
         <h3 class="cs-subheading reveal">Quality indicators</h3>
         <p class="hero__desc cs-para reveal" style="max-width: none;">Without using a rating system.</p>
 
-        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+        <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+          <img src="../assets/images/eshop-quality-indicators.webp" alt="Quality indicator explorations: red picto-badges (a hammer for human-made content, a star for high user retention, an arrow for actively updated content, plus a question mark linking to an explanation); a Content Disclosure panel listing how AI was used for art, dialogue, code and music; a review card with a like count; and orange text badges reading High user retention, Actively updated and Human made, noted as more on the nose and less Nintendo-like" width="1756" height="777" loading="lazy" decoding="async" />
+        </div>
 
         <div class="cs-split cs-split--reverse reveal">
           <div class="cs-split__body">
@@ -379,7 +401,16 @@
               replacing it.</p>
           </div>
           <div class="cs-split__media">
-            <div class="cs-square cs-media-placeholder"></div>
+            <!-- same lazy video as Aira's demos (data-src + preload="none",
+                 so nothing downloads until it nears the viewport, and it
+                 pauses once scrolled away), but --16x9 instead of 1:1: the
+                 recording is a 16:9 screen capture and a square tile would
+                 crop the Switch frame off both sides. Re-encoded to 1280x720
+                 with no audio track, which is all this column ever shows. -->
+            <div class="cs-square cs-square--16x9">
+              <video data-src="../assets/videos/eshop-discovery-demo.mp4" poster="../assets/videos/eshop-discovery-demo-poster.jpg" muted loop preload="none" playsinline
+                aria-label="Screen recording of the first iteration of the redesigned Recent releases page — a Popular Recent Releases shelf above the full list, with a filter button"></video>
+            </div>
           </div>
         </div>
 
@@ -411,7 +442,18 @@
           </div>
         </div>
 
-        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+        <!-- same lazy video as the discovery demo above (data-src +
+             preload="none", so nothing downloads until it nears the
+             viewport, and it pauses once scrolled away), but in the
+             full-width .cs-video frame rather than a split column —
+             this clip is the section's own closing beat, not something
+             sitting beside copy. 16:9 either way, so the frame fits the
+             recording exactly. Re-encoded to 1280x720 and stripped of
+             its audio track, which was silent in the capture. -->
+        <div class="cs-video reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+          <video data-src="../assets/videos/eshop-testing-demo.mp4" poster="../assets/videos/eshop-testing-demo-poster.jpg" muted loop preload="none" playsinline
+            aria-label="Screen recording of a usability test — a participant scrolling the redesigned Recent releases page, from the Popular Recent Releases shelf down through the Non AI shelf, with their webcam in the corner"></video>
+        </div>
       </section>
 
       <!-- ================= FINAL ITERATIONS ================= -->
@@ -420,7 +462,29 @@
         <div class="cs-divider reveal"></div>
         <p class="hero__desc cs-para reveal" style="max-width: none;">Placeholder copy — the finished screens, and what
           changed between them and the first pass.</p>
-        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+
+        <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+          <img src="../assets/images/eshop-final-iterations.webp" alt="The four finished screens laid out on a red board: the Recent releases page with a Popular Recent Releases shelf and a Free demo block for Canine; a full-page user review list with a like count and five reviews; a Game badges explainer showing the three red badges — Human made, High user retention, Frequently updated — above a description of what each recognizes; and the Canine game details page with its price, Continue button, and a review sidebar" width="1757" height="1000" loading="lazy" decoding="async" />
+        </div>
+
+        <!-- the two walkthroughs run side by side because they're the same
+             prototype taken down two different paths — browsing on the left,
+             a single product on the right — and reading them as a pair is
+             the point. Same lazy 16:9 tiles as the discovery demo, in the
+             two-up grid Highlights uses, which collapses to a single column
+             at 56.25em where half a column is too narrow for UI this dense.
+             Both sources are true 16:9, so cover fills each tile exactly
+             with nothing cropped. -->
+        <div class="cs-highlights-grid reveal">
+          <div class="cs-square cs-square--16x9">
+            <video data-src="../assets/videos/eshop-main-page-final.mp4" poster="../assets/videos/eshop-main-page-final-poster.jpg" muted loop preload="none" playsinline
+              aria-label="Walkthrough of the finished main page on a Nintendo Switch — the Recent releases shelves, the quality badges on store listings, and the Game badges screen explaining what Human made, High user retention and Frequently updated each mean"></video>
+          </div>
+          <div class="cs-square cs-square--16x9">
+            <video data-src="../assets/videos/eshop-details-page-final.mp4" poster="../assets/videos/eshop-details-page-final-poster.jpg" muted loop preload="none" playsinline
+              aria-label="Walkthrough of the finished game details page on a Nintendo Switch — Canine's product page scrolling through its screenshots, Product Details, and the Content Disclosure panel stating the title was created without AI tools, with the price and review sidebar alongside"></video>
+          </div>
+        </div>
       </section>
 
       <!-- ================= IMPACT ================= -->
@@ -474,7 +538,7 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=59"></script>
+<script src="../js/main.js?v=61"></script>
 <script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>
