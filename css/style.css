@@ -4468,6 +4468,21 @@ footer {
   margin-top: clamp(6rem, calc(4.857rem + 5.714vw), 14rem);
 }
 
+/* ...unless what it follows is the section's own opening paragraph. The
+   rule above reads "not straight after the divider" as "partway down the
+   section", which held while every section went divider -> subheading or
+   divider -> block. A section that opens with a line of framing prose
+   before its first subheading breaks that assumption: the subheading is
+   still the top of the section's content, so taking the full break gap
+   left a chasm between the intro and the first thing it introduces.
+
+   The gap here is exactly twice .cs-subheading's own margin-bottom, so
+   the heading sits twice as far from the paragraph above it as from the
+   one below, and reads as attached to what follows. */
+.cs-layout__body > section > .cs-divider + .cs-para + .cs-subheading {
+  margin-top: clamp(3rem, calc(2.7268rem + 1.165vw), 4rem);
+}
+
 /* Marketing's 3 video tiles — a thumbnail with a play-button overlay
    that swaps itself for a real YouTube iframe on click (see main.js).
    Nothing loads until it's actually clicked, so it stays as light as
@@ -4987,6 +5002,19 @@ footer {
 
 .cs-quote-set.is-active {
   display: flex;
+}
+
+/* body copy driven by a [data-cs-toggle] group, so the prose beside a
+   set of options can change with them instead of describing both at
+   once. Same display swap .cs-quote-set uses just above; block rather
+   than flex because what sits in here is a paragraph, and it takes the
+   spacing from .cs-split__body's own gap exactly as a bare <p> did. */
+.cs-toggle-copy {
+  display: none;
+}
+
+.cs-toggle-copy.is-active {
+  display: block;
 }
 
 .cs-validation-list__row {

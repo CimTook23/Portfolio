@@ -1104,10 +1104,17 @@
      A [data-cs-toggle] pill group switches every matching [data-cs-toggle-panel] found
      anywhere in its parent, matched by [data-cs-toggle-target] — not just the toggle's
      next sibling, so one Option A/B click can drive both the screenshot frame AND a
-     separate set of quote panels living alongside it. */
+     separate set of quote panels living alongside it.
+
+     The parent is the default scope because it is right for a group that sits in the
+     same box as everything it drives (Design validation's .cs-validation-lower). The
+     eShop's Game details toggle does not: it lives in a .cs-split's media column while
+     one of its panels is the copy in the body column, and the toggle cannot simply move
+     up to the .cs-split, which is a two-column grid that would take it as a third item.
+     That case marks the shared ancestor with [data-cs-toggle-scope] instead. */
   document.querySelectorAll("[data-cs-toggle]").forEach((group) => {
     const buttons = group.querySelectorAll("[data-cs-toggle-target]");
-    const scope = group.parentElement;
+    const scope = group.closest("[data-cs-toggle-scope]") || group.parentElement;
     if (!scope) return;
 
     buttons.forEach((btn) => {

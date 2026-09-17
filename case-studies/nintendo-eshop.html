@@ -18,7 +18,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=80" />
+<link rel="stylesheet" href="../css/style.css?v=81" />
 </head>
 <body class="case-study">
 
@@ -164,12 +164,11 @@
           <h3 class="cs-subheading">What's the problem</h3>
           <p class="hero__desc cs-para">The Nintendo eShop is Nintendo's official digital
             storefront for its game consoles. On both versions of the Nintendo Switch, it's where players browse,
-            purchase, download, and update digital games. Over the summer I decided to revisit some of my favourite
-            Switch games, which led me to the homepage of the <strong>eShop</strong> that led me down a very
-            interesting rabbit hole. I learned that Nintendo's shop had developed a reputation as one of the most
-            frustrating storefronts around, especially when it came to game discovery. With the sheer volume of
-            low-quality and repetitive titles, it had increasingly become the "Wild West" for Nintendo gamers
-            trying to discover new games.</p>
+            purchase, download, and update digital games. Over the summer I went back to revisit some of my favourite Switch games, 
+            which took me to the eShop homepage and down a genuinely interesting rabbit hole. I learned Nintendo's shop had built a reputation as one 
+            of the most frustrating storefronts around, especially for game discovery. With the sheer volume of low-quality and repetitive titles, it 
+had become something close to the "Wild West" for gamers trying to find something worth buying.
+</p>
         </div>
 
         <div class="cs-guidelines-grid reveal">
@@ -194,10 +193,10 @@
             <div class="cs-square">
               <img src="../assets/images/eshop-guideline-slop.png" alt="The Animal Crossing logo ringed by knockoff wordmarks in the same typeface — Village Critter, Creature Crawling, Mammal Walking — captioned &quot;stop copying me&quot;" loading="lazy" decoding="async" />
             </div>
-            <p class="cs-caption"><strong>Non-stop slop</strong>One account alone has published nearly 80 games
-              since February 2023, feeding a storefront where low-effort releases overwhelm legitimate ones. With
-              New &amp; Recent relying on a flat chronological list, every game gets the same visibility — which
-              makes finding a quality release among the shovelware genuinely hard.</p>
+            <p class="cs-caption"><strong>Non-stop slop</strong>The eShop has reportedly seen a rise in AI-generated accounts publishing nearly 80 games since February 2023, contributing to a storefront
+               increasingly crowded with low-effort releases. 
+              Since the New & Recent section uses a simple chronological list, every game receives roughly the same visibility, 
+              making it difficult for players to distinguish quality releases from shovelware.</p>
           </div>
         </div>
       </section>
@@ -214,14 +213,11 @@
         <div class="cs-split cs-split--reverse reveal">
           <div class="cs-split__body">
             <h3 class="cs-subheading">What does content regulation look like on other platforms?</h3>
-            <p class="hero__desc cs-para">Valve rewrote Steam's AI disclosure rules over the past two years. Every
-              developer now completes a Steamworks Content Survey before release, separating content generated
-              during development from content generated live during play
-              (<a href="https://www.videogameschronicle.com/" target="_blank" rel="noopener">Video Games Chronicle</a>,
-              <a href="https://www.gamedeveloper.com/" target="_blank" rel="noopener">Game Developer</a>). The result
-              appears on the store page as a plain label, roughly the same visual weight as a mature-content flag.
-              Disclosing isn't penalized — not disclosing eventually is: a June 2026 update blocks a release
-              outright if a developer skips the required metadata tagging.</p>
+            <p class="hero__desc cs-para">During my secondary research, a common question came up: Why just Nintendo? Why haven’t other storefronts faced the same negative reputation? Alongside research with the UW Game Dev Club, I conducted primary research into how other platforms handle these concerns and how their systems 
+              could inform my solution. For example, Steam requires developers to complete a Content Survey before release, distinguishing 
+              between AI-generated content used during development and content generated live during gameplay.
+              The result appears on the store page as a plain label, roughly the same visual weight as a mature-content flag.
+              </p>
           </div>
           <div class="cs-split__media">
             <div class="cs-wide-media">
@@ -236,16 +232,14 @@
         </div>
         <p class="cs-caption cs-caption--italic reveal">What the UW Game Dev Club thinks about the eShop.</p>
 
-        <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">AI disclosure works differently
-          on every platform — and some disclosures stay strictly between the publisher and the creator.</div>
+        <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">Once I gathered my information from both primary and secondary research, I was able to identify key patterns and insights that would inform my solution.</div>
 
         <div class="cs-split cs-split--reverse reveal">
           <div class="cs-split__body">
             <h3 class="cs-subheading">One constraint</h3>
-            <p class="hero__desc cs-para">Nintendo actually used to have a star rating system, and removed it over
-              its own values. Why has never been disclosed, but you can assume it was the same reason YouTube
-              removed the visible dislike count: protecting creators from dislike mobs. Rest in peace to a very
-              short-lived feature. It begs two questions.</p>
+            <p class="hero__desc cs-para">One interesting fact I learned during my research process was that Nintendo previously had a star-rating system for games on its 
+              eShop before eventually removing the feature. 
+              Nintendo has not publicly disclosed the reason for its removal. Which raises questions about how I can implement features that respect this earlier decision.</p>
             <div class="cs-callout">How do we leverage the power of user feedback while still working inside
               Nintendo's expectations?</div>
             <div class="cs-callout">How do we indicate game quality without a rating system?</div>
@@ -270,7 +264,7 @@
         <div class="cs-divider reveal"></div>
 
         <h3 class="cs-subheading reveal">Who should we be thinking of?</h3>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">I built two personas mapping out their wants and
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Based on the research I collected, I built two personas mapping out their wants and
           desires. Looking at the AI final boss's motivations helped me decide which parts of the storefront to
           regulate; looking at the game explorer's told me how to adjust the store design to fit what she's
           actually trying to do.</p>
@@ -308,25 +302,27 @@
             <span class="cs-takeaway-card__index" aria-hidden="true">01</span>
             <div class="cs-takeaway-card__text">
               <h3>The AI disclosure process</h3>
-              <p>The process for developers is strict in all the wrong ways — long and tedious where it doesn't
-                matter, and absent where it does. Checks for AI, asset flips, and low-quality flips are nowhere to
-                be found, which is what lets the flood of low-effort work onto the page.</p>
+              <p>Nintendo's submission process is strict in all the wrong places. It's long and tedious where it
+                doesn't matter, and it stops short where it counts: there are no checks for AI use, asset flips, or
+                low-quality clones. That gap is what lets so much low-effort work reach the page at all.</p>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__index" aria-hidden="true">02</span>
             <div class="cs-takeaway-card__text">
               <h3>The review system</h3>
-              <p>Nintendo users have no way to communicate with each other on the shop at all. That guts quality
-                control, and it's the step with the highest payoff for the least implementation effort.</p>
+              <p>Players have no way to talk to each other on the eShop at all. That takes away the most obvious
+                form of quality control a storefront has, and putting it back is the change with the biggest payoff
+                for the least work to build.</p>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__index" aria-hidden="true">03</span>
             <div class="cs-takeaway-card__text">
-              <h3>The recent homepage</h3>
-              <p>Recent is the first thing users see when exploring for new games, but its lack of filters and
-                sorting forces players to dig for hidden gems instead of having them surfaced.</p>
+              <h3>The Recent homepage</h3>
+              <p>Recent is the first place players look when they're hunting for something new, but it has no
+                filters and no sorting. That leaves people digging for the good releases instead of the page
+                surfacing them.</p>
             </div>
           </div>
         </div>
@@ -334,10 +330,10 @@
         <div class="cs-split reveal">
           <div class="cs-split__body">
             <h3 class="cs-subheading">Feature prioritization</h3>
-            <p class="hero__desc cs-para">Flag AI-made content and let players decide what to do with that
-              information. Valve has rewritten its own disclosure rules more than once trying to define the line —
-              a Nintendo version shouldn't pretend that line is simple.</p>
-            <div class="cs-callout">Red marks the features I decided to actually try out.</div>
+            <p class="hero__desc cs-para">From there I mapped every idea against how much it would change the
+              experience and how much work it would take to build. The ones that came out on top all point the same
+              way: flag AI-made content, and let players decide what to do with that information.</p>
+            <div class="cs-callout">Red marks the features I decided to take forward.</div>
           </div>
           <div class="cs-split__media">
             <!-- square tile, not --wide: the matrix is 1:1 and its axis
@@ -350,10 +346,32 @@
         </div>
       </section>
 
+      <!-- ================= DEVELOPER SIDE ================= -->
+      <!-- sits ahead of the user-facing iterations on purpose: every badge
+           and disclosure panel in the next section is only worth as much as
+           the answers collected here, so the intake is the thing that has to
+           be designed first. -->
+      <section id="submission" data-toc="The AI check">
+        <h2 class="cs-heading reveal">Developer experience: the AI check</h2>
+        <div class="cs-divider reveal"></div>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Everything above is what a player sees, and none
+          of it is worth anything unless the answers behind it are true. That puts the weight on submission, which is
+          where the eShop currently asks nothing at all. In the redesign, disclosure becomes a step a developer cannot
+          skip: before a build goes up, the publisher declares how AI was used for art, dialogue, code and music, one
+          component at a time, and that answer is what fills the Content Disclosure panel on the store page. Steam
+          already runs a version of this with its Content Survey, and blocks release outright when it is skipped.
+          Running alongside it, an automated pass checks submitted assets and code against what is already on the
+          shop, so clones and asset flips get caught at the door instead of after players complain.</p>
+        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+      </section>
+
       <!-- ================= FIRST ITERATIONS ================= -->
       <section id="iterations" data-toc="First iterations">
         <h2 class="cs-heading reveal">User experience: first iterations</h2>
         <div class="cs-divider reveal"></div>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">With the list settled, I took those features
+          forward and started drafting. Everything in this first pass is working on the same problem: how the shop
+          tells a player what a game is actually worth before they buy it.</p>
 
         <h3 class="cs-subheading reveal">Quality indicators</h3>
         <p class="hero__desc cs-para reveal" style="max-width: none;">Without using a rating system.</p>
@@ -362,12 +380,23 @@
           <img src="../assets/images/eshop-quality-indicators.webp" alt="Quality indicator explorations: red picto-badges (a hammer for human-made content, a star for high user retention, an arrow for actively updated content, plus a question mark linking to an explanation); a Content Disclosure panel listing how AI was used for art, dialogue, code and music; a review card with a like count; and orange text badges reading High user retention, Actively updated and Human made, noted as more on the nose and less Nintendo-like" width="1756" height="777" loading="lazy" decoding="async" />
         </div>
 
-        <div class="cs-split cs-split--reverse reveal">
+        <!-- [data-cs-toggle-scope]: the Option 1/2 pills live in the media
+             column but also drive the two copy blocks in the body column,
+             which is further than the toggle's default parent-element
+             scope reaches. See the toggle handler in main.js. -->
+        <div class="cs-split cs-split--reverse reveal" data-cs-toggle-scope>
           <div class="cs-split__body">
             <h3 class="cs-subheading">Game details page</h3>
-            <p class="hero__desc cs-para">Placeholder copy — two directions for the same page: one that states the
-              disclosure outright, one that folds it into the existing badge language. Both leave the buy flow
-              untouched, since whatever lands here is the last screen before a purchase.</p>
+            <p class="hero__desc cs-para">Two directions for the same page, and the same question underneath both:
+              how much of this should a player have to notice?</p>
+            <div class="cs-toggle-copy is-active" data-cs-toggle-panel="option-a">
+              <p class="hero__desc cs-para">The subtle one. The new features are blended far enough into the existing
+                UI that a regular player would have to look hard to notice anything had changed at all.</p>
+            </div>
+            <div class="cs-toggle-copy" data-cs-toggle-panel="option-b">
+              <p class="hero__desc cs-para">The on the nose one. Reviews, badges and ratings are all pushed to the
+                front where they cannot be missed, at the risk of crowding a page that already has a lot to say.</p>
+            </div>
           </div>
           <div class="cs-split__media">
             <!-- same toggle the Faculty of Environment process section
@@ -396,9 +425,11 @@
         <div class="cs-split reveal">
           <div class="cs-split__body">
             <h3 class="cs-subheading">The discovery</h3>
-            <p class="hero__desc cs-para">Placeholder copy — where the redesigned Recent page gets walked through:
-              the filters, the sorting, and how a curated shelf sits above the flat chronological list rather than
-              replacing it.</p>
+            <p class="hero__desc cs-para">Recent keeps its chronological list, because that is what the section is
+              for, but it no longer has to do the whole job alone. A Popular Recent Releases shelf sits above it so
+              there is something curated to land on, the quality badges show up on the tiles themselves, and the
+              filter button cuts the list down to what a player is actually after. Filtering to Non AI rewrites the
+              shelf heading too, so it stays obvious what you are looking at.</p>
           </div>
           <div class="cs-split__media">
             <!-- same lazy video as Aira's demos (data-src + preload="none",
@@ -414,30 +445,32 @@
           </div>
         </div>
 
-        <h3 class="cs-subheading reveal">Let's play</h3>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">Placeholder copy — three tasks I put the prototype
-          through to check whether any of this actually helps someone shopping.</p>
+        <!-- aria-hidden on the emoji so the heading still announces as
+             just "Let's play" rather than leading with the emoji's own
+             name. Same treatment the takeaway-card emoji get. -->
+        <h3 class="cs-subheading reveal"><span aria-hidden="true">🎮</span> Let's play</h3>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">For this part I got the UW Game Dev Club back
+          together. I put my iterations of the store in front of them, gave them three tasks to work through, and
+          asked them to talk out loud the whole way so I could hear what they were reading and where they were
+          guessing. One of the three was a straight head-to-head between two versions of the same screen.</p>
 
         <div class="cs-takeaways-grid reveal">
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__index" aria-hidden="true">01</span>
             <div class="cs-takeaway-card__text">
-              <h3>Find the right game among duplicates</h3>
-              <p>Placeholder copy describing the task and what it was meant to expose.</p>
+              <h3>Find a game carrying every quality badge</h3>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__index" aria-hidden="true">02</span>
             <div class="cs-takeaway-card__text">
-              <h3>Find the "quality" game with 0 AI usage</h3>
-              <p>Placeholder copy describing the task and what it was meant to expose.</p>
+              <h3>Pick between the two game details pages</h3>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__index" aria-hidden="true">03</span>
             <div class="cs-takeaway-card__text">
-              <h3>Write a review</h3>
-              <p>Placeholder copy describing the task and what it was meant to expose.</p>
+              <h3>Point out everything telling you about quality</h3>
             </div>
           </div>
         </div>
@@ -460,14 +493,23 @@
       <section id="final" data-toc="Final iterations">
         <h2 class="cs-heading reveal">Final iterations</h2>
         <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">Placeholder copy — the finished screens, and what
-          changed between them and the first pass.</p>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">The finished screens, and what moved between
+          them and the first pass. The orange text badges are gone, since they read as more on the nose than anything
+          Nintendo would actually ship. The quality signals became red picto-badges that sit next to the title and
+          repeat on the store tiles, reviews moved into the sidebar beside the price instead of hiding behind a link,
+          and the Content Disclosure panel now states outright whether a title used AI and breaks the answer down
+          component by component.</p>
 
         <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
           <img src="../assets/images/eshop-final-iterations.webp" alt="The four finished screens laid out on a red board: the Recent releases page with a Popular Recent Releases shelf and a Free demo block for Canine; a full-page user review list with a like count and five reviews; a Game badges explainer showing the three red badges — Human made, High user retention, Frequently updated — above a description of what each recognizes; and the Canine game details page with its price, Continue button, and a review sidebar" width="1757" height="1000" loading="lazy" decoding="async" />
         </div>
+        <p class="cs-caption cs-caption--italic reveal">All four finished screens: the Recent releases page, the full
+          review list, the badge explainer, and a game's own details page.</p>
 
-        <!-- the two walkthroughs run side by side because they're the same
+        <!-- each clip sits in a plain wrapper div so the tile and its caption
+             travel together as one grid column, the same shape Motion design's
+             gallery uses. The two walkthroughs run side by side because they're
+             the same
              prototype taken down two different paths — browsing on the left,
              a single product on the right — and reading them as a pair is
              the point. Same lazy 16:9 tiles as the discovery demo, in the
@@ -476,13 +518,21 @@
              Both sources are true 16:9, so cover fills each tile exactly
              with nothing cropped. -->
         <div class="cs-highlights-grid reveal">
-          <div class="cs-square cs-square--16x9">
-            <video data-src="../assets/videos/eshop-main-page-final.mp4" poster="../assets/videos/eshop-main-page-final-poster.jpg" muted loop preload="none" playsinline
-              aria-label="Walkthrough of the finished main page on a Nintendo Switch — the Recent releases shelves, the quality badges on store listings, and the Game badges screen explaining what Human made, High user retention and Frequently updated each mean"></video>
+          <div>
+            <div class="cs-square cs-square--16x9">
+              <video data-src="../assets/videos/eshop-main-page-final.mp4" poster="../assets/videos/eshop-main-page-final-poster.jpg" muted loop preload="none" playsinline
+                aria-label="Walkthrough of the finished main page on a Nintendo Switch — the Recent releases shelves, the quality badges on store listings, and the Game badges screen explaining what Human made, High user retention and Frequently updated each mean"></video>
+            </div>
+            <p class="cs-caption cs-caption--italic">The main page, from the Recent shelves through to the screen
+              explaining what each badge is actually claiming.</p>
           </div>
-          <div class="cs-square cs-square--16x9">
-            <video data-src="../assets/videos/eshop-details-page-final.mp4" poster="../assets/videos/eshop-details-page-final-poster.jpg" muted loop preload="none" playsinline
-              aria-label="Walkthrough of the finished game details page on a Nintendo Switch — Canine's product page scrolling through its screenshots, Product Details, and the Content Disclosure panel stating the title was created without AI tools, with the price and review sidebar alongside"></video>
+          <div>
+            <div class="cs-square cs-square--16x9">
+              <video data-src="../assets/videos/eshop-details-page-final.mp4" poster="../assets/videos/eshop-details-page-final-poster.jpg" muted loop preload="none" playsinline
+                aria-label="Walkthrough of the finished game details page on a Nintendo Switch — Canine's product page scrolling through its screenshots, Product Details, and the Content Disclosure panel stating the title was created without AI tools, with the price and review sidebar alongside"></video>
+            </div>
+            <p class="cs-caption cs-caption--italic">One game's page, from its screenshots down to the content
+              disclosure, with the price and reviews sitting alongside.</p>
           </div>
         </div>
       </section>
@@ -491,23 +541,28 @@
       <section id="impact">
         <h2 class="cs-heading reveal">Impact</h2>
         <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">Placeholder copy — what the redesign changes for
-          players like Gina, what it costs publishers like Sammy, and what I'd want to measure if this ever
-          shipped.</p>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">All of this comes back to the gap between Gina
+          and Sammy, and which of them the storefront is built for. If a version of this ever shipped, the number I
+          would want to watch is how often players buy anything from Recent at all, since that is the section the
+          current design quietly teaches them to scroll past.</p>
 
         <div class="cs-takeaways-grid reveal">
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__emoji" aria-hidden="true">🎮</span>
             <div class="cs-takeaway-card__text">
               <h3>Users' side</h3>
-              <p>Placeholder copy on what changes for the person browsing the shop.</p>
+              <p>Gina gets to tell listings apart before she buys instead of after. The badges do the first pass, the
+                filter takes the noise out of Recent, and the reviews give her something to go on other than a store
+                page the publisher wrote.</p>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__emoji" aria-hidden="true">🏷️</span>
             <div class="cs-takeaway-card__text">
               <h3>Publishers' side</h3>
-              <p>Placeholder copy on what changes for the people submitting games.</p>
+              <p>Sammy's model stops paying as well. Disclosure becomes a required step rather than an optional one,
+                clones and asset flips get screened before release instead of after the complaints roll in, and a list
+                that used to hand every game the same visibility now leans on signals he would have to earn.</p>
             </div>
           </div>
         </div>
@@ -538,7 +593,7 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=61"></script>
+<script src="../js/main.js?v=62"></script>
 <script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>
