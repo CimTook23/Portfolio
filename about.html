@@ -11,7 +11,22 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>About — Jaydon</title>
-<meta name="description" content="About Jaydon — product designer working in interaction, visual, and brand design." />
+<meta name="description" content="About Jaydon Wang, a product designer working across interaction, visual and brand design, and a GBDA student at the University of Waterloo." />
+
+<!-- Open Graph / Twitter card: what a pasted link renders as in
+     LinkedIn, Slack, iMessage and email. og:image is relative;
+     make it absolute (and add og:url) once the domain is live. -->
+<meta property="og:type" content="profile" />
+<meta property="og:site_name" content="Jaydon Wang" />
+<meta property="og:locale" content="en_CA" />
+<meta property="og:title" content="About Jaydon Wang" />
+<meta property="og:description" content="About Jaydon Wang, a product designer working across interaction, visual and brand design, and a GBDA student at the University of Waterloo." />
+<meta property="og:image" content="assets/images/jaydon-wordmark.png" />
+<meta property="og:image:alt" content="About Jaydon Wang" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="About Jaydon Wang" />
+<meta name="twitter:description" content="About Jaydon Wang, a product designer working across interaction, visual and brand design, and a GBDA student at the University of Waterloo." />
+<meta name="twitter:image" content="assets/images/jaydon-wordmark.png" />
 <link rel="icon" href="assets/images/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png" />
@@ -19,7 +34,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=81" />
+<link rel="stylesheet" href="css/style.css?v=103" />
 </head>
 <body>
 
@@ -56,7 +71,7 @@
 
     <ul class="nav__links" id="navLinks">
       <li><a href="about.html">About me</a></li>
-      <li><a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
     </ul>
 
@@ -76,7 +91,7 @@
        out in flow — so the composition holds its shape at any viewport
        instead of reflowing part by part, and never needs a scrollbar.
        See .about-hero in style.css for how the placement works. -->
-  <section class="about-hero">
+  <section class="about-hero" id="about-top">
     <div class="about-hero__grid" aria-hidden="true"></div>
 
     <div class="about-hero__inner container container--wide">
@@ -96,28 +111,169 @@
              alt="Illustration of Jaydon meditating" />
       </div>
 
-      <!-- The three discs are placeholders: the art (record, sunflower,
-           bin) isn't in assets/images yet, so they render as empty glass
-           and don't navigate — same as the pair they replace. Drop an
-           <img loading="lazy" decoding="async"> inside each one when the files land. -->
+      <!-- The three discs now hold their art. Slot names are positional and
+           predate it: --disc-top is the one centred above the character,
+           --disc-left and --disc-right the pair flanking it below.
+
+           alt="" on every image on purpose. The button already carries the
+           accessible name through aria-label, so a described image would
+           make a screen reader announce the same thing twice. When these
+           start navigating somewhere, the aria-label should name the
+           DESTINATION rather than the picture. -->
       <div class="about-hero__slot about-hero__slot--disc-top">
-        <button class="about-hero__disc" type="button" aria-label="More coming soon"></button>
+        <a class="about-hero__disc" href="#music" aria-label="Music">
+          <img src="assets/images/about-disc-record.webp" alt="" width="100" height="100" loading="lazy" decoding="async" />
+        </a>
       </div>
       <div class="about-hero__slot about-hero__slot--disc-left">
-        <button class="about-hero__disc" type="button" aria-label="More coming soon"></button>
+        <a class="about-hero__disc" href="#film" aria-label="Film">
+          <img src="assets/images/about-disc-film.webp" alt="" width="104" height="105" loading="lazy" decoding="async" />
+        </a>
       </div>
       <div class="about-hero__slot about-hero__slot--disc-right">
-        <button class="about-hero__disc" type="button" aria-label="More coming soon"></button>
+        <a class="about-hero__disc" href="#trash" aria-label="Trash">
+          <img src="assets/images/about-disc-bin.webp" alt="" width="82" height="101" loading="lazy" decoding="async" />
+        </a>
       </div>
 
-      <!-- buttons, not links: neither destination exists yet -->
       <div class="about-hero__slot about-hero__slot--action-left">
-        <button class="btn about-hero__action" type="button" aria-label="Biography — coming soon">Biography</button>
+        <a class="btn about-hero__action" href="#biography">Biography</a>
       </div>
       <div class="about-hero__slot about-hero__slot--action-right">
-        <button class="btn about-hero__action" type="button" aria-label="My design ethos — coming soon">My design ethos</button>
+        <a class="btn about-hero__action" href="#ethos">My design ethos</a>
       </div>
     </div>
+
+      <!-- ============ the five sheets on the board ============
+           Each disc and both pills link to one of these by id. They
+           are siblings of .about-hero__inner INSIDE the hero, not sections
+           after it, and that is the whole point: .about-hero__grid stays put
+           and keeps drawing, the composition fades out, and the view fades
+           in over the same board. Moving them out here would take the grid
+           with them.
+
+           Fragments rather than a click handler, so this costs no JavaScript
+           and the browser still does the work it is good at: Back and Forward
+           move between the composition and a view, and a link straight to
+           about.html#film opens on the films. See .about-view in style.css. -->
+
+      <section class="about-view subpage container container--wide" id="biography" aria-label="Biography">
+        <a class="subpage__back" href="#about-top">
+          <span class="subpage__back-arrow" aria-hidden="true">&#8592;</span> Back
+        </a>
+
+        <div class="bio__layout">
+          <div class="bio__copy">
+            <h1 class="hero__title bio__title" data-scramble>Bonjour</h1>
+
+            <p class="bio__para">My name is Jaydon, proudly born and raised in Scarborough, Ontario, one of Canada's most
+              culturally diverse communities. From a young age, I've always been drawn to art and the process of bringing
+              ideas to life. Inspired by media I consumed, and the Ontario Science Centre, I became fascinated with the
+              idea of not just creating things, but curating an experience both in the physical and digital world.</p>
+
+            <!-- One paragraph with a hard break, not two: the layout runs these
+                 two thoughts together with no gap between them, which is the
+                 one place here where the spacing is deliberate rather than
+                 inherited. Split them into separate <p> elements if that
+                 tightness was not intended. -->
+            <p class="bio__para">That passion led me to the University of Waterloo, where I study Global Business and
+              Digital Arts. Throughout my studies, I've explored a wide range of creative mediums and technologies,
+              learning how to communicate ideas in ways that are both innovative and purposeful.<br />
+              Whether I'm designing captivating visuals, creating intuitive digital experiences, or developing engaging
+              content, I'm interested in finding the balance between creativity and practicality.</p>
+          </div>
+
+          <div class="bio__media">
+            <img class="bio__photo" src="assets/images/jaydon-portrait.webp" alt="Jaydon standing on a residential street at golden hour, power lines crossing the sky behind him" width="1448" height="1086" loading="lazy" decoding="async" />
+          </div>
+        </div>
+      </section>
+
+      <!-- The case studies' takeaway cards, so the ethos reads as the same
+           kind of object as the lessons each project ends on. Always three
+           across: the grid's own 3-card rule does that, and collapses to one
+           column on a phone like everywhere else. -->
+      <section class="about-view subpage container container--wide" id="ethos" aria-label="My design ethos">
+        <a class="subpage__back" href="#about-top">
+          <span class="subpage__back-arrow" aria-hidden="true">&#8592;</span> Back
+        </a>
+
+        <div class="ethos">
+          <h2 class="hero__title bio__title ethos__title" data-scramble>My design ethos</h2>
+          <div class="cs-divider"></div>
+
+          <div class="cs-takeaways-grid ethos__grid">
+            <div class="cs-takeaway-card">
+              <span class="cs-takeaway-card__emoji" aria-hidden="true">🔬</span>
+              <div class="cs-takeaway-card__text">
+                <h3>Rigor over surface polish</h3>
+                <p>I keep grounding design decisions in research rather than aesthetics alone: Baymard benchmarking on
+                  the AliExpress redesign, two YouTube teardown videos as the source for the Dropbox case study,
+                  competitive comparisons like Nintendo eShop vs. Steam. My case studies also have to tie decisions to
+                  user behavior or business context, not just walk through process steps.</p>
+              </div>
+            </div>
+            <div class="cs-takeaway-card">
+              <span class="cs-takeaway-card__emoji" aria-hidden="true">🛠️</span>
+              <div class="cs-takeaway-card__text">
+                <h3>Craft discipline that resists shortcuts</h3>
+                <p>I've drawn a hard line against AI-generated motion in portfolio pieces where craft is being judged,
+                  I fix CSS limitations with inline SVG rather than papering over them, and I split code into separate
+                  files instead of monoliths. Small technical calls get made carefully instead of left messy.</p>
+              </div>
+            </div>
+            <div class="cs-takeaway-card">
+              <span class="cs-takeaway-card__emoji" aria-hidden="true">🎨</span>
+              <div class="cs-takeaway-card__text">
+                <h3>Identity-driven visual language over generic UI conventions</h3>
+                <p>My graffiti, lettering, and hip hop background feeds directly into my visual sensibility, and my
+                  inspiration sources (Rauno Freiberg, Emil Kowalski, Awwwards, Godly) lean toward distinctive,
+                  opinionated interaction design rather than templated patterns. That shows up in decisions like
+                  keeping UX and marketing case studies structurally separate so each speaks clearly to its own
+                  audience, rather than blending them for convenience.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-view subpage container container--wide" id="film" aria-label="Film">
+        <a class="subpage__back" href="#about-top">
+          <span class="subpage__back-arrow" aria-hidden="true">&#8592;</span> Back
+        </a>
+
+        <ul class="film-grid">
+          <li>
+            <img class="film-grid__poster about-tilt" src="assets/images/film-eeaao.webp" alt="Everything Everywhere All At Once poster" width="623" height="902" loading="lazy" decoding="async" />
+          </li>
+          <li>
+            <img class="film-grid__poster about-tilt" src="assets/images/film-spider-verse.webp" alt="Spider-Man: Across the Spider-Verse poster" width="608" height="902" loading="lazy" decoding="async" />
+          </li>
+          <li>
+            <img class="film-grid__poster about-tilt" src="assets/images/film-scott-pilgrim.webp" alt="Scott Pilgrim vs. the World poster" width="602" height="902" loading="lazy" decoding="async" />
+          </li>
+        </ul>
+      </section>
+
+      <section class="about-view subpage container container--wide" id="music" aria-label="Music">
+        <a class="subpage__back" href="#about-top">
+          <span class="subpage__back-arrow" aria-hidden="true">&#8592;</span> Back
+        </a>
+
+        <!-- A screenshot of a desktop app, so it keeps its own chrome and its
+             own corners: no border-radius from us, or the rounding would sit
+             inside the window's and read as a double edge. -->
+        <img class="subpage__shot about-tilt" src="assets/images/music-spotify.webp" alt="Jaydon's Spotify home screen, showing recently played playlists including Peak Millenial Optimism and Breaking Beats, artists Solange, MF DOOM and Ghostface Killah, and Summertime by The Sundays playing" width="1431" height="1003" loading="lazy" decoding="async" />
+      </section>
+
+      <section class="about-view subpage container container--wide" id="trash" aria-label="Trash">
+        <a class="subpage__back" href="#about-top">
+          <span class="subpage__back-arrow" aria-hidden="true">&#8592;</span> Back
+        </a>
+
+        <!-- Same treatment as Music above. -->
+        <img class="subpage__shot about-tilt" src="assets/images/trash-recycle-bin.webp" alt="A Windows Recycle Bin window holding three deleted files, named Nonchalance, Self doubt, and 2-factor authentication" width="1431" height="1029" loading="lazy" decoding="async" />
+      </section>
   </section>
 </main>
 
@@ -132,7 +288,7 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=62"></script>
+<script src="js/main.js?v=64"></script>
 <script src="js/scramble-text.js?v=59"></script>
 </body>
 </html>

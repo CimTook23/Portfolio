@@ -11,6 +11,22 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Aira — Case Study — Jaydon</title>
+<meta name="description" content="A health companion app from a Sun Life design jam, helping a teenager with asthma keep her medical history in one place and understand what it says." />
+
+<!-- Open Graph / Twitter card: what a pasted link renders as in
+     LinkedIn, Slack, iMessage and email. og:image is relative;
+     make it absolute (and add og:url) once the domain is live. -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Jaydon Wang" />
+<meta property="og:locale" content="en_CA" />
+<meta property="og:title" content="Aira: managing asthma" />
+<meta property="og:description" content="A health companion app from a Sun Life design jam, helping a teenager with asthma keep her medical history in one place and understand what it says." />
+<meta property="og:image" content="../assets/images/aira-thumb.gif" />
+<meta property="og:image:alt" content="Aira: managing asthma" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Aira: managing asthma" />
+<meta name="twitter:description" content="A health companion app from a Sun Life design jam, helping a teenager with asthma keep her medical history in one place and understand what it says." />
+<meta name="twitter:image" content="../assets/images/aira-thumb.gif" />
 <link rel="icon" href="../assets/images/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16.png" />
@@ -18,7 +34,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=81" />
+<link rel="stylesheet" href="../css/style.css?v=103" />
 </head>
 <body class="case-study">
 
@@ -52,7 +68,7 @@
 
     <ul class="nav__links" id="navLinks">
       <li><a href="../about.html">About me</a></li>
-      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="../assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
     </ul>
 
@@ -163,19 +179,13 @@
       <section id="introduction">
         <h2 class="cs-heading reveal">Introduction</h2>
         <div class="cs-divider reveal"></div>
-        <div class="cs-split reveal">
-          <div class="cs-split__body">
-            <p class="hero__desc cs-para">Every term in my program, GBDA, Sun Life runs a design jam at Waterloo's Stratford
-              campus. Student teams get a real healthcare challenge to solve.</p>
-            <div class="cs-callout">I pulled directly from my own experience navigating diagnoses, appointments, and
-              insurance paperwork — this one got personal fast.</div>
-          </div>
-          <div class="cs-split__media">
-            <div class="cs-square">
-              <video data-src="../assets/videos/aira-hero-demo.mp4" poster="../assets/videos/aira-hero-demo-poster.jpg" muted loop preload="none" playsinline
-                aria-label="Screen recording of the Aira app's mascot companion and home dashboard"></video>
-            </div>
-          </div>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Every term in my program, GBDA, Sun Life runs a
+          design jam at Waterloo's Stratford campus. Student teams get a real healthcare challenge to solve.</p>
+        <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">Our team drew chronic illness
+          management, and we took it to asthma. From there every feature had to answer one question: does this help
+          someone manage their own condition?</div>
+        <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+          <img src="../assets/images/aira-intro-screens.webp" alt="The four main Aira screens side by side: a welcome screen with the balloon mascot and a Get started button; a home screen greeting Alex with a symptom check-in field, upcoming appointments and a health tracker; a Medical History screen with an Upload Files button over doctors' notes, a prescription and test results; and a Support screen showing Waterloo and Sun Life benefit cards, an Add an institution button, and mental health resources" width="1760" height="936" loading="lazy" decoding="async" />
         </div>
       </section>
 
@@ -189,8 +199,8 @@
               system, hard-to-understand insurance benefits, and lifestyle changes patients are expected to figure out
               on their own. For Aira to matter, it had to help people understand their benefits, find their way
               through care pathways, and feel supported while they adjusted to living with the condition long term.</p>
-            <div class="cs-callout">As someone with a chronic illness, I didn't have to imagine this — I've lived
-              most of it.</div>
+            <div class="cs-callout">None of this is missing information. The notes, the benefits and the care
+              pathways all exist already. What does not exist is a version of them a patient can use.</div>
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
@@ -279,7 +289,7 @@
           <img src="../assets/images/aira-framework.png" alt="Aira site map — Home, Medical history, and Support tabs branching from onboarding, with their respective sub-features" loading="lazy" decoding="async" />
         </div>
         <p class="cs-caption cs-caption--italic reveal">Every feature on this map was matched to a challenge before
-          it made the cut — no orphaned ideas.</p>
+          it made the cut. No orphaned ideas.</p>
       </section>
 
       <!-- ================= SOLUTIONS ================= -->
@@ -292,11 +302,11 @@
             <h3 class="cs-subheading">Clarity</h3>
             <div class="cs-callout">How might we help Alex better manage her asthma and her medical history, so she
               feels confident instead of overwhelmed?</div>
-            <p class="hero__desc cs-para">One thing Alex and our real interviewees had in common: appointments were scattered
-              and disconnected, so every visit felt like starting from zero. Aira lets users upload their medical
-              history to one place they can actually view. On top of that, an AI summarization feature turns a
-              doctor's notes into something digestible, so health literacy stops being the bottleneck. Keeping
-              everything on file means Alex never has to reconstruct her own history from memory again.</p>
+            <p class="hero__desc cs-para">Alex and the people we interviewed had the same problem: appointments were
+              scattered and disconnected, so every visit felt like starting from zero. Aira puts a user's medical
+              history in one place they can read. An AI summary turns a doctor's notes into plain language, so
+              health literacy stops deciding whether someone understands their own care. With everything on file,
+              Alex never has to rebuild her history from memory again.</p>
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
@@ -309,11 +319,11 @@
         <div class="cs-split cs-split--reverse reveal">
           <div class="cs-split__body">
             <h3 class="cs-subheading">Organization tools</h3>
-            <p class="hero__desc cs-para">Confidence starts with knowing what needs to happen next. On the Home page, Alex can
-              view and add upcoming appointments and daily habits in one place, so managing her asthma stops feeling
-              like a scavenger hunt.</p>
+            <p class="hero__desc cs-para">Confidence starts with knowing what happens next. The Home page keeps her
+              appointments and daily habits together, and she can add to either, so managing her asthma stops
+              feeling like a scavenger hunt.</p>
             <div class="cs-callout">When Alex sets up her daily habits, Aira reads her uploaded doctor's notes and
-              suggests actions automatically — one less thing she has to figure out on her own.</div>
+              suggests actions on its own. One less thing for her to work out.</div>
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
@@ -328,11 +338,11 @@
             <h3 class="cs-subheading">Understanding</h3>
             <div class="cs-callout">How might we help Alex and her parents understand her asthma symptoms clearly
               enough to actually act on them?</div>
-            <p class="hero__desc cs-para">Right from the Home page, Aira has a quick-help companion on standby for whatever
-              symptoms Alex is dealing with in the moment. Built on our research, it walks through a short
-              questionnaire and returns suggestions and information based on the answers.</p>
-            <div class="cs-callout">Important: this feature doesn't diagnose anything. If the situation calls for
-              it, it points Alex toward real professional support instead.</div>
+            <p class="hero__desc cs-para">The Home page also keeps a quick-help companion on standby for whatever Alex
+              is feeling in the moment. It runs a short questionnaire built from our research, then gives her
+              suggestions and information based on the answers.</p>
+            <div class="cs-callout">Important: this does not diagnose anything. When the situation calls for it, it
+              points Alex toward professional support instead.</div>
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
@@ -347,10 +357,10 @@
             <h3 class="cs-subheading">Support</h3>
             <div class="cs-callout">How might we build a system that improves health literacy and care access for
               newcomer families specifically?</div>
-            <p class="hero__desc cs-para">Sun Life's own research pointed out that a lot of patients simply don't know what
-              care resources are available to them — which sends unnecessary traffic to doctors and strains a
-              system that's already stretched thin. To close that gap, we built simple, accessible guides that help
-              people understand and actually use the care plans they already have.</p>
+            <p class="hero__desc cs-para">Sun Life's own research found that a lot of patients don't know what care
+              resources are available to them. That sends unnecessary traffic to doctors and strains a system
+              already stretched thin. To close the gap, we built plain guides that help people understand and use
+              the care plans they already have.</p>
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
@@ -363,9 +373,8 @@
         <div class="cs-split reveal">
           <div class="cs-split__body">
             <h3 class="cs-subheading">Better integration</h3>
-            <p class="hero__desc cs-para">Aira also lets users link their affiliated institution directly to their account, so
-              benefits and coverage information flows in automatically instead of being something families have to
-              go dig up themselves.</p>
+            <p class="hero__desc cs-para">Users can link their institution straight to their account, so benefits and
+              coverage information arrives on its own instead of being something families have to dig up.</p>
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
@@ -380,32 +389,32 @@
       <section id="next-steps">
         <h2 class="cs-heading reveal">The next steps</h2>
         <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">As the design jam wound down, my team started talking about what we'd tackle next
-          if Aira were actually built out for real.</p>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">As the jam wound down, we started talking about
+          what we would take on next if Aira were ever built for real.</p>
 
         <div class="cs-takeaways-grid reveal">
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__emoji" aria-hidden="true">⚙️</span>
             <div class="cs-takeaway-card__text">
               <h3>Usability testing</h3>
-              <p>Test Aira with people like Alex and her parent to check whether the medical summaries actually
-                land, how much the organization tools help day-to-day, and whether the AI companion holds up.</p>
+              <p>Put Aira in front of people like Alex and her parents to see whether the medical summaries land,
+                how much the organization tools help day to day, and whether the AI companion holds up.</p>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__emoji" aria-hidden="true">📝</span>
             <div class="cs-takeaway-card__text">
               <h3>Expand on support</h3>
-              <p>Keep researching the chronic-health benefits that different institutions actually offer, so the
-                guides stay accurate and useful.</p>
+              <p>Keep researching the chronic-health benefits different institutions offer, so the guides stay
+                accurate and worth using.</p>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__emoji" aria-hidden="true">🤝</span>
             <div class="cs-takeaway-card__text">
               <h3>Personalization</h3>
-              <p>Let Aira recognize patterns in a user's symptoms over time, so it can adapt as their condition
-                changes instead of treating every check-in the same.</p>
+              <p>Let Aira pick up patterns in a user's symptoms over time, so it adapts as their condition changes
+                instead of treating every check-in the same.</p>
             </div>
           </div>
         </div>
@@ -421,17 +430,17 @@
             <span class="cs-takeaway-card__emoji" aria-hidden="true">🦾</span>
             <div class="cs-takeaway-card__text">
               <h3>Every feature serves a purpose</h3>
-              <p>Partway through ideation, we noticed a few features that didn't actually tie back to the app's
-                core goal. From then on, we wrote down exactly how each feature served that goal before it stayed
-                on the list.</p>
+              <p>Partway through ideation we caught a few features that didn't tie back to the app's core goal.
+                After that, we wrote down how each feature served that goal before it was allowed to stay on the
+                list.</p>
             </div>
           </div>
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__emoji" aria-hidden="true">💯</span>
             <div class="cs-takeaway-card__text">
               <h3>Organization is clarity</h3>
-              <p>How we organized each feature mattered as much as the feature itself. If Alex was going to manage
-                her asthma better, her tools needed to be organized and easy to reach — not just present.</p>
+              <p>How we organized the features mattered as much as the features themselves. For Alex to manage her
+                asthma better, her tools had to be easy to reach, not just present.</p>
             </div>
           </div>
         </div>
@@ -470,7 +479,7 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=62"></script>
+<script src="../js/main.js?v=64"></script>
 <script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>

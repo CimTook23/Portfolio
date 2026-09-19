@@ -905,7 +905,8 @@ main {
   border: 1px solid rgba(var(--overlay-rgb), 0.14);
   color: var(--text-primary);
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  /* same bouncy back-out curve as .btn — see its own comment for why */
+  transition: background 0.2s ease, transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .nav__theme-toggle:hover {
@@ -934,6 +935,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   display: none;
   grid-column: 3;
   justify-self: end;
+  /* same bouncy back-out curve as .btn — see its own comment for why */
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* ---------- buttons ---------- */
@@ -1081,6 +1084,37 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 .filter-pill:hover,
 .nav__switch:hover {
   background: rgba(var(--overlay-rgb), 0.08);
+}
+
+/* Every button on the site grows on hover, to the same 1.14 the Work
+   section's filter pills use. The theme toggle and the mobile menu
+   button were changing colour and sitting still.
+
+   Scale alone, no translateY: .btn adds a 2px lift on top because it is
+   a free-standing pill with room above it, but these two are seated in
+   the nav bar, where lifting reads as drift rather than as a
+   press-ready button. */
+.nav__theme-toggle:hover,
+.nav__toggle:hover {
+  transform: scale(1.14);
+}
+
+/* The five buttons in the About hero (three discs, Biography, My design
+   ethos) hover on `scale` rather than `transform`, unlike every other
+   button on the site. All five run the wiggle keyframes, which animate
+   `transform` — and an animation's value outranks a normal declaration
+   for the same property, so a hover written as `transform` is liable to
+   be swallowed for as long as the wiggle is running. That also applies
+   to .btn's own hover transform, which is what Biography and My design
+   ethos would otherwise be relying on.
+
+   `scale` is an independent transform property, so it composes with
+   whatever `transform` the animation sets on that frame instead of
+   competing for the same slot. Same 1.14 as everything else, and the
+   wiggle keeps drifting underneath it either way. */
+.about-hero__disc:hover,
+.about-hero__action:hover {
+  scale: 1.14;
 }
 
 /* font-size intentionally not overridden here — every button shares
@@ -1419,6 +1453,410 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 .hero__desc strong {
   color: var(--ink);
   font-weight: 700;
+}
+
+/* ---------- About sub-pages: biography, film, music, trash ---------- */
+
+/* Each view replaces the composition inside the SAME box the composition
+   occupies: one screen below the nav, and no scrollbar. That is the whole
+   point of the About page, and a view that pushed the window taller than
+   the thing it replaced would break the illusion that you are still on
+   the same screen.
+
+   height, not min-height, and overflow: hidden with it — the contents are
+   fitted to this box below rather than allowed to set it, so a clip is
+   the failure mode instead of a scrollbar. Same bargain .about-hero makes
+   for the composition, and the same 100vh - --nav-h arithmetic: --nav-h
+   is measured by main.js and falls back to the 130px every other rule in
+   this file uses. svh rather than vh so a mobile browser's collapsing
+   address bar does not leave the box taller than the window. */
+.about-view {
+  /* a sheet laid on the board. Absolute inside .about-hero so it covers
+     exactly the composition's box and nothing else: the grid underneath
+     (.about-hero__grid, z-index 0) keeps drawing through every state,
+     which is the one thing that makes this read as a swap rather than as
+     a page change. Same z-index as .about-hero__inner, later in source,
+     so a visible view sits over it. */
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+
+  /* laid out at all times, shown only when targeted. display: none would
+     be simpler and cannot be animated — an element has to be in the
+     layout to fade. visibility rides along with opacity so a hidden
+     sheet is out of the accessibility tree and off the tab order rather
+     than merely transparent, and it is in the transition list so it
+     flips at the END of the fade out, not the start of it. */
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.45s ease, visibility 0.45s;
+
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  /* Wider side gutters than .container--wide's own, which tops out at
+     110px and read as flush against the edge once the window is 2000px+.
+     7vw holds the proportion the design was drawn at instead of freezing
+     at a pixel value. */
+  padding-inline: clamp(1.25rem, 7vw, 11rem);
+  padding-block: clamp(0.75rem, 2.5vh, 2.25rem) clamp(1.25rem, 4vh, 3.5rem);
+
+  /* Following a fragment scrolls the target to the top of the WINDOW,
+     which here means straight past the nav. Reserving the nav's own
+     height means the ideal scroll position is the one the page is
+     already at, so nothing moves at all.
+
+     That only holds while the sheet really does start at the top of the
+     hero, which is what the margin reset below is protecting. */
+  scroll-margin-top: var(--nav-h, 130px);
+
+  /* These are <section>s, so the sitewide `section + section` rhythm
+     reached them: every view after the first (the three discs — only
+     Biography is preceded by a div rather than a section) picked up a
+     ~96px top margin. On an absolutely positioned box with inset: 0 that
+     margin is not dead weight — it offsets the top edge and takes the
+     same amount off the height, so the sheet sat one margin lower than
+     the composition it replaces AND its scroll-margin no longer described
+     where it starts. Following the fragment then scrolled the window down
+     by exactly that margin, dragging the nav half off the screen.
+
+     The rhythm between stacked sections means nothing for a sheet laid
+     over another one, so it is switched off here rather than compensated
+     for. margin-block only: these are .container elements, and the
+     margin-inline: auto they get from it is what centres the sheet
+     between left: 0 and right: 0 — a blanket margin: 0 here parks every
+     view against the left edge and shifts its contents half a gutter off
+     centre. */
+  margin-block: 0;
+}
+
+.about-view:target {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* the composition is the sheet that leaves. Not display: none, for the
+   same reason as above: it has to stay in the layout to fade, and
+   visibility keeps it out of the tab order while it is gone. */
+.about-hero__inner {
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+
+.about-hero:has(.about-view:target) .about-hero__inner {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* the crossfade is the interaction here, not decoration, so reduced
+   motion gets the swap without the fade rather than losing the swap. */
+@media (prefers-reduced-motion: reduce) {
+  .about-view,
+  .about-hero__inner {
+    transition: none;
+  }
+}
+
+/* everything in a view that is not the Back link is the content block.
+   min-height: 0 because a flex item defaults to min-height: auto, which
+   refuses to shrink below its content and is exactly how a "fitted" box
+   ends up overflowing anyway.
+
+   .subpage__shot is excluded rather than overridden: it is an <img> that
+   IS the content block, and flex: 1 in a column container sets an item's
+   height, which stretched a 1431x1029 capture to fill the box and
+   upscaled it into softness. Excluding it here is cheaper than winning a
+   specificity fight with this selector later. */
+.about-view > :not(.subpage__back):not(.subpage__shot) {
+  flex: 1;
+  min-height: 0;
+  margin-top: clamp(0.75rem, 3vh, 2.25rem);
+}
+
+/* the way back up to the composition. Sized and coloured like the
+   contents-list links in the case studies rather than like a .btn — it is
+   a step in the page's hierarchy, not an action, and a full glass pill
+   here would outweigh what it sits above. align-self keeps it from
+   stretching the full width of the flex column. */
+.subpage__back {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  font-size: var(--text-body);
+  color: var(--copy-ink);
+  transition: color 0.2s ease;
+}
+
+.subpage__back:hover {
+  color: var(--ink);
+}
+
+/* the arrow steps back on hover, toward where the link goes */
+.subpage__back-arrow {
+  display: inline-block;
+  transition: transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.subpage__back:hover .subpage__back-arrow {
+  transform: translateX(-0.25em);
+}
+
+/* ---- Music and Trash: one screenshot of a desktop app ----
+   contain rather than a max-width, so the window is fitted to whichever
+   of the two axes runs out first and is never cropped or upscaled. It
+   keeps its own corners: these are captures of real windows that are
+   already rounded, and a radius from us would sit inside theirs and read
+   as a double edge. */
+.subpage__shot {
+  display: block;
+  width: auto;
+  height: auto;
+
+  /* Held well inside the sheet rather than fitted to it. At 100%/100%
+     these two captures are under their own 1431px wide at most desktop
+     sizes, so they rendered at full size and filled the board edge to
+     edge — a window pasted over the page rather than a picture of one
+     sitting on it. Both arms are caps, not sizes: whichever runs out
+     first still decides, the aspect is still the image's own, and it is
+     still never upscaled past its own pixels. */
+  max-width: min(100%, 70rem);
+  max-height: 76vh;
+
+  /* shrink to fit, never grow past its own pixels; align-self stops the
+     cross-axis stretch doing the same to its width. */
+  flex: 0 1 auto;
+  align-self: center;
+  min-height: 0;
+
+  /* auto block margins split the leftover column space above and below
+     instead of banking it all under the image, which is what a fixed
+     margin-top did — the capture hung off the Back link with the gap
+     pooling at the bottom. This is the whole content of these two views,
+     so it belongs in the middle of the board, not at the top of it. */
+  margin-block: auto;
+}
+
+/* ---- Film: three posters across ----
+   A list, because that is what it is: an unordered set of three things,
+   not a layout of unrelated boxes. Sized off the row's HEIGHT — the posters
+   are ~0.68:1 portraits, so height is what decides whether three of them
+   fit a short window, and driving them from the width meant each one came
+   out taller than the screen. */
+.film-grid {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(0.75rem, 2.2vw, 2.5rem);
+}
+
+.film-grid li {
+  min-height: 0;
+  height: 100%;
+  display: flex;
+}
+
+/* each poster keeps its own proportions: the three sources are 623, 608
+   and 602 wide against an identical 902 tall, so a shared width would
+   stretch two of the three by a couple of percent. Equal heights, natural
+   widths. */
+.film-grid__poster {
+  display: block;
+  /* short of the full row on purpose: filling the box edge to edge made
+     three posters read as a wall rather than as three objects laid out,
+     and left no air under them. 62vh is roughly the proportion the
+     design is drawn at. */
+  height: min(100%, 62vh);
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-md);
+}
+
+/* ---- Film, Music and Trash: the project cards' flip and tilt ----
+   Same motion as .project-card__media: a rotateY(-15deg) -> 0 swing in,
+   then the pointer-tracked tilt from js/main.js. The swing is a keyframe
+   on :target rather than the cards' class swap, because these sheets are
+   opened by a link, not scrolled into, and :target re-matching restarts
+   the animation every time a view is opened. A running animation also
+   outranks the tilt's inline transform, so the swing can't be hijacked
+   mid-flight and needs none of the cards' isFlipping() guard.
+
+   The vanishing point lives on the parent, as with .project-card: each
+   poster gets its own <li> so the outer two don't skew toward the middle
+   of the row, and the lone screenshot uses the sheet itself. */
+.film-grid li,
+.about-view:has(> .subpage__shot) {
+  perspective: 900px;
+}
+
+.about-tilt {
+  transition: transform 0.25s ease-out;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.about-view:target .about-tilt {
+  animation: about-tilt-flip-in 1.1s ease-in-out;
+}
+
+@keyframes about-tilt-flip-in {
+  from {
+    transform: rotateY(-15deg);
+  }
+  to {
+    transform: rotateY(0deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-view:target .about-tilt {
+    animation: none;
+  }
+}
+
+/* ---- Biography: copy left, photograph right ---- */
+
+/* The pair is pushed down off the top of the view rather than starting
+   flush under the Back link. Two reasons, both about how the eye reads a
+   fixed-height box:
+
+   1. Optical balance. Content jammed against the top of a full-screen
+      container with a large void beneath it reads as unfinished, like
+      the page failed to load the rest. Sharing the slack between top and
+      bottom makes the block look placed rather than dropped.
+   2. Slightly ABOVE centre, not on it. A block sitting on the exact
+      geometric middle reads as low, because the eye takes the optical
+      centre to be a little higher than the real one. The top gap here
+      lands a bit under the bottom one on purpose.
+
+   vh rather than a fixed pixel offset so the proportion survives a
+   window of any height, and padding on the layout rather than a margin
+   on either column, so the title and the photo still start on exactly
+   the same line (see .bio__title's own margin-top). */
+.bio__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 5rem);
+  align-items: stretch;
+  padding-top: clamp(1rem, 10vh, 9rem);
+}
+
+.bio__copy {
+  display: flex;
+  flex-direction: column;
+  /* top-aligned, not centred: the title's first letter is meant to line
+     up with the top edge of the photograph beside it. */
+  justify-content: flex-start;
+  gap: clamp(0.75rem, 1.6vh, 1.5rem);
+  min-height: 0;
+}
+
+/* Full title size, the same --text-title * --font-hero-scale every other
+   H1 in this face uses (JAYDON WANG, the case-study titles, the footer).
+   The 26vh arm is a guard, not a design choice: this title shares a fixed
+   box with two paragraphs, so on a short window it has to give way rather
+   than push the copy out of the bottom of the view.
+
+   line-height 0.76 for the same reason the case-study titles carry it:
+   FS Mondwest's default line box is far taller than its ink. */
+.bio__title {
+  font-size: min(calc(var(--text-title) * var(--font-hero-scale)), 26vh);
+  line-height: 0.76;
+  /* the white halo every FS Mondwest title on the site carries: FFFFFF at
+     62%, 17px blur, no offset. See .hero__intro .hero__title. */
+  filter: drop-shadow(0 0 17px var(--hero-glow));
+
+  /* FS Mondwest's line box opens with a slab of empty space above the
+     letters, so top-aligning the two columns lined up the title's BOX
+     with the photo, leaving its first letter sitting well below the
+     photo's top edge. Measured for this rule the way .about-hero__title
+     measures its own (glyph metrics off a canvas at the computed size,
+     against this title's own 0.76 line-height): the ink starts 0.195em
+     below the box. Cancelling exactly that puts the top of the B on the
+     top of the photograph. em-based, so it holds at every size the
+     clamp resolves to. */
+  margin-top: -0.195em;
+  margin-bottom: clamp(0.5rem, 2vh, 1.75rem);
+}
+
+.bio__para {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.5em;
+  /* the running-prose grey every other paragraph on the site uses, not
+     full --ink: see .cs-para, which this matches exactly. */
+  color: var(--copy-ink);
+  max-width: 62ch;
+}
+
+.bio__media {
+  min-height: 0;
+  display: flex;
+}
+
+.bio__photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  align-self: flex-start;
+  border-radius: var(--radius-md);
+}
+
+/* ---- My design ethos: heading, rule, three takeaway cards ----
+   The case studies' "My takeaways" block lifted whole. The block is
+   centred in the sheet the way the Music and Trash captures are, rather
+   than hanging off the Back link with the slack pooled underneath. */
+.ethos {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ethos__grid {
+  margin-top: 0;
+}
+
+/* Below the site's shared breakpoint the one-screen bargain is off: a
+   phone cannot hold three posters or a two-column biography at a legible
+   size, so the views go back to laying out in flow and scrolling. */
+@media (max-width: 56.25em) {
+  /* still a sheet on the same board, but allowed to scroll inside itself
+     rather than clip: a phone cannot hold three posters or a two-column
+     biography at a legible size in one screen. */
+  .about-view {
+    overflow-y: auto;
+  }
+
+  .bio__layout,
+  .film-grid {
+    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .film-grid__poster {
+    height: auto;
+    width: 100%;
+    max-width: 22rem;
+  }
+
+  .bio__photo {
+    height: auto;
+    aspect-ratio: 1448 / 1086;
+  }
+
+  .subpage__shot {
+    height: auto;
+  }
 }
 
 /* ---------- hero faces ---------- */
@@ -2785,6 +3223,12 @@ footer {
      viewport here, so any padding would push the composition down out of
      the space it was just measured against */
   padding-block: 0;
+
+  /* #about-top, the target every Back link points at. Same reservation
+     the views make: this section starts one nav-height down the page, so
+     without it a Back click from anywhere the page has been scrolled
+     top-aligns the hero and leaves the nav scrolled off above it. */
+  scroll-margin-top: var(--nav-h, 130px);
 }
 
 /* diagonal hairlines, the same pair of 20deg/-20deg repeating gradients
@@ -2981,7 +3425,17 @@ footer {
    still in force. Above that the floor is inert and the disc scales with
    the composition exactly as before. */
 .about-hero__disc {
-  display: block;
+  /* flex, not block, purely to centre the artwork inside the circle: the
+     disc is a fixed square and the art is a free-standing object with its
+     own proportions, so there is nothing else holding it in the middle. */
+  display: flex;
+  /* same bouncy back-out curve as .btn and .filter-pill — see .btn's own
+     comment for why. `scale`, not `transform`: the hover uses the
+     independent property so it can coexist with the wiggle animation
+     (see the hover rule further up). */
+  transition: background 0.2s ease, scale 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+  align-items: center;
+  justify-content: center;
   width: max(44px, calc(7.25 * var(--u)));
   height: max(44px, calc(7.25 * var(--u)));
   border-radius: 50%;
@@ -2989,11 +3443,28 @@ footer {
   cursor: pointer;
 }
 
+/* The art sits inside the glass rather than filling it. 68% leaves a ring
+   of the disc's own surface visible all the way round, which is what keeps
+   the object reading as sitting IN the circle instead of being cropped by
+   it. contain, not cover: the bin is portrait (82x101) and the film reel
+   and record are square, so a cover crop would shave the bin's handles off
+   while leaving the other two untouched. */
+.about-hero__disc img {
+  display: block;
+  width: 68%;
+  height: 68%;
+  object-fit: contain;
+}
+
 /* the one place on the site where a button is NOT the flat sitewide
    0.938rem/1.875rem spec (see .btn): these two are part of the
    composition rather than chrome around it, so they scale with
    everything else in it. Floored the same way .about-hero__lede is. */
 .about-hero__action {
+  /* .btn already transitions transform on the same curve, but the hover
+     here rides on `scale` instead (see .about-hero__disc:hover), so the
+     property has to be named explicitly or the grow would snap. */
+  transition: scale 0.22s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.25s ease, border-color 0.2s ease, background 0.2s ease;
   font-size: max(13px, calc(1.35 * var(--u)));
   padding: calc(1.15 * var(--u)) calc(3.6 * var(--u));
   white-space: nowrap;

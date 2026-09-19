@@ -11,6 +11,22 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Revamping the Nintendo eShop — Case Study — Jaydon</title>
+<meta name="description" content="A five-day sprint rethinking game discovery on the Nintendo eShop: AI disclosure, asset-flip screening, user reviews, and a Recent page worth browsing." />
+
+<!-- Open Graph / Twitter card: what a pasted link renders as in
+     LinkedIn, Slack, iMessage and email. og:image is relative;
+     make it absolute (and add og:url) once the domain is live. -->
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="Jaydon Wang" />
+<meta property="og:locale" content="en_CA" />
+<meta property="og:title" content="Revamping the Nintendo eShop" />
+<meta property="og:description" content="A five-day sprint rethinking game discovery on the Nintendo eShop: AI disclosure, asset-flip screening, user reviews, and a Recent page worth browsing." />
+<meta property="og:image" content="../assets/images/eshop-thumb.png" />
+<meta property="og:image:alt" content="Revamping the Nintendo eShop" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Revamping the Nintendo eShop" />
+<meta name="twitter:description" content="A five-day sprint rethinking game discovery on the Nintendo eShop: AI disclosure, asset-flip screening, user reviews, and a Recent page worth browsing." />
+<meta name="twitter:image" content="../assets/images/eshop-thumb.png" />
 <link rel="icon" href="../assets/images/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16.png" />
@@ -18,7 +34,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=81" />
+<link rel="stylesheet" href="../css/style.css?v=103" />
 </head>
 <body class="case-study">
 
@@ -52,7 +68,7 @@
 
     <ul class="nav__links" id="navLinks">
       <li><a href="../about.html">About me</a></li>
-      <li><a href="../assets/resume.pdf" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="../assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
     </ul>
 
@@ -105,7 +121,7 @@
            project it is, not who I was on a team. Same component. -->
       <div class="cs-hero__meta reveal">
         <div class="cs-hero__meta-item">
-          <span>Type</span>
+          <span>Role</span>
           <p>App design, personal project</p>
         </div>
         <div class="cs-hero__meta-item">
@@ -151,6 +167,29 @@
     <aside class="cs-toc" id="csToc" aria-label="On this page" hidden></aside>
 
     <div class="cs-layout__body">
+      <!-- ================= SNEAK PEEK ================= -->
+      <!-- the finished walkthroughs up front, before any of the reasoning.
+           Same two clips the Final iterations section closes on, and the
+           same lazy data-src hook, so the pair here and the pair there are
+           independently observed and neither downloads until it is near the
+           viewport. No captions: they name the Recent shelves and the
+           content disclosure, which mean nothing this early in the page. -->
+      <section id="sneak-peek" data-toc="Sneak peek">
+        <h2 class="cs-heading reveal">Sneak peek</h2>
+        <div class="cs-divider reveal"></div>
+
+        <div class="cs-highlights-grid reveal">
+          <div class="cs-square cs-square--16x9">
+            <video data-src="../assets/videos/eshop-main-page-final.mp4" poster="../assets/videos/eshop-main-page-final-poster.jpg" muted loop preload="none" playsinline
+              aria-label="Walkthrough of the finished main page on a Nintendo Switch — the Recent releases shelves, the quality badges on store listings, and the Game badges screen explaining what Human made, High user retention and Frequently updated each mean"></video>
+          </div>
+          <div class="cs-square cs-square--16x9">
+            <video data-src="../assets/videos/eshop-details-page-final.mp4" poster="../assets/videos/eshop-details-page-final-poster.jpg" muted loop preload="none" playsinline
+              aria-label="Walkthrough of the finished game details page on a Nintendo Switch — Canine's product page scrolling through its screenshots, Product Details, and the Content Disclosure panel stating the title was created without AI tools, with the price and review sidebar alongside"></video>
+          </div>
+        </div>
+      </section>
+
       <!-- ================= BACKGROUND ================= -->
       <section id="background" data-toc="Background info">
         <h2 class="cs-heading reveal">Background information</h2>
@@ -354,15 +393,26 @@ had become something close to the "Wild West" for gamers trying to find somethin
       <section id="submission" data-toc="The AI check">
         <h2 class="cs-heading reveal">Developer experience: the AI check</h2>
         <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">Everything above is what a player sees, and none
-          of it is worth anything unless the answers behind it are true. That puts the weight on submission, which is
-          where the eShop currently asks nothing at all. In the redesign, disclosure becomes a step a developer cannot
-          skip: before a build goes up, the publisher declares how AI was used for art, dialogue, code and music, one
-          component at a time, and that answer is what fills the Content Disclosure panel on the store page. Steam
-          already runs a version of this with its Content Survey, and blocks release outright when it is skipped.
-          Running alongside it, an automated pass checks submitted assets and code against what is already on the
-          shop, so clones and asset flips get caught at the door instead of after players complain.</p>
-        <div class="cs-wide-media cs-media-placeholder reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);"></div>
+        <!-- --reverse puts the flow in the first track and the prose in the
+             1fr one beside it. .cs-wide-media rather than a .cs-square: the
+             diagram is 831x1954, and any fixed-ratio tile would crop the
+             chain apart. It runs tall in a half-width column by design, so
+             the prose sits level with its top (.cs-split is align-items:
+             start) and the steps read down from there. -->
+        <div class="cs-split cs-split--reverse reveal">
+          <div class="cs-split__body">
+            <p class="hero__desc cs-para">Everything above is what a player sees, and none of it is worth anything
+              unless the answers behind it are true. That puts the weight on submission, which is where the eShop
+              currently asks nothing at all. In the redesign, disclosure becomes a step a developer cannot skip:
+              before a build goes up, the publisher declares how AI was used for art, dialogue, code and music, one
+              component at a time, and that answer is what fills the Content Disclosure panel on the store page.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-wide-media">
+              <img src="../assets/images/eshop-disclosure-flow.webp" alt="Submission flow for the redesigned eShop. 1, upload build. 2, certification check for technical compliance and age rating, existing and unchanged. 3, AI disclosure form covering art, audio, dialogue and text, and code, each marked human-made, AI-generated or mixed. 4, asset and code fingerprint scan. A decision follows: does the scan match the disclosure? On a match the build goes straight on. On a mismatch it goes to 5a, a review hold stating the reason, whether a new account, a near-duplicate title or a scan and disclosure mismatch, estimated at two to three business days, then 5b, human review resolving the flag. Both paths meet at 6, a developer preview showing the exact page render with the badge included before anyone else sees it, and then 7, published, with the badge live at the same visual weight as the age rating." width="831" height="1954" loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
       </section>
 
       <!-- ================= FIRST ITERATIONS ================= -->
@@ -593,7 +643,7 @@ had become something close to the "Wild West" for gamers trying to find somethin
   </div>
 </footer>
 
-<script src="../js/main.js?v=62"></script>
+<script src="../js/main.js?v=64"></script>
 <script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>

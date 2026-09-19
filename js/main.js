@@ -983,6 +983,20 @@
           const match = filter === "all" || categories.includes(filter);
           card.style.display = match ? "" : "none";
         });
+
+        /* The matches close up at the top of the list, so a visitor who
+           had scrolled down into it was left looking at the empty space
+           below them. Bring the list's top back into view — but only when
+           it is already above the screen: on a phone the pills sit above
+           the list, and pulling the page down to them would be a jump
+           nobody asked for. Instant under reduced motion. */
+        const section = projectGrid && projectGrid.closest("section");
+        if (section && section.getBoundingClientRect().top < 0) {
+          window.scrollTo({
+            top: section.getBoundingClientRect().top + window.scrollY,
+            behavior: prefersReduced ? "auto" : "smooth",
+          });
+        }
       });
     });
   }
@@ -1020,7 +1034,10 @@
     minB + ((value - minA) * (maxB - minB)) / (maxA - minA);
 
   if (!prefersReduced) {
-    document.querySelectorAll(".project-card__media").forEach((media) => {
+    // .about-tilt: the About page's posters and screenshots, which flip in
+    // off a CSS animation instead (see that rule) and so never carry
+    // these classes, making isFlipping() a no-op for them
+    document.querySelectorAll(".project-card__media, .about-tilt").forEach((media) => {
       const isFlipping = () =>
         media.classList.contains("is-flipping-in") || media.classList.contains("is-flipped-in");
 
