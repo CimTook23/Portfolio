@@ -40,7 +40,10 @@
 
   const MAX_YAW_DEG = 22; // left/right
   const MAX_PITCH_DEG = 12; // up/down
-  const DAMPING = 0.08; // original per-frame-at-60fps feel — converted to a rate below, not used directly as a multiplier anymore
+  // per-frame-at-60fps follow speed — converted to a rate below, not used
+  // directly as a multiplier. Was 0.08 (~0.6s to catch up), which read as
+  // lag; 0.18 lands in ~0.25s and still eases rather than snapping.
+  const DAMPING = 0.18;
   // continuous decay rate (per second) that reproduces DAMPING's feel at 60fps:
   // solves (1 - RATE_PER_SEC-equivalent step)^(1/60s) = (1 - DAMPING) per 1/60s frame
   const DECAY_RATE = -Math.log(1 - DAMPING) * 60;
@@ -158,7 +161,6 @@
 
     const trackZone = document.querySelector(".dm-hero__track-zone");
     const media = document.querySelector(".dm-hero__media");
-    const stage = trackZone || media;
 
     function applyPose() {
       qYaw.setFromAxisAngle(yAxis, currentYaw);
@@ -219,12 +221,32 @@
     function aimAtPointer() {
       if (pointerX === null) return;
 
-      const rect = (stage || modelViewer).getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
+      /* The head turns about the character's own centre (the track zone),
+         but full turn is reached at the edge of the whole hero (clipped to
+         the window), not at the edge of the zone. Normalising against the
+         zone's half-width alone saturated the moment the cursor left it:
+         the zone is the right 42% of the hero, so across the entire left
+         side — the title and buttons, where the cursor usually is — the
+         head sat pinned at full left and ignored every movement until the
+         cursor crossed back in. That dead band was the "pause before it
+         follows". Measuring each side to its own edge keeps the mapping
+         continuous everywhere, lopsided as the two sides are. */
+      const zone = (trackZone || modelViewer).getBoundingClientRect();
+      const bounds = (media || modelViewer).getBoundingClientRect();
+      const cx = zone.left + zone.width / 2;
+      const cy = zone.top + zone.height / 2;
 
-      const nx = Math.max(-1, Math.min(1, (pointerX - cx) / (rect.width / 2)));
-      const ny = Math.max(-1, Math.min(1, (pointerY - cy) / (rect.height / 2)));
+      const left = Math.max(bounds.left, 0);
+      const right = Math.min(bounds.right, window.innerWidth);
+      const top = Math.max(bounds.top, 0);
+      const bottom = Math.min(bounds.bottom, window.innerHeight);
+
+      const spanX = pointerX < cx ? cx - left : right - cx;
+      const spanY = pointerY < cy ? cy - top : bottom - cy;
+      const clamp = (v) => Math.max(-1, Math.min(1, v));
+
+      const nx = spanX > 0 ? clamp((pointerX - cx) / spanX) : 0;
+      const ny = spanY > 0 ? clamp((pointerY - cy) / spanY) : 0;
 
       targetYaw = nx * (MAX_YAW_DEG * Math.PI / 180);
       targetPitch = ny * (MAX_PITCH_DEG * Math.PI / 180);

@@ -4,8 +4,10 @@
 <meta charset="UTF-8" />
 <script>
   /* applied before first paint so the page never flashes the wrong
-     theme on load — the actual toggle logic lives in js/main.js */
-  if (localStorage.getItem("theme") === "light") {
+     theme on load — the actual toggle logic lives in js/main.js.
+     Light is the default: the attribute goes on unless this visitor has
+     chosen dark, which is the only value that keeps it off. */
+  if (localStorage.getItem("theme") !== "dark") {
     document.documentElement.dataset.theme = "light";
   }
 </script>
@@ -35,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=103" />
+<link rel="stylesheet" href="../css/style.css?v=114" />
 </head>
 <body class="case-study">
 
@@ -51,7 +53,7 @@
            sun/moon icon swap) already existed but no page ever rendered the
            button, so the theme could only be reached by hand-editing
            localStorage. -->
-      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="false">
+      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="true">
         <svg class="nav__theme-icon nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4.2"/>
           <path d="M12 2.4v2.3M12 19.3v2.3M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.3M19.3 12h2.3M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
@@ -425,7 +427,13 @@ had become something close to the "Wild West" for gamers trying to find somethin
           tells a player what a game is actually worth before they buy it.</p>
 
         <h3 class="cs-subheading reveal">Quality indicators</h3>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">Without using a rating system.</p>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">A score out of ten flattens a game into one number, so
+          I worked in signals a player can read instead. Badges mark what a listing has earned — a hammer for human-made,
+          a star for high retention, an arrow for actively updated — with a question mark linking out to what each one
+          means. A Content Disclosure panel itemises where AI was used, labelling art, dialogue, code and music
+          separately rather than flagging the whole title. Reviews sit alongside them with a like count, so the useful
+          ones rise. I drew the badges twice, as pictograms and as words: the words leave nothing to interpret, but they
+          shout on a storefront that stays quiet everywhere else, and the pictograms sound more like Nintendo.</p>
 
         <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
           <img src="../assets/images/eshop-quality-indicators.webp" alt="Quality indicator explorations: red picto-badges (a hammer for human-made content, a star for high user retention, an arrow for actively updated content, plus a question mark linking to an explanation); a Content Disclosure panel listing how AI was used for art, dialogue, code and music; a review card with a like count; and orange text badges reading High user retention, Actively updated and Human made, noted as more on the nose and less Nintendo-like" width="1756" height="777" loading="lazy" decoding="async" />
@@ -644,7 +652,7 @@ had become something close to the "Wild West" for gamers trying to find somethin
   </div>
 </footer>
 
-<script src="../js/main.js?v=64"></script>
+<script src="../js/main.js?v=66"></script>
 <script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>

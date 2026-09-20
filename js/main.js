@@ -821,8 +821,11 @@
   // still land in different callback batches, so the two animations
   // visibly drifted apart. Called from inside the same reveal callback
   // below instead, so both trigger in the same synchronous tick.
+  // Any element carrying .is-flipping-in inside a revealed block flips, not
+  // just a project card's media: the Play page's motion design tiles use
+  // the same entrance (.dm-flip in style.css).
   const startCardFlip = (card) => {
-    const media = card.querySelector(".project-card__media.is-flipping-in");
+    const media = card.querySelector(".is-flipping-in");
     if (!media) return;
 
     media.classList.replace("is-flipping-in", "is-flipped-in");
@@ -845,7 +848,7 @@
     if (prefersReduced || !("IntersectionObserver" in window)) {
       revealEls.forEach((el) => {
         el.classList.add("is-visible");
-        el.querySelectorAll(".project-card__media.is-flipping-in").forEach((media) =>
+        el.querySelectorAll(".is-flipping-in").forEach((media) =>
           media.classList.remove("is-flipping-in")
         );
       });
@@ -1064,6 +1067,24 @@
       });
     });
   }
+
+  /* ---------- marquee pause toggle ----------
+     A [data-marquee-toggle] button stops and restarts the marquee named by
+     its aria-controls. It only adds .is-stopped, which pauses the track in
+     CSS on top of whatever the in-view observer is doing with .is-running,
+     so scrolling away and back never quietly restarts a strip the visitor
+     stopped. The label says what a press will do next. */
+  document.querySelectorAll("[data-marquee-toggle]").forEach((button) => {
+    const marquee = document.getElementById(button.getAttribute("aria-controls"));
+    const text = button.querySelector(".dm-process__toggle-text");
+    if (!marquee) return;
+
+    button.addEventListener("click", () => {
+      const stopped = marquee.classList.toggle("is-stopped");
+      button.classList.toggle("is-stopped", stopped);
+      if (text) text.textContent = stopped ? "Play" : "Pause";
+    });
+  });
 
   /* ---------- digital media: motion design tag filter ----------
      Same click-a-pill-to-filter interaction as the homepage's case-study

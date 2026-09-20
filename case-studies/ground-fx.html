@@ -4,8 +4,10 @@
 <meta charset="UTF-8" />
 <script>
   /* applied before first paint so the page never flashes the wrong
-     theme on load — the actual toggle logic lives in js/main.js */
-  if (localStorage.getItem("theme") === "light") {
+     theme on load — the actual toggle logic lives in js/main.js.
+     Light is the default: the attribute goes on unless this visitor has
+     chosen dark, which is the only value that keeps it off. */
+  if (localStorage.getItem("theme") !== "dark") {
     document.documentElement.dataset.theme = "light";
   }
 </script>
@@ -35,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../css/style.css?v=103" />
+<link rel="stylesheet" href="../css/style.css?v=114" />
 </head>
 <body class="case-study">
 
@@ -51,7 +53,7 @@
            sun/moon icon swap) already existed but no page ever rendered the
            button, so the theme could only be reached by hand-editing
            localStorage. -->
-      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="false">
+      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="true">
         <svg class="nav__theme-icon nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4.2"/>
           <path d="M12 2.4v2.3M12 19.3v2.3M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.3M19.3 12h2.3M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
@@ -88,6 +90,24 @@
   <section class="cs-hero">
     <div class="hero__grid" aria-hidden="true"></div>
 
+    <!-- The animated GFX logo, spinning in 3D behind the hero — the same
+         component as the other three case studies (see aira.html for the
+         full notes). The faces are <video> rather than <img>: a silent
+         720px loop at 175 KB, where a GIF of it would run to megabytes.
+         data-src hands both to main.js's lazy-video observer, which loads
+         them on first sight and pauses them whenever the hero is off
+         screen; the poster holds the finished logo until then. -->
+    <div class="cs-hero__card cs-hero__card--gfx" data-inview-anim aria-hidden="true">
+      <div class="cs-hero__card-spin">
+        <video class="cs-hero__card-face" data-src="../assets/videos/gfx-hero-card.mp4"
+               poster="../assets/videos/gfx-hero-card-poster.jpg" width="720" height="720"
+               muted loop playsinline preload="none" tabindex="-1"></video>
+        <video class="cs-hero__card-face cs-hero__card-face--back" data-src="../assets/videos/gfx-hero-card.mp4"
+               poster="../assets/videos/gfx-hero-card-poster.jpg" width="720" height="720"
+               muted loop playsinline preload="none" tabindex="-1"></video>
+      </div>
+    </div>
+
     <div class="cs-hero__top">
       <!-- tags moved in here, right under the title, instead of sitting
            after the whole title+meta row — see aira.html's copy of this
@@ -111,7 +131,7 @@
         </div>
         <div class="cs-hero__meta-item">
           <span>Timeline</span>
-          <p>3 months</p>
+          <p>5 months</p>
         </div>
         <div class="cs-hero__meta-item">
           <span>Skills</span>
@@ -184,8 +204,8 @@
 
     <div class="cs-jump__links reveal">
       <a class="btn btn-outline" href="#team">See the team ↓</a>
-      <a class="btn btn-outline" href="#promo">See the promo ↓</a>
       <a class="btn btn-outline" href="#branding">See the branding ↓</a>
+      <a class="btn btn-outline" href="#promo">See the promo ↓</a>
     </div>
   </section>
 
@@ -228,7 +248,7 @@
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
-              <img src="../assets/images/gfx-intro-me.jpg" alt="Jaydon at the Ground FX event, pointed out by an arrow labeled 'Me' among the crowd watching a battle" loading="lazy" decoding="async" />
+              <img src="../assets/images/gfx-action.png" alt="Jaydon at the Ground FX event, pointed out by an arrow labeled 'Me' among the crowd watching a battle" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -337,19 +357,117 @@
       <section id="process">
         <h2 class="cs-heading reveal">Process</h2>
         <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">The majority of Ground FX takes place in the SLC Lower
-          Atrium, so securing that venue was a top priority alongside confirming our artists. Once the space and
-          talent were locked in, my team and I mapped out the floor plan, registration area, judge seating, sponsor
-          tables, and DJ setup for the best flow and audience visibility.</p>
-        <p class="hero__desc cs-para reveal" style="max-width: none; margin-top: clamp(1.5rem, 3vw, 2.25rem);">To ensure seamless execution, we ran
-          a full test-through the weekend before the event, role-playing it start to finish to catch dead ends
-          before the real day.</p>
-        <div class="cs-callout reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">With the team, I built and
-          managed a detailed budget covering artist compensation, media coverage, venue reservations, prizes,
-          merchandise, and A/V, then pitched WUSA and Artist Endowment Funds to secure it.</div>
-        <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
-          <img src="../assets/images/gfx-setup.png" alt="Testing the projector and lighting setup ahead of Ground FX" loading="lazy" decoding="async" />
+        <!-- Five steps in the order they happened, each one a split with the
+             artefact it produced beside it. The media alternates sides so the
+             run reads as a sequence rather than a column of text with pictures
+             stacked under it. Every image here keeps its own proportions
+             (.cs-wide-media, no forced ratio), so the chart, floor plan and
+             budget sheet are never cropped. -->
+        <div class="cs-split reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">Five months of runway</h3>
+            <p class="hero__desc cs-para">Planning started on November 1, five months out. Venue booking, artist outreach,
+              funding and the budget came first, then A/V and the floor plan, then registration and marketing, with
+              the Instagram campaign released in the final weeks.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-wide-media">
+              <img src="../assets/images/gfx-timeline.png" alt="Gantt chart of the Ground FX timeline from November 1 to March 29: venue booking and artist outreach, A/V booking and layout, registration and marketing material, the Instagram campaign, and a mock test day" loading="lazy" decoding="async" />
+            </div>
+          </div>
         </div>
+
+        <div class="cs-split cs-split--reverse reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">Venue and floor plan</h3>
+            <p class="hero__desc cs-para">The majority of Ground FX takes place in the SLC Lower Atrium, so securing that
+              venue was a top priority alongside confirming our artists. Once the space and talent were locked in, my
+              team and I mapped out the floor plan, registration area, judge seating, sponsor tables, and DJ setup for
+              the best flow and audience visibility.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-wide-media">
+              <img src="../assets/images/gfx-setup.png" alt="The Ground FX floor plan: main stage with projector and screen, DJ setup and judges' seating to one side, sound and light support around the edges, and the vendor room behind" loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-split reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">Budget and funding</h3>
+            <p class="hero__desc cs-para">With the team, I built and managed a detailed budget covering artist
+              compensation, media coverage, venue reservations, prizes, merchandise, and A/V, then pitched WUSA and
+              Artist Endowment Funds to secure it.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-wide-media">
+              <img src="../assets/images/gfx-budget-sheet.jpg" alt="The Ground FX budget spreadsheet, itemising payments for judges, the MC, DJ, workshop hosts, videographer and photographer, the venue, prizes, and merchandise" loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-split cs-split--reverse reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">The test run</h3>
+            <p class="hero__desc cs-para">To ensure seamless execution, we ran a full test-through the weekend before the
+              event, role-playing it start to finish to catch dead ends before the real day. The day before, we tested
+              the projector and lighting on site.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-wide-media">
+              <video src="../assets/videos/gfx-testing-clip.mp4" poster="../assets/videos/gfx-testing-clip-poster.jpg"
+                controls preload="metadata" playsinline
+                aria-label="Behind-the-scenes clip testing the projector and lighting before Ground FX"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-split reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">The day itself</h3>
+            <p class="hero__desc cs-para">On March 29, doors opened at 1:00 PM for the cypher and registration, followed by
+              the workshops, 3v3 prelims, exhibition battles and UW dance performances, before the top 16 took the
+              floor from 6:00 PM.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-square">
+              <img src="../assets/images/gfx-schedule.jpg" alt="The Ground FX event schedule: cypher and registration at 1:00, workshops at 2:00, 3v3 prelims at 3:30, exhibition battles at 5:00, UW dance performances at 5:30, and the top 16 from 6:00" loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= BRANDING =================
+           Ahead of the promo and the merch now, not after them: both of
+           those are built out of this identity, and the promo copy opens
+           with "Alongside the branding", which read as a forward reference
+           while this section came last. -->
+      <section id="branding">
+        <h2 class="cs-heading reveal">Branding</h2>
+        <div class="cs-divider reveal"></div>
+        <div class="cs-split reveal">
+          <div class="cs-split__body">
+            <p class="hero__desc cs-para">From the Instagram visuals to the physical décor throughout the venue, I wanted this
+              year's Ground FX to have a distinct, memorable visual identity. I was deeply inspired by graffiti
+              culture, and wanted that raw, expressive energy to shape the event's look and feel.</p>
+            <p class="hero__desc cs-para">I remember sketching logo concepts while watching passing trains, each one layered
+              in graffiti. From there the identity came together, grounded in street art but still cohesive and
+              intentional across every touchpoint.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-square">
+              <img src="../assets/images/gfx-branding-1.png" alt="Ground FX posters for the breaking competition, the judges and the workshops, laid out as a set" loading="lazy" decoding="async" />
+            </div>
+          </div>
+        </div>
+
+        <!-- the logo sheet is 1.88:1 and used to sit in a 1:1 tile, which cut
+             off the lockups' wordmarks; full width at its own ratio instead -->
+        <div class="cs-wide-media cs-wide-media--spaced reveal">
+          <img src="../assets/images/gfx-branding-2.png" alt="The Ground FX logo system: the primary mark with its colour palette, and horizontal lockups on dark, light and purple backgrounds" loading="lazy" decoding="async" />
+        </div>
+        <p class="cs-caption reveal">The logo system: the primary mark, its palette, and lockups for dark, light and purple
+          grounds.</p>
       </section>
 
       <!-- ================= PROMOTIONAL MEDIA ================= -->
@@ -377,9 +495,9 @@
               showcasing Waterloo's breaking scene.</p>
           </div>
           <div>
-            <div class="cs-square cs-video-tile" data-yt-id="Xm_MzOONDlM">
+            <div class="cs-square cs-video-tile cs-video-tile--own-thumb" data-yt-id="Xm_MzOONDlM">
               <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX teaser video">
-                <img src="../assets/images/gfx-action.png" alt="Ground FX teaser video thumbnail" loading="lazy" decoding="async" />
+                <img src="../assets/images/gfx-crowd-overhead.jpg" alt="Ground FX teaser video thumbnail: the crowd circled around a breaker, seen from the atrium balcony" loading="lazy" decoding="async" />
                 <span class="cs-video-tile__play" aria-hidden="true">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
                 </span>
@@ -389,9 +507,9 @@
               the event.</p>
           </div>
           <div>
-            <div class="cs-square cs-video-tile" data-yt-id="Qx8zIcAz8n8">
+            <div class="cs-square cs-video-tile cs-video-tile--own-thumb cs-video-tile--contain" style="--tile-fill: #161e36;" data-yt-id="Qx8zIcAz8n8">
               <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX official announcement">
-                <img src="../assets/images/gfx-branding-1.png" alt="Ground FX official announcement post thumbnail" loading="lazy" decoding="async" />
+                <img src="../assets/images/gfx-official-post.png" alt="Ground FX official announcement post thumbnail" loading="lazy" decoding="async" />
                 <span class="cs-video-tile__play" aria-hidden="true">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
                 </span>
@@ -400,9 +518,9 @@
             <p class="cs-caption"><strong>The announcement</strong>The official post with the full event details.</p>
           </div>
           <div>
-            <div class="cs-square cs-video-tile" data-yt-id="C7CwaG9Y6kw">
+            <div class="cs-square cs-video-tile cs-video-tile--own-thumb" data-yt-id="C7CwaG9Y6kw">
               <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX logo rendition">
-                <img src="../assets/images/gfx-branding-2.png" alt="Second Ground FX logo rendition video thumbnail" loading="lazy" decoding="async" />
+                <img src="../assets/images/gfx-logo-thumb.jpg" alt="Second Ground FX logo rendition video thumbnail" loading="lazy" decoding="async" />
                 <span class="cs-video-tile__play" aria-hidden="true">
                   <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
                 </span>
@@ -413,58 +531,26 @@
           </div>
         </div>
 
-        <p class="cs-caption cs-caption--italic reveal">Behind the scenes: testing the projector and lighting the
-          day before the event.</p>
-        <div style="border-radius: var(--radius-md); overflow: hidden; margin-top: 0.875rem;">
-          <video src="../assets/videos/gfx-testing-clip.mp4" poster="../assets/videos/gfx-testing-clip-poster.jpg"
-            controls preload="metadata" style="display: block; width: 100%; height: auto;"
-            aria-label="Behind-the-scenes clip testing the projector and lighting before Ground FX"></video>
-        </div>
-      </section>
-
-      <!-- ================= MERCH ================= -->
-      <section id="merch" data-toc="Merch">
-        <h2 class="cs-heading reveal">Creating GFX merch</h2>
-        <div class="cs-divider reveal"></div>
-        <div class="cs-split cs-split--reverse reveal">
+        <!-- Merch is promotion too, so it sits under this section as a
+             subsection rather than as its own. The id stays on the block so
+             any existing #merch link still lands here. -->
+        <div class="cs-split cs-split--reverse reveal" id="merch">
           <div class="cs-split__body">
+            <h3 class="cs-subheading">Creating GFX merch</h3>
             <p class="hero__desc cs-para">Along with the dance battles, another tradition Waterloo alumni keep alive is the
               swag. Every year the club creates new Ground FX-themed merch. Designing and marketing that merch was
               another piece I got to lead.</p>
           </div>
           <div class="cs-split__media">
-            <div class="cs-highlights-grid" style="margin-top: 0;">
-              <div class="cs-square">
-                <img src="../assets/images/gfx-merch.png" alt="Ground FX merchandise lineup" loading="lazy" decoding="async" />
+            <!-- the shirt photo is a 9:16 story capture; in a 1:1 tile it lost
+                 the top and bottom of the back print. .cs-ratio-row sizes each
+                 image by its own ratio so both stand at one height uncropped. -->
+            <div class="cs-ratio-row">
+              <div style="--ar: 1;">
+                <img src="../assets/images/gfx-merch.png" alt="Ground FX shirt and windbreaker promo, limited quantities" loading="lazy" decoding="async" />
               </div>
-              <div class="cs-square">
-                <img src="../assets/images/gfx-shirt.jpg" alt="Ground FX branded t-shirt" loading="lazy" decoding="async" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- ================= BRANDING ================= -->
-      <section id="branding">
-        <h2 class="cs-heading reveal">Branding</h2>
-        <div class="cs-divider reveal"></div>
-        <div class="cs-split reveal">
-          <div class="cs-split__body">
-            <p class="hero__desc cs-para">From the Instagram visuals to the physical décor throughout the venue, I wanted this
-              year's Ground FX to have a distinct, memorable visual identity. I was deeply inspired by graffiti
-              culture, and wanted that raw, expressive energy to shape the event's look and feel.</p>
-            <p class="hero__desc cs-para">I remember sketching logo concepts while watching passing trains, each one layered
-              in graffiti. From there the identity came together, grounded in street art but still cohesive and
-              intentional across every touchpoint.</p>
-          </div>
-          <div class="cs-split__media">
-            <div class="cs-highlights-grid" style="margin-top: 0;">
-              <div class="cs-square">
-                <img src="../assets/images/gfx-branding-1.png" alt="Ground FX graffiti-inspired branding exploration" loading="lazy" decoding="async" />
-              </div>
-              <div class="cs-square">
-                <img src="../assets/images/gfx-branding-2.png" alt="A second Ground FX branding exploration" loading="lazy" decoding="async" />
+              <div style="--ar: 0.5585;">
+                <img src="../assets/images/gfx-shirt.jpg" alt="The back print of the Ground FX shirt, a graffiti-style breaker drawn in yellow and purple" loading="lazy" decoding="async" />
               </div>
             </div>
           </div>
@@ -526,7 +612,7 @@
   </div>
 </footer>
 
-<script src="../js/main.js?v=64"></script>
+<script src="../js/main.js?v=66"></script>
 <script src="../js/scramble-text.js?v=59"></script>
 </body>
 </html>

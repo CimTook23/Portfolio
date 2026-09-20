@@ -4,8 +4,10 @@
 <meta charset="UTF-8" />
 <script>
   /* applied before first paint so the page never flashes the wrong
-     theme on load — the actual toggle logic lives in js/main.js */
-  if (localStorage.getItem("theme") === "light") {
+     theme on load — the actual toggle logic lives in js/main.js.
+     Light is the default: the attribute goes on unless this visitor has
+     chosen dark, which is the only value that keeps it off. */
+  if (localStorage.getItem("theme") !== "dark") {
     document.documentElement.dataset.theme = "light";
   }
 </script>
@@ -37,15 +39,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=103" />
+<link rel="stylesheet" href="css/style.css?v=114" />
 <!-- the 3D model's poster (see <model-viewer> below) — preloaded so it's
      ready the instant the custom element upgrades, instead of the poster
      itself being the thing you wait on. This is what makes the head show
      up immediately instead of an empty gap before the real model loads. -->
 <link rel="preload" as="image" href="assets/images/me-head-poster.webp" fetchpriority="high" />
-<!-- <model-viewer> is NOT executed here any more — see the deferral script
-     at the bottom of this page for why. The poster preloaded above is
-     what fills the hero until it arrives.
+<!-- <model-viewer> is NOT executed here — the script at the bottom of this
+     page injects it (immediately, no longer after the title scramble). The
+     poster preloaded above is what fills the hero until it arrives.
 
      Its BYTES are fetched here all the same, and the distinction is the
      whole point. What the deferral exists to keep out of the hero's
@@ -99,7 +101,7 @@
            sun/moon icon swap) already existed but no page ever rendered the
            button, so the theme could only be reached by hand-editing
            localStorage. -->
-      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="false">
+      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="true">
         <svg class="nav__theme-icon nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4.2"/>
           <path d="M12 2.4v2.3M12 19.3v2.3M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.3M19.3 12h2.3M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
@@ -187,6 +189,52 @@
     </div>
   </section>
 
+  <!-- ================= MY PROCESS =================
+       The Ground FX case study's marquee (.cs-marquee, see style.css for
+       how the loop stays seamless), reused as is. The track holds the six
+       tiles TWICE; the second set is aria-hidden so a screen reader hears
+       each once. data-inview-anim runs it only while it is on screen and
+       the tab is visible; data-native-scroll lets it scroll natively under
+       reduced motion, where it stops travelling.
+
+       Each tile is a short silent loop (720px MP4, converted from the
+       original clips and GIFs) with a poster frame. data-src hands them to
+       main.js's lazy-video observer, so none load until the strip is near
+       the screen and each pauses when it leaves. To swap a tile, change it
+       in BOTH copies. -->
+  <section id="enjoying-the-process" class="container container--wide dm-process">
+    <div class="section-head reveal">
+      <div class="dm-process__head">
+        <h2>Enjoying the process</h2>
+        <!-- stops and restarts the strip below (see "marquee pause toggle"
+             in main.js). Hidden under reduced motion, where the strip
+             never moves in the first place. -->
+        <button type="button" class="btn btn-outline dm-process__toggle" data-marquee-toggle aria-controls="processMarquee">
+          <svg class="dm-process__toggle-icon dm-process__toggle-icon--pause" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1.5" width="3.5" height="11" rx="1" fill="currentColor"/><rect x="8.5" y="1.5" width="3.5" height="11" rx="1" fill="currentColor"/></svg>
+          <svg class="dm-process__toggle-icon dm-process__toggle-icon--play" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.8v10.4a.6.6 0 0 0 .9.5l8.3-5.2a.6.6 0 0 0 0-1L3.9 1.3a.6.6 0 0 0-.9.5Z" fill="currentColor"/></svg>
+          <span class="dm-process__toggle-text">Pause</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="cs-marquee" id="processMarquee" data-inview-anim data-native-scroll>
+      <ul class="cs-marquee__track" role="list">
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-envoices.mp4" poster="assets/videos/process-envoices-poster.jpg" muted loop playsinline preload="none" aria-label="The ENVoices badge animating in"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-gfx-logo.mp4" poster="assets/videos/process-gfx-logo-poster.jpg" muted loop playsinline preload="none" aria-label="The Ground FX logo assembling from its pieces"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-reese.mp4" poster="assets/videos/process-reese-poster.jpg" muted loop playsinline preload="none" aria-label="A chocolate Spider-Man mask spinning in front of a burst of light, from the Reese x Across the Spider-Verse spot"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-boombox.mp4" poster="assets/videos/process-boombox-poster.jpg" muted loop playsinline preload="none" aria-label="A boombox shot in live footage that turns into an illustrated, comic-style version of itself"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-ai-vs-toronto.mp4" poster="assets/videos/process-ai-vs-toronto-poster.jpg" muted loop playsinline preload="none" aria-label="A line drawing of a face with the title Ai vs Toronto typing out across it"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-battle.mp4" poster="assets/videos/process-battle-poster.jpg" muted loop playsinline preload="none" aria-label="An illustrated fight scene: one character lands a punch labelled Latch!, then the frame glitches into a health bar"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-envoices.mp4" poster="assets/videos/process-envoices-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-gfx-logo.mp4" poster="assets/videos/process-gfx-logo-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-reese.mp4" poster="assets/videos/process-reese-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-boombox.mp4" poster="assets/videos/process-boombox-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-ai-vs-toronto.mp4" poster="assets/videos/process-ai-vs-toronto-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-battle.mp4" poster="assets/videos/process-battle-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+      </ul>
+    </div>
+  </section>
+
   <!-- ================= MOTION DESIGN ================= -->
   <section id="motion-design" class="container container--wide">
     <div class="section-head reveal">
@@ -214,11 +262,11 @@
          The two video tiles are wrapped in .dm-media-item so a title + tag
          row can sit underneath (same tag-chip language as the homepage
          project cards) without disturbing the plain placeholder tiles. -->
-    <div class="dm-media-grid dm-media-grid--motion reveal">
-      <div class="dm-media-item">
-        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="CmHm0k9JKVo" data-tags="after-effects,3d-modeling">
+    <div class="dm-media-grid dm-media-grid--motion">
+      <div class="dm-media-item reveal">
+        <div class="cs-square cs-square--wide dm-flip is-flipping-in cs-video-tile cs-video-tile--own-thumb" data-yt-id="CmHm0k9JKVo" data-tags="after-effects,3d-modeling">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play Reese x Across the Spiderverse">
-            <img src="https://img.youtube.com/vi/CmHm0k9JKVo/hqdefault.jpg" alt="Reese x Across the Spiderverse video thumbnail" loading="lazy" decoding="async" />
+            <img src="assets/images/dm-thumb-reese.jpg" alt="Reese x Across the Spiderverse video thumbnail" loading="lazy" decoding="async" />
             <span class="cs-video-tile__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
             </span>
@@ -232,10 +280,10 @@
           <h3 class="dm-video-meta__title">Reese x Across the Spiderverse</h3>
         </div>
       </div>
-      <div class="dm-media-item">
-        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="MnodlnBwL7M" data-tags="videography,3d-modeling,after-effects,vfx">
+      <div class="dm-media-item reveal">
+        <div class="cs-square cs-square--wide dm-flip is-flipping-in cs-video-tile cs-video-tile--own-thumb" data-yt-id="MnodlnBwL7M" data-tags="videography,3d-modeling,after-effects,vfx">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play 10 years of design">
-            <img src="https://img.youtube.com/vi/MnodlnBwL7M/hqdefault.jpg" alt="10 years of design video thumbnail" loading="lazy" decoding="async" />
+            <img src="assets/images/dm-thumb-10-years.jpg" alt="10 years of design video thumbnail" loading="lazy" decoding="async" />
             <span class="cs-video-tile__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
             </span>
@@ -251,10 +299,10 @@
           <h3 class="dm-video-meta__title">10 years of design</h3>
         </div>
       </div>
-      <div class="dm-media-item">
-        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="LpOAWPr6fKE" data-tags="videography,after-effects">
+      <div class="dm-media-item reveal">
+        <div class="cs-square cs-square--wide dm-flip is-flipping-in cs-video-tile cs-video-tile--own-thumb" data-yt-id="LpOAWPr6fKE" data-tags="videography,after-effects">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play Chlorine Stabilizing Mini Pucks">
-            <img src="https://img.youtube.com/vi/LpOAWPr6fKE/hqdefault.jpg" alt="Chlorine Stabilizing Mini Pucks video thumbnail" loading="lazy" decoding="async" />
+            <img src="assets/images/dm-thumb-bromine.jpg" alt="Aqua Coastal product video thumbnail: a jar of bromine tabs tumbling through a water splash" loading="lazy" decoding="async" />
             <span class="cs-video-tile__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
             </span>
@@ -268,10 +316,10 @@
           <h3 class="dm-video-meta__title">Chlorine Stabilizing Mini Pucks</h3>
         </div>
       </div>
-      <div class="dm-media-item">
-        <div class="cs-square cs-square--wide cs-video-tile" data-yt-id="elPYYsEdtG4" data-tags="after-effects">
+      <div class="dm-media-item reveal">
+        <div class="cs-square cs-square--wide dm-flip is-flipping-in cs-video-tile" data-yt-id="elPYYsEdtG4" data-tags="after-effects">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play Terry Balloon">
-            <img src="https://img.youtube.com/vi/elPYYsEdtG4/hqdefault.jpg" alt="Terry Balloon video thumbnail" loading="lazy" decoding="async" />
+            <img src="https://img.youtube.com/vi/elPYYsEdtG4/maxresdefault.jpg" alt="Terry Balloon video thumbnail" loading="lazy" decoding="async" />
             <span class="cs-video-tile__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
             </span>
@@ -284,7 +332,7 @@
           <h3 class="dm-video-meta__title">Terry Balloon</h3>
         </div>
       </div>
-      <div class="dm-media-item">
+      <div class="dm-media-item reveal">
         <!-- self-hosted, not a YouTube embed — same portrait tile shape as
              the other three, just a real <video> instead of a click-to-play
              thumbnail. Unlike the Ground FX case study's version of this
@@ -296,8 +344,8 @@
              .cs-square--fit-viewport caps its height (not just width, like
              every other tile here) so the whole video fits on screen
              without scrolling past it. -->
-        <div class="cs-square cs-square--portrait cs-square--contain cs-square--fit-viewport" data-tags="videography,after-effects">
-          <video src="assets/videos/gfx-recap.mp4" controls preload="metadata" playsinline
+        <div class="cs-square cs-square--portrait cs-square--contain cs-square--fit-viewport dm-flip is-flipping-in" data-tags="videography,after-effects">
+          <video src="assets/videos/gfx-recap.mp4" poster="assets/videos/gfx-recap-poster.jpg" controls preload="metadata" playsinline
             aria-label="The Ground FX recap video"></video>
         </div>
         <div class="dm-video-meta">
@@ -367,12 +415,10 @@
      moment to load. The work itself is not wasted — it is the character,
      and it has to happen — it just has no reason to happen THEN.
 
-     So it is held until the hero has finished animating: scramble-text.js
-     fires scramble:done when the title finishes resolving, and a timer
-     backstops it (the scramble is skipped entirely under
-     prefers-reduced-motion, so that event is not guaranteed to arrive).
-     The visitor sees the poster the whole time either way, and the head
-     starts tracking the cursor a moment later than it used to. -->
+     It was held until the hero finished animating, which fixed that but
+     delayed the head tracking the cursor. It loads immediately again now,
+     trading some entrance smoothness for a head that is live sooner; see
+     the note at the load call below. -->
 <script>
   (function () {
     var mv = document.getElementById("dmModel");
@@ -395,30 +441,21 @@
       document.head.appendChild(s);
     }
 
-    /* Under reduced motion there is no entrance animation to protect —
-       scramble-text.js leaves the real text in place and never runs — so
-       there is nothing to wait for and holding the model back would just
-       be a slower page for no reason. */
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      loadModelViewer();
-      return;
-    }
-
-    document.addEventListener("scramble:done", loadModelViewer, { once: true });
-
-    /* Deliberately a timer and NOT requestIdleCallback. rIC fires at the
-       first idle period, not at its timeout, and the gaps between frames
-       of an animation are idle — measured firing at 400ms, i.e. squarely
-       inside the 1500ms scramble this exists to stay out of. A plain
-       timeout past the animation's own duration is the guarantee that was
-       actually wanted; scramble:done normally beats it to the punch. */
-    setTimeout(loadModelViewer, 2500);
+    /* Loaded straight away now, not held until scramble:done. Waiting
+       kept the entrance animation smooth, but it left the head frozen on
+       its poster for a second or two before it would follow the cursor,
+       and that wait was the more noticeable of the two. The trade: the
+       model's setup work lands during the title scramble again, so the
+       entrance may hitch on slower machines. To restore the wait, listen
+       for "scramble:done" (with a 2500ms timer as a backstop) instead of
+       calling this directly. */
+    loadModelViewer();
   })();
 </script>
 
-<script src="js/main.js?v=64"></script>
+<script src="js/main.js?v=66"></script>
 <script src="js/scramble-text.js?v=59"></script>
-<script src="js/head-track.js?v=60"></script>
+<script src="js/head-track.js?v=61"></script>
 <!-- powers the Jaydon MP4 .instagram-media blockquotes above — Instagram's
      own script, not ours; it finds every blockquote with that class and
      replaces it with the real embedded player.

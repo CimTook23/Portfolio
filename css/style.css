@@ -1917,8 +1917,25 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
      row); giving the laptop more presence is a safer way to fill that
      imbalance than stretching gaps or overriding the title's
      match-every-page size. */
-  height: calc(clamp(220px, calc(181px + 10.31vw), 420px) * var(--hero-fit));
-  width: auto;
+  /* Same size as the height-driven version this replaces (the laptop is
+     exactly 1080x600, so height x 1.8 IS the width it was resolving to),
+     but expressed as a width so it can be capped.
+
+     Why it had to be: .hero__intro is a single-column grid, and a column
+     with no explicit track size is as wide as its widest item. On a phone
+     that item was this laptop — 220px tall, so 396px wide against a 342px
+     container at 390px viewport — and a grid column wider than its
+     container overflows to ONE side, the right. The title and paragraph
+     are centred in that column, so the whole stack sat ~28px right of
+     centre while the container around it was centred correctly.
+
+     The cap is .container--wide's own width formula (its 2600px arm left
+     out: it only binds past ~2710px, where this is nowhere near the
+     limit), minus 1.5rem of air for the corners the -6deg tilt below
+     swings past the layout box. */
+  width: calc(clamp(220px, calc(181px + 10.31vw), 420px) * var(--hero-fit) * 1.8);
+  max-width: calc(100vw - clamp(48px, 6vw, 110px) - 1.5rem);
+  height: auto;
   /* tilted counter-clockwise so the laptop leans toward the left side
      of the stack instead of sitting perfectly square between the title
      and the paragraph. Rotation doesn't change the layout box, so the
@@ -4222,6 +4239,13 @@ footer {
   --cs-hero-card-radius: 27px;
 }
 
+/* the moving GFX logo: square, hard-edged video on its own navy ground,
+   so it takes the ENVoices card's size and corner treatment */
+.cs-hero__card--gfx {
+  --cs-hero-card-w: min(clamp(9rem, 20vw, 27rem), 40vh);
+  --cs-hero-card-radius: 27px;
+}
+
 /* the eShop Switch, 1400:598 (~2.34:1) — far wider than it is tall, so
    its height arm converts generously (~40vh of height ~= 94vh of width)
    and the width arm is what binds almost everywhere. Kept narrower than
@@ -4598,6 +4622,53 @@ footer {
   transform: none;
 }
 
+/* The Play page's motion design tiles take the project cards' flip-in:
+   rotateY(-15deg) -> 0 over 1.1s, started from the same reveal callback
+   (startCardFlip in main.js), so each tile turns in as IT scrolls into
+   view rather than the grid arriving as one block. The same fade-only
+   override as .project-card.reveal applies, so the flip is the only
+   motion. Entrance only: no hover tilt, since a tile becomes a YouTube
+   player on click and a tilted iframe would freeze at whatever angle the
+   cursor left it (mouse events stop reaching the page over an iframe).
+
+   Cheap: one transform transition per tile, once, which the compositor
+   runs without layout or paint. The class is dropped when it lands, so
+   nothing is left promoted to its own layer afterwards. */
+.dm-media-item {
+  perspective: 900px;
+}
+
+.dm-media-item.reveal {
+  transform: none;
+}
+
+.dm-flip {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.dm-flip.is-flipping-in,
+.dm-flip.is-flipped-in {
+  transition: transform 1.1s ease-in-out;
+  will-change: transform;
+}
+
+.dm-flip.is-flipping-in {
+  transform: rotateY(-15deg);
+}
+
+.dm-flip.is-flipped-in {
+  transform: rotateY(0deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-flip.is-flipping-in,
+  .dm-flip.is-flipped-in {
+    transition: none;
+    transform: none;
+  }
+}
+
 .project-card.reveal.is-visible {
   transform: none;
 }
@@ -4860,10 +4931,45 @@ footer {
   overflow: hidden;
 }
 
-.cs-wide-media img {
+.cs-wide-media img,
+.cs-wide-media video {
   width: 100%;
   height: auto;
   display: block;
+}
+
+/* a .cs-wide-media standing on its own under a split, not inside one */
+.cs-wide-media--spaced {
+  margin-top: clamp(1.5rem, 3vw, 2.25rem);
+}
+
+.cs-wide-media--spaced + .cs-caption {
+  margin-top: 0.875rem;
+}
+
+/* Several images in one row at a shared height, none of them cropped.
+   Each child carries its image's width/height ratio as --ar, and a flex
+   basis of 0 grown by that ratio makes every child's width proportional
+   to it, which at width: 100% / height: auto lands them all on the same
+   height. Unlike .cs-highlights-grid, mixed portrait and square sources
+   can sit together without either being forced into the other's shape. */
+.cs-ratio-row {
+  display: flex;
+  align-items: flex-start;
+  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+}
+
+.cs-ratio-row > * {
+  flex: var(--ar, 1) 1 0;
+  min-width: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.cs-ratio-row img {
+  display: block;
+  width: 100%;
+  height: auto;
 }
 
 /* Marks a media slot whose artwork isn't in the repo yet, so a layout can
@@ -5002,6 +5108,23 @@ footer {
   transform-origin: center;
 }
 
+/* tiles whose thumbnail is our own artwork rather than a YouTube frame:
+   there is no blurred fill to crop, so the zoom above only cut into the
+   picture */
+.cs-video-tile--own-thumb img {
+  transform: none;
+}
+
+/* a square post in this portrait tile: shown whole, letterboxed on the
+   tile's --tile-fill (set to the artwork's own ground colour) rather than
+   losing its headline off both sides to a cover crop */
+.cs-video-tile--contain .cs-video-tile__trigger {
+  background: var(--tile-fill, #000);
+}
+
+.cs-video-tile--contain img {
+  object-fit: contain;
+}
 .cs-video-tile__play {
   position: absolute;
   top: 50%;
@@ -5320,9 +5443,9 @@ footer {
   will-change: transform;
 }
 
-/* let a reader stop the strip on a photo they want to look at, and
-   never scroll a tile out from under keyboard focus */
-.cs-marquee.is-running:hover .cs-marquee__track,
+/* never scroll a tile out from under keyboard focus. Hover no longer
+   pauses it: the strip sits right where the pointer rests on the way to
+   the jump links, so it kept stopping without anyone asking it to. */
 .cs-marquee.is-running:focus-within .cs-marquee__track {
   animation-play-state: paused;
 }
@@ -5347,6 +5470,57 @@ footer {
   .cs-marquee__track {
     animation: none;
     will-change: auto;
+  }
+}
+
+/* The Play page's "My process" strip reuses the marquee above. Its
+   margin-block-end exists to clear Ground FX's jump links; here the strip
+   is the last thing in its section, so the section's own padding does
+   that job instead. */
+.dm-process .cs-marquee {
+  margin-block-end: 0;
+  /* larger tiles than Ground FX's strip (clamp(11rem, 26vw, 24rem)):
+     here the strip is the section's whole content, not a band above a
+     row of buttons */
+  --cs-marquee-item: clamp(15rem, 36vw, 34rem);
+}
+
+/* heading and its Pause/Play pill on one line, the pill centred on the
+   heading's height */
+.dm-process__head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(0.75rem, 1.5vw, 1.5rem);
+}
+
+.dm-process__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+/* one icon at a time: pause while it runs, play once it is stopped */
+.dm-process__toggle-icon--play,
+.dm-process__toggle.is-stopped .dm-process__toggle-icon--pause {
+  display: none;
+}
+
+.dm-process__toggle.is-stopped .dm-process__toggle-icon--play {
+  display: block;
+}
+
+/* the stop itself. Same weight as .cs-marquee.is-running's rule and
+   later in the file, so it wins while the strip is on screen; the
+   in-view observer can keep adding and removing .is-running underneath
+   without undoing a pause the visitor asked for. */
+.cs-marquee.is-stopped .cs-marquee__track {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dm-process__toggle {
+    display: none;
   }
 }
 
