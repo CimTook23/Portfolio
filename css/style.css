@@ -3865,6 +3865,31 @@ footer {
     margin-top: 0;
   }
 
+  /* Hold the heading at the size it already has where this breakpoint
+     starts, instead of letting it keep shrinking down the phone range.
+
+     --text-h1's ramp is tuned for the DESKTOP layout, where this heading
+     lives in a narrow sticky sidebar: at 901px that column is only 375px
+     wide and the heading is 78px, filling about 73% of it. Stacked, the
+     column is the full viewport instead, but the type kept scaling with
+     the VIEWPORT rather than the column it now sits in — so it fell to
+     55px at 430 and 52px at 360 while the filter pills below it stayed
+     put at a fixed 16px in 52px-tall boxes. FS Mondwest sets small glyphs
+     for its em size, so a 55px heading in it reads lighter than a 52px
+     button: the buttons looked larger than the heading they belong to.
+
+     max() against the existing ramp, so this only ever raises the floor
+     and never lowers a size: 78.1px at 899 is what the ramp already gives
+     there, which makes the breakpoint boundary continuous rather than a
+     step. The 22vw arm is a fit guard, not a design choice — "& Case
+     Studies" (the longer of the two hard-broken lines) renders ~3.5x the
+     font size, so at 78px it needs 274px of the column. That clears
+     360px phones with room, but would overflow a 320px one; 22vw eases
+     it back to ~70px there and stays out of the way above ~355px. */
+  .case-studies__side .section-head h2 {
+    font-size: max(calc(var(--text-h1) * var(--font-hero-scale)), min(4.875rem, 22vw));
+  }
+
   .case-studies__side .section-head,
   .filters {
     justify-content: flex-start;
