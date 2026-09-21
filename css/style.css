@@ -1996,7 +1996,7 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
 /* the heading/copy column fills the row instead of shrinking to its own
    content. As a default flex item (flex: 0 1 auto) it sized to its
    widest child, so the Jaydon MP4 paragraph sat in an 860px column
-   inside a 2450px section while .cs-cta and .ig-embed-grid below it ran
+   inside a 2450px section while .cs-cta and the video grid below it ran
    the full width — the section read as two different widths stacked.
    min-width: 0 lets it actually shrink when it needs to, since a flex
    item's default min-width: auto refuses to go below its content. */
@@ -5532,25 +5532,34 @@ footer {
   gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
 }
 
-/* Jaydon MP4 — holds the three real Instagram oEmbed widgets
-   (.instagram-media blockquotes, processed by embed.js into iframes) side
-   by side. Unlike .cs-marketing-grid's .cs-square tiles, nothing here
-   forces an aspect-ratio: the widget calculates and sets its own height
-   once processed, so the row just needs to size to whatever it decides —
-   forcing a ratio would either crop its chrome or leave dead space. */
-.ig-embed-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
-  align-items: start;
-}
+/* Jaydon MP4 — three portrait clips side by side. This used to be
+   .ig-embed-grid, sizing itself around Instagram oEmbed widgets whose
+   height only arrived once each iframe reported back; it holds ordinary
+   .cs-square--portrait video tiles now (see the comment on the grid in
+   digital-media.html), so the ratio is known up front and the row
+   reserves its space on the first paint instead of after a round trip.
 
-/* the widget's own default width is a fixed px value (max 658px) meant for
-   a single-column blog post, not a grid cell — stretch it to fill its
-   column instead, same as every other tile on this page. */
-.ig-embed-grid iframe {
-  width: 100% !important;
-  min-width: 0 !important;
+   Inherits .dm-media-grid's gap and margin-top, same as
+   .dm-media-grid--two and --motion — only the column count is its own. */
+.dm-media-grid--mp4 {
+  /* Full section width, like every other grid on the page: three equal
+     columns across .container--wide, so the row lines up edge to edge
+     with the View instagram button above it and the Motion design grid
+     above that.
+
+     This carried a 1300px cap for a while, which held the tiles to
+     415x703. Removing it hands each column the section's full third —
+     ~798px — and 711:1206 then makes every tile 798x1354, taller than a
+     typical viewport, so a visitor scrolls through one reel at a time
+     rather than seeing the row at a glance. That is the trade for the
+     tiles spanning the section, and it is the intended look.
+
+     minmax(0, 1fr) rather than a plain 1fr: a grid track's default
+     min-width is auto, which refuses to shrink below its content, and a
+     video's intrinsic width (1080px here) would hold the columns open
+     and push the row past the section on narrow screens. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
 }
 
 /* Design validation */
@@ -6393,7 +6402,7 @@ footer {
 
   .cs-guidelines-grid,
   .cs-marketing-grid,
-  .ig-embed-grid {
+  .dm-media-grid--mp4 {
     grid-template-columns: 1fr 1fr;
   }
 
@@ -6406,7 +6415,7 @@ footer {
 @media (max-width: 35em) {
   .cs-guidelines-grid,
   .cs-marketing-grid,
-  .ig-embed-grid {
+  .dm-media-grid--mp4 {
     grid-template-columns: 1fr;
   }
 }

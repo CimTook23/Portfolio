@@ -39,7 +39,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=114" />
+<link rel="stylesheet" href="css/style.css?v=117" />
 <!-- the 3D model's poster (see <model-viewer> below) — preloaded so it's
      ready the instant the custom element upgrades, instead of the poster
      itself being the thing you wait on. This is what makes the head show
@@ -65,26 +65,6 @@
      and the browser would download the bundle twice. -->
 <link rel="preconnect" href="https://unpkg.com" crossorigin />
 
-<!-- Instagram's embed pipeline, warmed but NOT started — same split as the
-     model-viewer hints above. The three reels in the Jaydon MP4 grid are
-     each a full Instagram page in an iframe, and what costs is the iframe
-     work, which is still gated on scrolling near the grid (see the
-     observer at the bottom of this page). What is NOT gated is the DNS +
-     TLS handshake to three separate Instagram origins and the download of
-     embed.js itself, none of which touches the main thread. Paying for
-     them up front means the observer's script tag resolves against a warm
-     connection and a cached file instead of starting from cold at the one
-     moment the visitor is about to look at the grid.
-
-     No crossorigin on the preload, deliberately: embed.js is injected as a
-     plain classic script with no crossorigin attribute, so it is fetched
-     in no-cors mode, and a preload that specified crossorigin would be a
-     different request and download the file twice. (The unpkg preload
-     above needs the opposite for the opposite reason - it is a module.) -->
-<link rel="preconnect" href="https://www.instagram.com" />
-<link rel="preconnect" href="https://static.cdninstagram.com" />
-<link rel="preconnect" href="https://scontent.cdninstagram.com" />
-<link rel="preload" as="script" href="https://www.instagram.com/embed.js" />
 <link rel="preload" as="script" crossorigin href="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js" />
 </head>
 <body>
@@ -118,7 +98,7 @@
     </div>
 
     <ul class="nav__links" id="navLinks">
-      <!-- About me hidden for now; restore by uncommenting. <li><a href="about.html">About me</a></li> -->
+      <li><a href="about.html">About me</a></li>
       <li><a href="assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
     </ul>
@@ -371,20 +351,55 @@
 
     <a class="btn btn-outline cs-cta reveal" href="https://www.instagram.com/jayd0n.mp4/" target="_blank" rel="noopener">View instagram</a>
 
-    <!-- Instagram's own official oEmbed widget (blockquote + embed.js, see
-         the script tag at the bottom of the page) instead of a custom
-         thumbnail/click-to-play tile — this is what actually renders the
-         real header (avatar, "View profile"), the real play button, and
-         the real like/comment row exactly as Instagram serves it, so it's
-         watchable in one click with no extra loading step of our own.
-         embed.js finds every .instagram-media blockquote on the page and
-         swaps it for a properly-sized iframe; the permalink is the only
-         thing each one needs. The three highest-view reels on the
-         account, most-viewed first. -->
-    <div class="ig-embed-grid reveal">
-      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/Da3i90PtVnW/" data-instgrm-version="14"></blockquote>
-      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbJjgZuhtTP/" data-instgrm-version="14"></blockquote>
-      <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbrG8luhNQY/" data-instgrm-version="14"></blockquote>
+    <!-- Self-hosted copies of the three reels, NOT Instagram's oEmbed
+         widget (blockquote + embed.js), which used to sit here.
+
+         The widget stopped working: embed.js still loads and still swaps
+         each blockquote for an iframe, but Instagram now serves a
+         logged-out embed as a ~626KB script shell with no media in it, so
+         every iframe came back height="0" and rendered 2px tall — the
+         section read as empty. It also inserted each iframe ALONGSIDE its
+         blockquote rather than replacing it, leaving 6 children in a
+         3-column grid. None of that is fixable from this end.
+
+         Even while it worked it was the only thing on the site that
+         waited on a third party: 626KB of script, then three full
+         Instagram pages in iframes (measured at 519/529/537ms), then a
+         postMessage from each one before the grid knew its own height.
+         That is where the delay and the pop-in came from, and no amount
+         of preconnecting or lead time fixes a layout that cannot size
+         itself until a cross-origin frame reports back.
+
+         These are plain <video> tiles instead — the exact pattern the
+         Ground FX recap above uses, in the same .dm-media-item/.reveal/
+         .dm-flip wrapper as every other video on this page, so they paint
+         from their own poster immediately and enter with the same flip.
+         .cs-square--contain because the sources are 9:16 (0.5625) against
+         this tile's 711:1206 (~0.5895): cover would shave a sliver off
+         the top and bottom, contain shows the whole frame.
+
+         The "View instagram" button above is now the only Instagram
+         dependency in the section, and it is a link, so it costs nothing
+         until it is clicked. -->
+    <div class="dm-media-grid dm-media-grid--mp4">
+      <div class="dm-media-item reveal">
+        <div class="cs-square cs-square--portrait cs-square--contain dm-flip is-flipping-in">
+          <video src="assets/videos/mp4-sandwich.mp4" poster="assets/videos/mp4-sandwich-poster.jpg" controls preload="metadata" playsinline
+            aria-label="The best sandwich ever"></video>
+        </div>
+      </div>
+      <div class="dm-media-item reveal">
+        <div class="cs-square cs-square--portrait cs-square--contain dm-flip is-flipping-in">
+          <video src="assets/videos/mp4-funking.mp4" poster="assets/videos/mp4-funking-poster.jpg" controls preload="metadata" playsinline
+            aria-label="Funking"></video>
+        </div>
+      </div>
+      <div class="dm-media-item reveal">
+        <div class="cs-square cs-square--portrait cs-square--contain dm-flip is-flipping-in">
+          <video src="assets/videos/mp4-villains-hangout.mp4" poster="assets/videos/mp4-villains-hangout-poster.jpg" controls preload="metadata" playsinline
+            aria-label="Villains hangout"></video>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -456,74 +471,5 @@
 <script src="js/main.js?v=66"></script>
 <script src="js/scramble-text.js?v=59"></script>
 <script src="js/head-track.js?v=61"></script>
-<!-- powers the Jaydon MP4 .instagram-media blockquotes above — Instagram's
-     own script, not ours; it finds every blockquote with that class and
-     replaces it with the real embedded player.
-
-     Fetched when that grid comes within a screen of the viewport rather
-     than on page load. It used to be a plain `async` tag, which sounds
-     cheap but isn't: the moment it arrives it swaps all three blockquotes
-     for iframes, and each of those iframes is a full Instagram page with
-     its own framework bundle. Measured on a warm load, the three took
-     519/529/537ms and all of it landed at ~600ms — the same instant
-     window.load fires, i.e. mid-way through the hero's 1.5s scramble and
-     while the 3D head is being tracked. Nothing in that grid is visible
-     until you have scrolled two full sections down, so none of that work
-     had to happen then. The observer keeps the behaviour identical for
-     anyone who actually scrolls to it, just not before. -->
-<script>
-  (function () {
-    var grid = document.querySelector(".ig-embed-grid");
-    if (!grid) return;
-
-    var loaded = false;
-    function loadEmbedJs() {
-      if (loaded) return;
-      loaded = true;
-      var s = document.createElement("script");
-      s.async = true;
-      s.src = "https://www.instagram.com/embed.js";
-      document.body.appendChild(s);
-    }
-
-    // no IntersectionObserver (very old browser) — load it the old way
-    // rather than leaving three bare blockquotes on the page
-    if (!("IntersectionObserver" in window)) {
-      loadEmbedJs();
-      return;
-    }
-
-    var io = new IntersectionObserver(
-      function (entries) {
-        for (var i = 0; i < entries.length; i += 1) {
-          if (entries[i].isIntersecting) {
-            io.disconnect();
-            loadEmbedJs();
-            return;
-          }
-        }
-      },
-      /* Lead time, so the embeds have finished resolving by the time the
-         section is actually reached rather than starting when it is.
-
-         800px was the old value and it was not the "screenful" it was
-         described as: measured at 1271px tall it is 0.63 of a viewport,
-         which at any normal scrolling speed put the grid on screen while
-         Instagram was still building the three iframes - three empty
-         boxes, then a pop-in. The iframes measured 519/529/537ms on a warm
-         load, so the lead has to cover roughly half a second of work plus
-         the scroll itself.
-
-         1500px is a little under 1.2 viewports here, nearly double the
-         old lead. The ceiling on it is page load: the grid starts 3573px
-         down the document, i.e. 2302px below the fold on this viewport,
-         and a margin that reached it would fire instantly and undo the
-         whole point of deferring this. 1500 keeps ~800px of slack against
-         that, so it still cannot trigger before the visitor scrolls. */
-      { rootMargin: "1500px 0px" }
-    );
-    io.observe(grid);
-  })();
-</script>
 </body>
 </html>
