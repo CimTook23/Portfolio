@@ -235,8 +235,33 @@
      actually use, unlike the old clamp()'s floor/ceiling. */
   --text-title: clamp(48px, 8.333vw, 300px);   /* 120px @1440 — titles (FS Mondwest, scramble) */
   --text-h1: clamp(2rem, calc(1.296rem + 3.005vw), 4rem);          /* 64px @1440 — section headings (both fonts) */
-  --text-h2: clamp(1.75rem, calc(1.42rem + 1.408vw), 2.688rem);    /* 43px @1440 — card titles, meta labels, subheads */
-  --text-h3: 1.375rem;                                              /* 22px — homepage hero paragraph ("Enjoys working in product...") */
+  --text-h2: clamp(1.75rem, calc(1.42rem + 1.408vw), 2.688rem);    /* 43px @1440 — card titles */
+  /* 43px @1440 — case-study meta labels (Role/Timeline/Skills) and
+     subheadings. Identical to --text-h2 at 1440 and close to it through
+     the desktop range, which is the point: these three styles are meant
+     to read as one voice (see .cs-hero__meta-item span), and on a desktop
+     they still do.
+
+     It exists because --text-h2's floor is too high for the phone range.
+     That ramp only reaches 28px before flattening (below ~375px), while
+     .cs-heading — the SECTION title these subheads are supposed to sit
+     under — floors at 29px. Measured at 360/390/430px: subhead 28/28.2/
+     28.8 against a section title of 29.3 at all three. A half-pixel step
+     is no step at all, so a subheading and the heading above it rendered
+     as the same size, and the Role/Timeline/Skills labels sat at 28px
+     over their own 12px values.
+
+     Same 2.688rem ceiling, but pinned through (400px, 20px) instead, so
+     it stays a true ramp across phone widths: ~20.7px at 430, ~28px at
+     768 against a 48px section title, 43px at 1440. */
+  --text-subhead: clamp(1.125rem, calc(0.697rem + 2.212vw), 2.688rem);
+  /* Was a flat 1.375rem (22px) at every width — fine at 1440, far too
+     heavy on a phone, where it landed at 22px under a 78.5px title and
+     ran the hero paragraph to four lines. Fluid now, pinned through
+     (430px, 15px) and (1440px, 22px): unchanged on desktop, ~32% smaller
+     on a phone. The 0.9375rem floor holds it at 15px below 430 rather
+     than letting it keep shrinking into unreadability. */
+  --text-h3: clamp(0.9375rem, calc(0.751rem + 0.693vw), 1.375rem);  /* 22px @1440 — homepage hero paragraph ("-Uses his love of games...") */
   --text-body: 1rem;                                                /* 16px — all paragraph + button text */
   --text-caption: 0.688rem;                                         /* 11px — captions, tags, metadata */
   /* dedicated to the nav's Work/Play switch (.nav__switch-opt) — not a
@@ -4512,7 +4537,11 @@ footer {
   display: block;
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: var(--text-h2);
+  /* --text-subhead, not --text-h2: the same size as a card title on a
+     desktop, but it keeps ramping down below ~375px instead of flattening
+     at 28px, which is what left these labels nearly as large as the case
+     study's own title on a phone. See the token for the measurements. */
+  font-size: var(--text-subhead);
   /* was a flat 0.5rem/8px. A label of ~43px sitting 8px above its value
      binds them tightly, but the pair then sat closer to the NEXT
      column's text than its own parts were to each other in some
@@ -5002,7 +5031,10 @@ footer {
 .cs-subheading {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: var(--text-h2);
+  /* --text-subhead, not --text-h2 — on a phone the latter floors at 28px
+     against .cs-heading's 29px, so a subheading and the section title
+     above it came out the same size. See the token. */
+  font-size: var(--text-subhead);
   letter-spacing: -0.01em;
 }
 
