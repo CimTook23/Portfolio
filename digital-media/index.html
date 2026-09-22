@@ -23,28 +23,28 @@
 <meta property="og:locale" content="en_CA" />
 <meta property="og:title" content="Digital museum: motion, VFX and 3D" />
 <meta property="og:description" content="Motion design, VFX and 3D work by Jaydon Wang: After Effects experiments, a mixed-media event recap, and the Jaydon MP4 motion graphics Instagram." />
-<meta property="og:image" content="https://cimtook23.github.io/Portfolio/assets/images/og-portfolio.jpg" />
+<meta property="og:image" content="https://jaydonwang.me/assets/images/og-portfolio.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="705" />
-<meta property="og:url" content="https://cimtook23.github.io/Portfolio/digital-media.html" />
+<meta property="og:url" content="https://jaydonwang.me/digital-media/" />
 <meta property="og:image:alt" content="Digital museum: motion, VFX and 3D" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Digital museum: motion, VFX and 3D" />
 <meta name="twitter:description" content="Motion design, VFX and 3D work by Jaydon Wang: After Effects experiments, a mixed-media event recap, and the Jaydon MP4 motion graphics Instagram." />
-<meta name="twitter:image" content="https://cimtook23.github.io/Portfolio/assets/images/og-portfolio.jpg" />
-<link rel="icon" href="assets/images/favicon.ico" sizes="any" />
-<link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png" />
-<link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png" />
-<link rel="apple-touch-icon" href="assets/images/favicon-180.png" />
+<meta name="twitter:image" content="https://jaydonwang.me/assets/images/og-portfolio.jpg" />
+<link rel="icon" href="../assets/images/favicon.ico" sizes="any" />
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/images/favicon-32.png" />
+<link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon-16.png" />
+<link rel="apple-touch-icon" href="../assets/images/favicon-180.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=122" />
+<link rel="stylesheet" href="../css/style.css?v=122" />
 <!-- the 3D model's poster (see <model-viewer> below) — preloaded so it's
      ready the instant the custom element upgrades, instead of the poster
      itself being the thing you wait on. This is what makes the head show
      up immediately instead of an empty gap before the real model loads. -->
-<link rel="preload" as="image" href="assets/images/me-head-poster.webp" fetchpriority="high" />
+<link rel="preload" as="image" href="../assets/images/me-head-poster.webp" fetchpriority="high" />
 <!-- <model-viewer> is NOT executed here — the script at the bottom of this
      page injects it (immediately, no longer after the title scramble). The
      poster preloaded above is what fills the hero until it arrives.
@@ -74,8 +74,8 @@
     <!-- logo + theme switch share the grid's first column so the bar
          stays a single row; see .nav__brand in style.css -->
     <div class="nav__brand">
-      <a class="nav__logo" href="index.html" aria-label="Jaydon — home">
-        <span class="nav__logo-badge"><img src="assets/images/nav-avatar.png" alt="" /></span>
+      <a class="nav__logo" href="../" aria-label="Jaydon — home">
+        <span class="nav__logo-badge"><img src="../assets/images/nav-avatar.png" alt="" /></span>
       </a>
       <!-- light/dark switch. The CSS for this (.nav__theme-toggle and the
            sun/moon icon swap) already existed but no page ever rendered the
@@ -93,13 +93,13 @@
     </div>
 
     <div class="nav__switch">
-      <a class="nav__switch-opt" href="index.html">Work</a>
-      <a class="nav__switch-opt is-active" href="digital-media.html" aria-current="page">Play</a>
+      <a class="nav__switch-opt" href="../">Work</a>
+      <a class="nav__switch-opt is-active" href="./" aria-current="page">Play</a>
     </div>
 
     <ul class="nav__links" id="navLinks">
-      <li><a href="about.html">About me</a></li>
-      <li><a href="assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="../about/">About me</a></li>
+      <li><a href="../assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
     </ul>
 
@@ -136,9 +136,9 @@
         <model-viewer
           id="dmModel"
           class="dm-hero__model"
-          src="assets/models/me-head.glb"
+          src="../assets/models/me-head.glb"
           alt="A 3D scanned model of Jaydon's head and shoulders"
-          poster="assets/images/me-head-poster.webp"
+          poster="../assets/images/me-head-poster.webp"
           camera-controls
           disable-tap
           disable-zoom
@@ -199,18 +199,18 @@
 
     <div class="cs-marquee" id="processMarquee" data-inview-anim data-native-scroll>
       <ul class="cs-marquee__track" role="list">
-        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-envoices.mp4" poster="assets/videos/process-envoices-poster.jpg" muted loop playsinline preload="none" aria-label="The ENVoices badge animating in"></video></div></li>
-        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-gfx-logo.mp4" poster="assets/videos/process-gfx-logo-poster.jpg" muted loop playsinline preload="none" aria-label="The Ground FX logo assembling from its pieces"></video></div></li>
-        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-reese.mp4" poster="assets/videos/process-reese-poster.jpg" muted loop playsinline preload="none" aria-label="A chocolate Spider-Man mask spinning in front of a burst of light, from the Reese x Across the Spider-Verse spot"></video></div></li>
-        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-boombox.mp4" poster="assets/videos/process-boombox-poster.jpg" muted loop playsinline preload="none" aria-label="A boombox shot in live footage that turns into an illustrated, comic-style version of itself"></video></div></li>
-        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-ai-vs-toronto.mp4" poster="assets/videos/process-ai-vs-toronto-poster.jpg" muted loop playsinline preload="none" aria-label="A line drawing of a face with the title Ai vs Toronto typing out across it"></video></div></li>
-        <li class="cs-marquee__item"><div class="cs-square"><video data-src="assets/videos/process-battle.mp4" poster="assets/videos/process-battle-poster.jpg" muted loop playsinline preload="none" aria-label="An illustrated fight scene: one character lands a punch labelled Latch!, then the frame glitches into a health bar"></video></div></li>
-        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-envoices.mp4" poster="assets/videos/process-envoices-poster.jpg" muted loop playsinline preload="none"></video></div></li>
-        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-gfx-logo.mp4" poster="assets/videos/process-gfx-logo-poster.jpg" muted loop playsinline preload="none"></video></div></li>
-        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-reese.mp4" poster="assets/videos/process-reese-poster.jpg" muted loop playsinline preload="none"></video></div></li>
-        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-boombox.mp4" poster="assets/videos/process-boombox-poster.jpg" muted loop playsinline preload="none"></video></div></li>
-        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-ai-vs-toronto.mp4" poster="assets/videos/process-ai-vs-toronto-poster.jpg" muted loop playsinline preload="none"></video></div></li>
-        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="assets/videos/process-battle.mp4" poster="assets/videos/process-battle-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="../assets/videos/process-envoices.mp4" poster="../assets/videos/process-envoices-poster.jpg" muted loop playsinline preload="none" aria-label="The ENVoices badge animating in"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="../assets/videos/process-gfx-logo.mp4" poster="../assets/videos/process-gfx-logo-poster.jpg" muted loop playsinline preload="none" aria-label="The Ground FX logo assembling from its pieces"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="../assets/videos/process-reese.mp4" poster="../assets/videos/process-reese-poster.jpg" muted loop playsinline preload="none" aria-label="A chocolate Spider-Man mask spinning in front of a burst of light, from the Reese x Across the Spider-Verse spot"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="../assets/videos/process-boombox.mp4" poster="../assets/videos/process-boombox-poster.jpg" muted loop playsinline preload="none" aria-label="A boombox shot in live footage that turns into an illustrated, comic-style version of itself"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="../assets/videos/process-ai-vs-toronto.mp4" poster="../assets/videos/process-ai-vs-toronto-poster.jpg" muted loop playsinline preload="none" aria-label="A line drawing of a face with the title Ai vs Toronto typing out across it"></video></div></li>
+        <li class="cs-marquee__item"><div class="cs-square"><video data-src="../assets/videos/process-battle.mp4" poster="../assets/videos/process-battle-poster.jpg" muted loop playsinline preload="none" aria-label="An illustrated fight scene: one character lands a punch labelled Latch!, then the frame glitches into a health bar"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="../assets/videos/process-envoices.mp4" poster="../assets/videos/process-envoices-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="../assets/videos/process-gfx-logo.mp4" poster="../assets/videos/process-gfx-logo-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="../assets/videos/process-reese.mp4" poster="../assets/videos/process-reese-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="../assets/videos/process-boombox.mp4" poster="../assets/videos/process-boombox-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="../assets/videos/process-ai-vs-toronto.mp4" poster="../assets/videos/process-ai-vs-toronto-poster.jpg" muted loop playsinline preload="none"></video></div></li>
+        <li class="cs-marquee__item" aria-hidden="true"><div class="cs-square"><video data-src="../assets/videos/process-battle.mp4" poster="../assets/videos/process-battle-poster.jpg" muted loop playsinline preload="none"></video></div></li>
       </ul>
     </div>
   </section>
@@ -246,7 +246,7 @@
       <div class="dm-media-item reveal">
         <div class="cs-square cs-square--wide dm-flip is-flipping-in cs-video-tile cs-video-tile--own-thumb" data-yt-id="CmHm0k9JKVo" data-tags="after-effects,3d-modeling">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play Reese x Across the Spiderverse">
-            <img src="assets/images/dm-thumb-reese.jpg" alt="Reese x Across the Spiderverse video thumbnail" loading="lazy" decoding="async" />
+            <img src="../assets/images/dm-thumb-reese.jpg" alt="Reese x Across the Spiderverse video thumbnail" loading="lazy" decoding="async" />
             <span class="cs-video-tile__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
             </span>
@@ -263,7 +263,7 @@
       <div class="dm-media-item reveal">
         <div class="cs-square cs-square--wide dm-flip is-flipping-in cs-video-tile cs-video-tile--own-thumb" data-yt-id="MnodlnBwL7M" data-tags="videography,3d-modeling,after-effects,vfx">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play 10 years of design">
-            <img src="assets/images/dm-thumb-10-years.jpg" alt="10 years of design video thumbnail" loading="lazy" decoding="async" />
+            <img src="../assets/images/dm-thumb-10-years.jpg" alt="10 years of design video thumbnail" loading="lazy" decoding="async" />
             <span class="cs-video-tile__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
             </span>
@@ -282,7 +282,7 @@
       <div class="dm-media-item reveal">
         <div class="cs-square cs-square--wide dm-flip is-flipping-in cs-video-tile cs-video-tile--own-thumb" data-yt-id="LpOAWPr6fKE" data-tags="videography,after-effects">
           <button type="button" class="cs-video-tile__trigger" aria-label="Play Chlorine Stabilizing Mini Pucks">
-            <img src="assets/images/dm-thumb-bromine.jpg" alt="Aqua Coastal product video thumbnail: a jar of bromine tabs tumbling through a water splash" loading="lazy" decoding="async" />
+            <img src="../assets/images/dm-thumb-bromine.jpg" alt="Aqua Coastal product video thumbnail: a jar of bromine tabs tumbling through a water splash" loading="lazy" decoding="async" />
             <span class="cs-video-tile__play" aria-hidden="true">
               <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
             </span>
@@ -325,7 +325,7 @@
              every other tile here) so the whole video fits on screen
              without scrolling past it. -->
         <div class="cs-square cs-square--portrait cs-square--contain cs-square--fit-viewport dm-flip is-flipping-in" data-tags="videography,after-effects">
-          <video src="assets/videos/gfx-recap.mp4" poster="assets/videos/gfx-recap-poster.jpg" controls preload="metadata" playsinline
+          <video src="../assets/videos/gfx-recap.mp4" poster="../assets/videos/gfx-recap-poster.jpg" controls preload="metadata" playsinline
             aria-label="The Ground FX recap video"></video>
         </div>
         <div class="dm-video-meta">
@@ -384,19 +384,19 @@
     <div class="dm-media-grid dm-media-grid--mp4">
       <div class="dm-media-item reveal">
         <div class="cs-square cs-square--portrait cs-square--contain dm-flip is-flipping-in">
-          <video src="assets/videos/mp4-sandwich.mp4" poster="assets/videos/mp4-sandwich-poster.jpg" controls preload="metadata" playsinline
+          <video src="../assets/videos/mp4-sandwich.mp4" poster="../assets/videos/mp4-sandwich-poster.jpg" controls preload="metadata" playsinline
             aria-label="The best sandwich ever"></video>
         </div>
       </div>
       <div class="dm-media-item reveal">
         <div class="cs-square cs-square--portrait cs-square--contain dm-flip is-flipping-in">
-          <video src="assets/videos/mp4-funking.mp4" poster="assets/videos/mp4-funking-poster.jpg" controls preload="metadata" playsinline
+          <video src="../assets/videos/mp4-funking.mp4" poster="../assets/videos/mp4-funking-poster.jpg" controls preload="metadata" playsinline
             aria-label="Funking"></video>
         </div>
       </div>
       <div class="dm-media-item reveal">
         <div class="cs-square cs-square--portrait cs-square--contain dm-flip is-flipping-in">
-          <video src="assets/videos/mp4-villains-hangout.mp4" poster="assets/videos/mp4-villains-hangout-poster.jpg" controls preload="metadata" playsinline
+          <video src="../assets/videos/mp4-villains-hangout.mp4" poster="../assets/videos/mp4-villains-hangout-poster.jpg" controls preload="metadata" playsinline
             aria-label="Villains hangout"></video>
         </div>
       </div>
@@ -452,7 +452,7 @@
       started = true;
       var s = document.createElement("script");
       s.type = "module";
-      s.src = "https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
+      s.src="https://unpkg.com/@google/model-viewer@3.5.0/dist/model-viewer.min.js";
       document.head.appendChild(s);
     }
 
@@ -468,8 +468,8 @@
   })();
 </script>
 
-<script src="js/main.js?v=68"></script>
-<script src="js/scramble-text.js?v=59"></script>
-<script src="js/head-track.js?v=61"></script>
+<script src="../js/main.js?v=68"></script>
+<script src="../js/scramble-text.js?v=59"></script>
+<script src="../js/head-track.js?v=61"></script>
 </body>
 </html>

@@ -791,19 +791,39 @@
   const caseStudiesSide = document.querySelector(".case-studies__side");
   const desktopLayout = window.matchMedia("(min-width: 901px)");
 
+  /* Declared out here rather than inside the guard below because
+     filtering also changes .project-grid's height, and the cap has to
+     follow it — left at the unfiltered list's height, this sidebar holds
+     the whole row open at a full viewport around a one-card list. */
+  const syncCaseStudiesSticky = () => {
+    if (!projectGrid || !caseStudiesSide) return;
+
+    if (!desktopLayout.matches) {
+      // mobile stacks this column statically — let its own CSS
+      // (height: auto) take over instead
+      caseStudiesSide.style.removeProperty("--side-max-h");
+      return;
+    }
+
+    const gridHeight = projectGrid.getBoundingClientRect().height;
+
+    /* The cap must not drop below what the sidebar itself needs. Filtered
+       down to a single card the list can be shorter than the heading,
+       pills and their 34vh of bottom padding put together, and capping to
+       the list there would squeeze that content out of a box smaller than
+       it is. Measured rather than assumed: the padding is viewport-based,
+       so the number moves with the screen. */
+    caseStudiesSide.style.height = "auto";
+    const naturalHeight = caseStudiesSide.getBoundingClientRect().height;
+    caseStudiesSide.style.removeProperty("height");
+
+    caseStudiesSide.style.setProperty(
+      "--side-max-h",
+      `${Math.max(gridHeight, naturalHeight)}px`
+    );
+  };
+
   if (projectGrid && caseStudiesSide) {
-    const syncCaseStudiesSticky = () => {
-      if (!desktopLayout.matches) {
-        // mobile stacks this column statically — let its own CSS
-        // (height: auto) take over instead
-        caseStudiesSide.style.removeProperty("--side-max-h");
-        return;
-      }
-
-      const gridHeight = projectGrid.getBoundingClientRect().height;
-      caseStudiesSide.style.setProperty("--side-max-h", `${gridHeight}px`);
-    };
-
     syncCaseStudiesSticky();
     window.addEventListener("resize", syncCaseStudiesSticky);
     window.addEventListener("load", syncCaseStudiesSticky);
@@ -986,18 +1006,6 @@
 
         const filter = pill.dataset.filter;
 
-        /* Hiding cards used to make the page shorter, so the browser had
-           to move the scroll position (clamping it, or re-anchoring on
-           whatever was left) and the screen jumped. Holding the list at
-           its current height keeps the page the same length, so the
-           scroll position never has a reason to change — the matching
-           cards just close up at the top of the list. Released on "All",
-           which is the full list's natural height anyway. */
-        if (projectGrid) {
-          projectGrid.style.minHeight =
-            filter === "all" ? "" : `${projectGrid.getBoundingClientRect().height}px`;
-        }
-
         projectCards.forEach((card) => {
           // a card can belong to more than one category (comma-separated,
           // e.g. Ground FX is both "marketing" and "event-coordination")
@@ -1005,6 +1013,11 @@
           const match = filter === "all" || categories.includes(filter);
           card.style.display = match ? "" : "none";
         });
+
+        /* The list just changed height, so the sticky column's cap is
+           stale — without this it keeps the row open at the unfiltered
+           height and the cards sit in a column of empty space. */
+        syncCaseStudiesSticky();
 
         /* The matches close up at the top of the list, so a visitor who
            had scrolled down into it was left looking at the empty space
@@ -1394,4 +1407,371 @@
       window.addEventListener("resize", syncPastHero);
     }
   }
+
+  /* ---------- inventory board ----------
+     The board is a fixed capacity — the 84 cells of the 14 x 6 frame it
+     was drawn as — holding works that each occupy a rectangle of cells
+     (data-w / data-h in the markup). Items can be picked up and moved,
+     and a move is only allowed onto cells that are inside the board and
+     free, so two works can never overlap and nothing can hang off an
+     edge.
+
+     Placement is explicit here rather than left to grid auto-flow: once
+     a thing can be dragged it needs a position that can be named, and
+     "wherever the browser put it" is not one. The empty slots are laid
+     out explicitly too, one per cell of the whole board, and the items
+     sit on top of them — much steadier than flowing filler around the
+     items and recounting it every time one moves.
+
+     Without JS the markup still renders: the items keep the span rules
+     from the stylesheet, the slots flow around them, and the board reads
+     exactly as it did before any of this. It just does not move. */
+  const inventoryGrid = document.querySelector(".inventory__grid");
+  if (inventoryGrid) {
+    const CAPACITY = 84;
+    const items = Array.from(
+      inventoryGrid.querySelectorAll(".inventory__item")
+    );
+
+    if (items.length) {
+      const ghost = document.createElement("div");
+      ghost.className = "inventory__ghost";
+      ghost.setAttribute("aria-hidden", "true");
+      inventoryGrid.appendChild(ghost);
+
+      /* The board's current shape, and where every item sits in it.
+         Positions are 1-based, matching CSS grid's own numbering, so
+         they go straight into grid-column/grid-row with no off-by-one
+         conversion at either end. */
+      let cols = 0;
+      let rows = 0;
+      const placed = new Map();
+
+      /* Read the column count back from the grid rather than
+         re-deriving the breakpoints here: the ladder lives in style.css
+         and this must not hold a second, drifting copy of it. */
+      const columnCount = () =>
+        window
+          .getComputedStyle(inventoryGrid)
+          .gridTemplateColumns.split(" ")
+          .filter(Boolean).length;
+
+      /* An item may never ask for more columns than the board has — the
+         same cap the stylesheet applies below 30em. */
+      const footprint = (item) => ({
+        w: Math.min(Math.max(Number(item.dataset.w) || 1, 1), cols),
+        h: Math.max(Number(item.dataset.h) || 1, 1),
+      });
+
+      const key = (row, col) => row + ":" + col;
+
+      /* Every cell spoken for, optionally ignoring one item — which is
+         what makes "can it go here" answerable for the item currently in
+         the air: it must not collide with itself. */
+      const occupiedCells = (ignore) => {
+        const taken = new Set();
+        placed.forEach((pos, item) => {
+          if (item === ignore) return;
+          for (let r = pos.row; r < pos.row + pos.h; r++) {
+            for (let c = pos.col; c < pos.col + pos.w; c++) {
+              taken.add(key(r, c));
+            }
+          }
+        });
+        return taken;
+      };
+
+      /* The whole rule, in one place: inside the board, and every cell
+         it would cover is free. */
+      const fits = (col, row, w, h, taken) => {
+        if (col < 1 || row < 1) return false;
+        if (col + w - 1 > cols || row + h - 1 > rows) return false;
+        for (let r = row; r < row + h; r++) {
+          for (let c = col; c < col + w; c++) {
+            if (taken.has(key(r, c))) return false;
+          }
+        }
+        return true;
+      };
+
+      const applyPosition = (item) => {
+        const pos = placed.get(item);
+        item.style.gridColumn = pos.col + " / span " + pos.w;
+        item.style.gridRow = pos.row + " / span " + pos.h;
+      };
+
+      /* First fit, in markup order. Used for the initial layout and
+         again whenever the column count changes — an item sitting at
+         column 11 of a 14-wide board has nowhere to be on a 4-wide one,
+         so positions cannot survive a breakpoint and are re-derived
+         rather than patched. */
+      const repack = () => {
+        placed.clear();
+        items.forEach((item) => {
+          const size = footprint(item);
+          const taken = occupiedCells(null);
+          let spot = null;
+          for (let row = 1; row <= rows && !spot; row++) {
+            for (let col = 1; col <= cols - size.w + 1; col++) {
+              if (fits(col, row, size.w, size.h, taken)) {
+                spot = { col: col, row: row, w: size.w, h: size.h };
+                break;
+              }
+            }
+          }
+          placed.set(item, spot || { col: 1, row: 1, w: size.w, h: size.h });
+          applyPosition(item);
+        });
+      };
+
+      /* One slot per cell of the board, addressed explicitly so the
+         items can sit over them. */
+      const layoutSlots = () => {
+        const wanted = cols * rows;
+        let slots = inventoryGrid.querySelectorAll(".inventory__slot");
+
+        for (let i = slots.length; i > wanted; i--) {
+          slots[i - 1].remove();
+        }
+        if (slots.length < wanted) {
+          const batch = document.createDocumentFragment();
+          for (let i = slots.length; i < wanted; i++) {
+            const slot = document.createElement("div");
+            slot.className = "inventory__slot";
+            batch.appendChild(slot);
+          }
+          inventoryGrid.insertBefore(batch, ghost);
+        }
+
+        slots = inventoryGrid.querySelectorAll(".inventory__slot");
+        slots.forEach((slot, i) => {
+          slot.style.gridColumn = String((i % cols) + 1);
+          slot.style.gridRow = String(Math.floor(i / cols) + 1);
+        });
+      };
+
+      const syncBoard = () => {
+        const next = columnCount();
+        if (!next || next === cols) return;
+        cols = next;
+        rows = Math.ceil(CAPACITY / cols);
+        layoutSlots();
+        repack();
+      };
+
+      /* ---- moving an item ---- */
+
+      /* Cell geometry measured from the live grid rather than recomputed
+         from the clamp() in the stylesheet — one source of truth, and it
+         stays right through a font load or a browser zoom. */
+      const cellMetrics = () => {
+        const rect = inventoryGrid.getBoundingClientRect();
+        const style = window.getComputedStyle(inventoryGrid);
+        const colGap = parseFloat(style.columnGap) || 0;
+        const rowGap = parseFloat(style.rowGap) || 0;
+        return {
+          colGap: colGap,
+          rowGap: rowGap,
+          tileW: (rect.width - colGap * (cols - 1)) / cols,
+          tileH: (rect.height - rowGap * (rows - 1)) / rows,
+        };
+      };
+
+      const hideGhost = () => {
+        ghost.style.display = "none";
+        ghost.classList.remove("is-active");
+      };
+
+      /* Only ever drawn on a target the item can actually take, so its
+         presence is the whole answer — occupied cells and cells off the
+         edge both simply get no ghost. */
+      const showGhost = (col, row, w, h) => {
+        ghost.style.display = "block";
+        ghost.style.gridColumn = col + " / span " + w;
+        ghost.style.gridRow = row + " / span " + h;
+        ghost.classList.add("is-active");
+      };
+
+      /* Hands the item back to its transition and keeps it above its
+         neighbours until it has arrived. */
+      const settle = (item) => {
+        item.classList.add("is-settling");
+        item.classList.remove("is-dragging");
+        item.style.transform = "";
+        window.setTimeout(() => item.classList.remove("is-settling"), 320);
+      };
+
+      items.forEach((item) => {
+        item.addEventListener("pointerdown", (event) => {
+          if (event.button > 0) return;
+          const origin = placed.get(item);
+          if (!origin) return;
+
+          /* preventDefault stops the browser starting its own text or
+             image drag, but it also cancels the focus a mousedown would
+             normally give — so hand it over explicitly, and picking an
+             item up with the mouse leaves the arrow keys pointed at it.
+             The ring is kept away by the marker rather than by trusting
+             :focus-visible to notice this came from a pointer — it does
+             not reliably, and an accent ring around an item you are
+             already holding is noise. The first keypress clears it. */
+          event.preventDefault();
+          item.dataset.pointerFocus = "";
+          item.focus();
+
+          const metrics = cellMetrics();
+          const itemRect = item.getBoundingClientRect();
+          const grabX = event.clientX - itemRect.left;
+          const grabY = event.clientY - itemRect.top;
+          const taken = occupiedCells(item);
+          let target = null;
+          let moved = false;
+
+          /* Capture keeps the gesture with the item if the pointer
+             outruns it, but it is an optimisation, not the contract:
+             the move/up listeners go on the window, so a drag still
+             ends correctly if capture is refused or the pointer leaves
+             the window entirely. Relying on capture alone is how a
+             dragged item gets stuck to the cursor. */
+          try {
+            item.setPointerCapture(event.pointerId);
+          } catch (err) {
+            /* no capture available — the window listeners cover it */
+          }
+          item.classList.add("is-dragging");
+
+          const onMove = (moveEvent) => {
+            const dx = moveEvent.clientX - event.clientX;
+            const dy = moveEvent.clientY - event.clientY;
+            if (!moved && Math.abs(dx) + Math.abs(dy) < 3) return;
+            moved = true;
+            item.style.transform = "translate(" + dx + "px, " + dy + "px)";
+
+            /* The cell the item's own top-left corner is nearest, which
+               is what the user is aiming with — not the pointer's cell,
+               which would drop a 3x2 item wherever its middle happened
+               to be and feel like it was fighting them. */
+            const gridRect = inventoryGrid.getBoundingClientRect();
+            const left = moveEvent.clientX - grabX - gridRect.left;
+            const top = moveEvent.clientY - grabY - gridRect.top;
+            const col =
+              Math.round(left / (metrics.tileW + metrics.colGap)) + 1;
+            const row =
+              Math.round(top / (metrics.tileH + metrics.rowGap)) + 1;
+
+            const inBoard =
+              col >= 1 &&
+              row >= 1 &&
+              col + origin.w - 1 <= cols &&
+              row + origin.h - 1 <= rows;
+
+            if (!inBoard) {
+              target = null;
+              hideGhost();
+              return;
+            }
+
+            if (!fits(col, row, origin.w, origin.h, taken)) {
+              target = null;
+              hideGhost();
+              return;
+            }
+
+            target = { col: col, row: row };
+            showGhost(col, row, origin.w, origin.h);
+          };
+
+          const onUp = () => {
+            window.removeEventListener("pointermove", onMove);
+            window.removeEventListener("pointerup", onUp);
+            window.removeEventListener("pointercancel", onUp);
+            try {
+              item.releasePointerCapture(event.pointerId);
+            } catch (err) {
+              /* never captured, or already released */
+            }
+            hideGhost();
+
+            if (target) {
+              /* The item is under the pointer; its new cell is wherever
+                 the grid puts it. Committing both at once snaps that gap
+                 shut in a single frame, which is the jolt you feel on
+                 drop. So: measure where it is, move it, measure where it
+                 landed, put the difference back as a transform — the
+                 item has not visibly moved — and then let the transition
+                 carry it in. Same destination, no jump. */
+              const from = item.getBoundingClientRect();
+              placed.set(item, {
+                col: target.col,
+                row: target.row,
+                w: origin.w,
+                h: origin.h,
+              });
+              applyPosition(item);
+              item.style.transform = "";
+              const to = item.getBoundingClientRect();
+              item.style.transform =
+                "translate(" +
+                (from.left - to.left) +
+                "px, " +
+                (from.top - to.top) +
+                "px)";
+              /* read back the layout so that offset is the animation's
+                 committed starting point, not a value coalesced away */
+              void item.offsetWidth;
+              settle(item);
+            } else {
+              /* Refused: it eases back to where it came from, which is
+                 the whole message. */
+              settle(item);
+            }
+          };
+
+          window.addEventListener("pointermove", onMove);
+          window.addEventListener("pointerup", onUp);
+          window.addEventListener("pointercancel", onUp);
+        });
+
+        /* The same move, by keyboard. The items are already focusable
+           for the blurb, and a drag only a mouse can perform would put
+           the board out of reach entirely. Arrow keys step one cell and
+           obey exactly the same rule. */
+        /* Any key means the keyboard has taken over, so the focus ring
+           is wanted again from here — including the arrow keys that are
+           about to move the item. */
+        item.addEventListener("keydown", (event) => {
+          delete item.dataset.pointerFocus;
+
+          const step = {
+            ArrowLeft: [-1, 0],
+            ArrowRight: [1, 0],
+            ArrowUp: [0, -1],
+            ArrowDown: [0, 1],
+          }[event.key];
+          if (!step) return;
+
+          const pos = placed.get(item);
+          if (!pos) return;
+          event.preventDefault();
+
+          const col = pos.col + step[0];
+          const row = pos.row + step[1];
+          if (!fits(col, row, pos.w, pos.h, occupiedCells(item))) return;
+
+          placed.set(item, { col: col, row: row, w: pos.w, h: pos.h });
+          applyPosition(item);
+        });
+
+        /* leaving the item resets the question — the next focus decides
+           for itself whether it deserves a ring */
+        item.addEventListener("blur", () => {
+          delete item.dataset.pointerFocus;
+        });
+      });
+
+      syncBoard();
+      window.addEventListener("resize", syncBoard);
+    }
+  }
+
 })();

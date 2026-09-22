@@ -23,15 +23,15 @@
 <meta property="og:locale" content="en_CA" />
 <meta property="og:title" content="Jaydon Wang: product, visual and brand design" />
 <meta property="og:description" content="Portfolio of Jaydon Wang. Product design, marketing and motion graphics case studies, from a Nintendo eShop redesign to a Sun Life healthcare design jam." />
-<meta property="og:image" content="https://cimtook23.github.io/Portfolio/assets/images/og-portfolio.jpg" />
+<meta property="og:image" content="https://jaydonwang.me/assets/images/og-portfolio.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="705" />
-<meta property="og:url" content="https://cimtook23.github.io/Portfolio/index.html" />
+<meta property="og:url" content="https://jaydonwang.me/" />
 <meta property="og:image:alt" content="Jaydon Wang: product, visual and brand design" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Jaydon Wang: product, visual and brand design" />
 <meta name="twitter:description" content="Portfolio of Jaydon Wang. Product design, marketing and motion graphics case studies, from a Nintendo eShop redesign to a Sun Life healthcare design jam." />
-<meta name="twitter:image" content="https://cimtook23.github.io/Portfolio/assets/images/og-portfolio.jpg" />
+<meta name="twitter:image" content="https://jaydonwang.me/assets/images/og-portfolio.jpg" />
 <link rel="icon" href="assets/images/favicon.ico" sizes="any" />
 <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicon-32.png" />
 <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicon-16.png" />
@@ -39,7 +39,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=122" />
+<link rel="stylesheet" href="css/style.css?v=135" />
 </head>
 <body>
 
@@ -56,7 +56,7 @@
     <!-- logo + theme switch share the grid's first column so the bar
          stays a single row; see .nav__brand in style.css -->
     <div class="nav__brand">
-      <a class="nav__logo" href="index.html" aria-label="Jaydon — home">
+      <a class="nav__logo" href="./" aria-label="Jaydon — home">
         <span class="nav__logo-badge"><img src="assets/images/nav-avatar.png" alt="" /></span>
       </a>
       <!-- light/dark switch. The CSS for this (.nav__theme-toggle and the
@@ -75,12 +75,12 @@
     </div>
 
     <div class="nav__switch">
-      <a class="nav__switch-opt is-active" href="index.html" aria-current="page">Work</a>
-      <a class="nav__switch-opt" href="digital-media.html">Play</a>
+      <a class="nav__switch-opt is-active" href="./" aria-current="page">Work</a>
+      <a class="nav__switch-opt" href="digital-media/">Play</a>
     </div>
 
     <ul class="nav__links" id="navLinks">
-      <li><a href="about.html">About me</a></li>
+      <li><a href="about/">About me</a></li>
       <li><a href="assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
     </ul>
@@ -117,7 +117,7 @@
     <div class="case-studies__layout">
       <div class="project-grid">
 
-        <a class="project-card reveal" href="case-studies/nintendo-eshop.html" data-category="product-design">
+        <a class="project-card reveal" href="case-studies/nintendo-eshop/" data-category="product-design">
           <div class="project-card__media is-flipping-in">
             <img src="assets/images/eshop-thumb.png" alt="Nintendo Switch showing a redesigned eShop Recent Releases page, with a review card, red quality badges, and the submission-review flow floating around it" loading="lazy" decoding="async" />
           </div>
@@ -131,7 +131,7 @@
           </div>
         </a>
 
-        <a class="project-card reveal" href="case-studies/aira.html" data-category="product-design">
+        <a class="project-card reveal" href="case-studies/aira/" data-category="product-design">
           <div class="project-card__media is-flipping-in">
             <img src="assets/images/aira-thumb.gif" alt="Aira app — screens showing appointment tracker, air quality index, and health tracker" loading="lazy" decoding="async" />
           </div>
@@ -145,7 +145,7 @@
           </div>
         </a>
 
-        <a class="project-card reveal" href="case-studies/faculty-of-environment.html" data-category="marketing">
+        <a class="project-card reveal" href="case-studies/faculty-of-environment/" data-category="marketing">
           <div class="project-card__media is-flipping-in">
             <img src="assets/images/faculty-of-environment-thumb.png" alt="Waterloo Faculty of Environment — ENVoices campaign artwork" loading="lazy" decoding="async" />
           </div>
@@ -159,7 +159,7 @@
           </div>
         </a>
 
-        <a class="project-card reveal" href="case-studies/ground-fx.html" data-category="marketing,event-coordination">
+        <a class="project-card reveal" href="case-studies/ground-fx/" data-category="marketing,event-coordination">
           <div class="project-card__media is-flipping-in">
             <img src="assets/images/ground-fx-thumb.png" alt="Ground FX — breakdancing event branding and motion graphics" loading="lazy" decoding="async" />
           </div>
@@ -192,6 +192,143 @@
     </div>
   </section>
 
+
+  <!-- Inventory: the 14 x 6 board from the Figma frame. Every slot is
+       the same tile — #0D0D0D fill, 21px corner radius, and the glass
+       panel's -45deg light read as a rim that catches along the top-left
+       edge. The slots are real elements rather than a painted background
+       so each one can hold something later; they are empty and purely
+       decorative for now, hence aria-hidden on the board. -->
+  <section id="inventory" class="inventory container container--wide">
+    <div class="section-head reveal">
+      <div>
+        <h2>Inventory</h2>
+        <p class="hero__desc cs-para section-head__sub">Bits and pieces of past projects, and ideas.
+          Drag and hover to your heart's content.</p>
+      </div>
+    </div>
+
+    <!-- same class stack as the Play page's "View instagram": .cs-cta is
+         the full-width centred pill, and it brings its own spacing (36px
+         above from .section-head, 1.75rem below from .cs-cta itself), so
+         this needs no rule of its own.
+
+         The arrow is decorative and aria-hidden, so the link announces as
+         "View digital media" rather than "View digital media right
+         arrow". -->
+    <a class="btn btn-outline cs-cta reveal" href="digital-media/">
+      View digital media
+      <span aria-hidden="true">&rarr;</span>
+    </a>
+
+    <div class="inventory__board reveal">
+      <div class="inventory__grid">
+
+        <!-- Items come first in the DOM so grid auto-placement lays them
+             out from the top-left and the empty slots below flow in
+             around them. Each item declares the rectangle it occupies
+             with data-w / data-h, in cells — this one is 3 across by 2
+             down, so it eats 6 of the board's 84. main.js keeps the slot
+             count in step with that, so adding an item here is just a
+             matter of dropping in the markup; nothing needs recounting.
+
+             tabindex is what lets a keyboard reach the blurb, which is
+             otherwise hover-only. The moment this piece has a page of
+             its own, the <article> becomes <a href="..."> and the
+             tabindex comes off — a link is focusable already. -->
+        <article class="inventory__item" data-w="3" data-h="2" tabindex="0">
+          <img class="inventory__item-media" src="assets/images/solar-blankets.gif"
+            alt="Solar Blankets — inflated clear plastic sheeting coiled into a rose on a yellow ground"
+            loading="lazy" decoding="async" />
+          <div class="inventory__blurb">
+            <h3>Solar Blankets</h3>
+            <p>TODO: one or two lines about this piece.</p>
+          </div>
+        </article>
+
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+        <div class="inventory__slot"></div>
+      </div>
+    </div>
+
+  </section>
+
 </main>
 
 <footer>
@@ -205,7 +342,7 @@
   </div>
 </footer>
 
-<script src="js/main.js?v=68"></script>
+<script src="js/main.js?v=75"></script>
 <script src="js/scramble-text.js?v=59"></script>
 </body>
 </html>

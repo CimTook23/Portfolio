@@ -53,6 +53,27 @@
   --surface-border: rgba(255, 255, 255, 0.09);
   --surface-blur: blur(14px) saturate(140%);
 
+  /* inventory tiles. The board has no ground of its own — the body
+     gradient has finished landing by 1396px, so by the time the section
+     comes round the page is flat --bg-bottom and the tiles read straight
+     against it, exactly as the Figma frame drew them on black. The rim
+     is the -45deg light: it catches along the top-left edge and falls
+     off to almost nothing at the bottom-right. */
+  --inv-slot: #0d0d0d;
+  /* a flat px, shared by the empty slots and the items. It was briefly a
+     min(21px, 24%) so the corner held its drawn proportion on a small
+     tile, but an item spans a 3x2 rectangle — a percentage there
+     resolves against width and height separately and cuts ellipses, not
+     corners. A filled cell and an empty one have to be the same shape,
+     so both take the literal 21px the frame specifies, and the column
+     ladder is what keeps the tile from ever getting small enough for
+     that to round away (64px at the very narrowest). */
+  --inv-radius: 21px;
+  --inv-rim: rgba(255, 255, 255, 0.16);
+  --inv-rim-soft: rgba(255, 255, 255, 0.045);
+  --inv-inner: rgba(255, 255, 255, 0.028);
+  --inv-cast: rgba(0, 0, 0, 0.55);
+
   /* accent — used sparingly: primary CTA + small hover/active touches */
   --accent: #a855f7;
   --accent-strong: #9333ea;
@@ -345,6 +366,20 @@ html[data-theme="light"] {
      doing all the work of separating ring from background. */
   --cursor-glow: rgba(20, 22, 43, 0.22);
   --cursor-halo: rgba(20, 22, 43, 0.72);
+
+  /* the inventory tiles invert outright: #0d0d0d about the middle grey
+     is #f2f2f2, and the same flip turns the rim from a white highlight
+     into a dark one at the identical alphas. That keeps the negative of
+     the dark-mode tile — same lighting, same edge, reversed — instead of
+     parking a black panel in the middle of a white page. The cast shadow
+     is the one thing that does NOT invert (a white "shadow" reads as a
+     glow), so it stays dark and only loses weight: 0.55 black under a
+     near-white tile is a hard line rather than a lift. */
+  --inv-slot: #f2f2f2;
+  --inv-rim: rgba(0, 0, 0, 0.16);
+  --inv-rim-soft: rgba(0, 0, 0, 0.045);
+  --inv-inner: rgba(0, 0, 0, 0.028);
+  --inv-cast: rgba(0, 0, 0, 0.12);
 
   /* the footer slab is a deliberate surface CHANGE, so it inverts with
      the page rather than staying white-on-white */
@@ -6674,5 +6709,336 @@ footer {
   .cs-marketing-grid,
   .dm-media-grid--mp4 {
     grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   Inventory — a game-style board of works and empty slots
+   ========================================================= */
+
+/* No ground of its own: the tiles sit straight on the page in both
+   themes (see --inv-slot in :root for why that works out to the Figma
+   frame's black). The element stays as the reveal wrapper. */
+.inventory__board {
+  background: none;
+}
+
+.inventory__grid {
+  display: grid;
+  /* 14 across is the design at full width, but it is a ceiling, not a
+     fixed shape — the board reflows to fewer columns as the viewport
+     narrows (see the ladder at the bottom of this block) rather than
+     scrolling sideways or shrinking the tiles into beads. minmax(0, 1fr)
+     rather than a px floor: the columns divide whatever width there is,
+     and the breakpoints keep the result a sensible tile size.
+
+     dense matters once there is more than one item: an item that cannot
+     fit in the cells left on a row gets pushed down, and dense is what
+     sends the following 1x1 slots back to fill the hole it left rather
+     than leaving a notch in the board. */
+  grid-auto-flow: row dense;
+  grid-template-columns: repeat(var(--inv-cols, 14), minmax(0, 1fr));
+  /* the Figma frame's gap is ~11% of a tile; this ramp holds that ratio
+     across the container's range rather than pinning a fixed pixel gap
+     that reads tight once the tiles grow on a wide monitor. */
+  gap: clamp(6px, 0.72vw, 18px);
+}
+
+/* ---------- the empty slots ---------- */
+
+/* The Figma tile: #0d0d0d fill (inverted in light mode), 21px radius,
+   and the glass panel's settings read into CSS as far as CSS goes — the
+   -45deg light becomes the rim, depth the soft inner wall, and frost 4
+   the backdrop blur. Refraction/dispersion have no CSS equivalent and
+   are approximated by that rim alone. */
+.inventory__slot {
+  aspect-ratio: 1;
+  border-radius: var(--inv-radius);
+  background: var(--inv-slot);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow:
+    inset 1.5px 1.5px 1px -0.5px var(--inv-rim),
+    inset -1.5px -1.5px 1px -0.5px var(--inv-rim-soft),
+    inset 0 0 14px var(--inv-inner),
+    0 1px 3px var(--inv-cast);
+}
+
+/* ---------- the items ---------- */
+
+/* An item is a work sitting in the board, and it occupies a rectangle of
+   cells rather than a single one — data-w/data-h in the markup, read by
+   the span rules below. It carries the slot's radius (a flat px, not the
+   slot's own percentage, which on a 3x2 box would resolve against two
+   different lengths and round the corners into ellipses) so a filled
+   cell and an empty one are cut to the same shape. */
+.inventory__item {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--inv-radius);
+  background: var(--inv-slot);
+  /* no aspect-ratio: the item is sized by the cells it spans, and the
+     row height comes from the 1x1 slots around it */
+  box-shadow:
+    inset 0 0 0 1px var(--inv-rim-soft),
+    0 1px 3px var(--inv-cast);
+  transition: box-shadow 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
+  /* the board owns the gesture. Without this a touch drag pans the page
+     instead of moving the item, and there is no way to get it back once
+     the browser has claimed the sequence as a scroll. */
+  touch-action: none;
+  cursor: grab;
+  /* above the slots, which are the board's floor */
+  z-index: 2;
+}
+
+/* the face and the blurb are painted by the item, not targets of their
+   own — every pointerdown has to land on the item itself or the drag
+   never starts. -webkit-user-drag is the one that stops Chrome running
+   its native image-drag instead. */
+.inventory__item-media,
+.inventory__blurb {
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.inventory__item:hover:not(.is-dragging),
+.inventory__item:focus-visible:not([data-pointer-focus]):not(.is-dragging) {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 0 0 1px var(--inv-rim),
+    0 6px 18px var(--inv-cast);
+}
+
+/* Keyboard focus only, and not in the brand purple. Grabbing an item
+   with the mouse focuses it (see main.js) so the arrow keys follow the
+   pointer, and that programmatic focus was matching :focus-visible and
+   painting an accent ring around an item the user was simply dragging.
+   main.js marks pointer-driven focus with data-pointer-focus and clears
+   it on the first keypress, so the ring appears when someone is actually
+   navigating by keyboard and never during a drag.
+
+   --overlay-rgb, not --accent: it is the stylesheet's translucent-white
+   channel, which the light palette redefines as dark ink, so the ring
+   carries in both themes without introducing a colour the board does not
+   otherwise use. */
+.inventory__item:focus-visible:not([data-pointer-focus]) {
+  outline: 2px solid rgba(var(--overlay-rgb), 0.9);
+  outline-offset: 2px;
+}
+
+.inventory__item-media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* the media is the item's whole face; the blurb sits over it */
+  display: block;
+}
+
+/* ---------- the hover blurb ---------- */
+
+/* Deliberately dark in BOTH themes: it sits over the artwork rather than
+   over the page, so it follows the image the way .cs-video's letterbox
+   follows its source, not the palette. It is only visually hidden
+   (opacity, not display/visibility), so a screen reader still reads the
+   title and description straight out of the markup. */
+.inventory__blurb {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: clamp(10px, 1vw, 18px);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.92) 0%,
+    rgba(0, 0, 0, 0.74) 62%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  color: #f4f5fb;
+  opacity: 0;
+  transform: translateY(18%);
+  transition: opacity 0.32s ease, transform 0.32s ease;
+}
+
+/* :not([data-pointer-focus]) on every focus-driven state here, not just
+   the outline — grabbing an item focuses it, and without this a mouse
+   drop would leave the item lifted with its blurb pinned open until you
+   clicked somewhere else. Hover is untouched, so the blurb still follows
+   the pointer normally. */
+.inventory__item:hover .inventory__blurb,
+.inventory__item:focus-visible:not([data-pointer-focus]) .inventory__blurb {
+  opacity: 1;
+  transform: none;
+}
+
+.inventory__blurb h3 {
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 0.25em;
+}
+
+.inventory__blurb p {
+  font-size: var(--text-caption);
+  line-height: 1.4;
+  color: rgba(244, 245, 251, 0.78);
+  /* an item can be as small as two cells across — clamp rather than let
+     a long blurb push itself out of the top of its own gradient */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+/* Touch: there is no hover to reveal it with, and no second state to
+   spend a tap on while the items are not yet links, so the blurb just
+   stays up. */
+@media (hover: none) {
+  .inventory__blurb {
+    opacity: 1;
+    transform: none;
+  }
+
+  .inventory__blurb p {
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inventory__item,
+  .inventory__blurb {
+    transition-duration: 0.01ms;
+  }
+
+  .inventory__item:hover,
+  .inventory__item:focus-visible {
+    transform: none;
+  }
+
+  .inventory__blurb {
+    transform: none;
+  }
+}
+
+/* ---------- dragging ---------- */
+
+/* While dragging, the item is following the pointer through an inline
+   transform, so it must not be interpolating one — the transition that
+   makes the hover lift feel soft would make the item lag the cursor.
+   Dropping it here (rather than clearing it in JS) also means a
+   rejected drop animates home the moment the class comes off. */
+.inventory__item.is-dragging {
+  transition: none;
+  cursor: grabbing;
+  z-index: 3;
+  /* The ghost marks the cells the item would land in, so the item in
+     hand is almost always sitting right on top of its own answer.
+     Translucency is what lets the verdict read through it — opaque, the
+     item hides the very feedback it is asking for. */
+  opacity: 0.72;
+  box-shadow:
+    inset 0 0 0 1px var(--inv-rim),
+    0 14px 34px var(--inv-cast);
+}
+
+.inventory__item.is-dragging .inventory__blurb {
+  opacity: 0;
+}
+
+/* Held for the length of the settle. Dropping straight back to the
+   resting z-index would let the item slide UNDER a neighbour on its way
+   into the cell, which looks like a glitch rather than a placement. */
+.inventory__item.is-settling {
+  z-index: 3;
+}
+
+/* Where the item would land, drawn in the cells it would occupy. Hidden
+   outright when the pointer is somewhere the item cannot go at all
+   (past an edge), which is its own answer: no landing spot, no ghost. */
+.inventory__ghost {
+  display: none;
+  /* Above the item in hand (z-index 3), not below it. The ghost marks
+     the cells that item would land in, so the two sit on top of each
+     other almost exactly for the whole drag — underneath, the verdict is
+     covered by the very thing asking for it. It is only a ring and a
+     wash, so it reads as an annotation over the artwork rather than
+     hiding it, and the item's own translucency still lets you see what
+     is already parked in those cells. */
+  z-index: 4;
+  border-radius: var(--inv-radius);
+  pointer-events: none;
+}
+
+/* One state, not two. The ghost now appears only where the item can
+   actually land, so its presence IS the answer and there is nothing left
+   for a second colour to say — a blocked target and a target off the
+   edge of the board read the same way, as no ghost at all.
+
+   White in both themes, deliberately NOT run through --overlay-rgb the
+   way the board's other translucent whites are. Inverting it to dark ink
+   on the light palette puts a heavy grey box back in the middle of the
+   page, which is the thing this replaced. For most of a drag the ghost
+   is over the item's own artwork, where white reads cleanly either way;
+   over bare slots on the light board it is quiet, which is the point. */
+.inventory__ghost.is-active {
+  background: rgba(255, 255, 255, 0.22);
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.95);
+}
+
+/* ---------- item spans ---------- */
+
+/* data-w/data-h are the item's footprint in cells. Written out rather
+   than passed through a custom property because grid-column: span needs
+   a literal integer — span calc(var(--w)) is not valid CSS. 1-6 covers
+   the board at every tier; the cap below is what keeps a wide item from
+   asking for more columns than a narrow viewport has. */
+.inventory__item[data-w="1"] { grid-column: span 1; }
+.inventory__item[data-w="2"] { grid-column: span 2; }
+.inventory__item[data-w="3"] { grid-column: span 3; }
+.inventory__item[data-w="4"] { grid-column: span 4; }
+.inventory__item[data-w="5"] { grid-column: span 5; }
+.inventory__item[data-w="6"] { grid-column: span 6; }
+
+.inventory__item[data-h="1"] { grid-row: span 1; }
+.inventory__item[data-h="2"] { grid-row: span 2; }
+.inventory__item[data-h="3"] { grid-row: span 3; }
+.inventory__item[data-h="4"] { grid-row: span 4; }
+
+/* ---------- the column ladder ----------
+   Every step is a divisor of the board's 84 cells (84 = 14x6 = 12x7 =
+   7x12 = 6x14 = 4x21), so the board stays a complete rectangle — no
+   half-empty last row at any width. The steps are picked so the tile
+   lands roughly 64-160px at every tier. */
+@media (max-width: 75em) {
+  .inventory__grid {
+    --inv-cols: 12;
+  }
+}
+
+@media (max-width: 56.25em) {
+  .inventory__grid {
+    --inv-cols: 7;
+  }
+}
+
+@media (max-width: 35em) {
+  .inventory__grid {
+    --inv-cols: 6;
+  }
+}
+
+@media (max-width: 30em) {
+  .inventory__grid {
+    --inv-cols: 4;
+  }
+
+  /* nothing may ask for more columns than the board has. main.js reads
+     the same cap when it works out how many cells the items are using,
+     so the slot count stays right here too. */
+  .inventory__item[data-w="5"],
+  .inventory__item[data-w="6"] {
+    grid-column: span 4;
   }
 }
