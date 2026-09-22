@@ -1854,31 +1854,67 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
    phone cannot hold three posters or a two-column biography at a legible
    size, so the views go back to laying out in flow and scrolling. */
 @media (max-width: 56.25em) {
-  /* still a sheet on the same board, but allowed to scroll inside itself
-     rather than clip: a phone cannot hold three posters or a two-column
-     biography at a legible size in one screen. */
-  .about-view {
-    overflow-y: auto;
+  /* ---- the views stop being sheets pinned to a one-screen board ----
+
+     .about-hero is height: var(--about-h) — the viewport minus the nav —
+     with overflow: hidden, and each .about-view is absolutely positioned
+     inset: 0 inside it. That is the whole composition's premise on a
+     desktop: the discs, the character and every view occupy exactly one
+     screen and swapping between them never moves the page.
+
+     It is also a hard cap, and on a phone the biography and the ethos
+     cards simply contain more than one phone screen of content. Letting
+     the sheet scroll inside itself was not enough: the content was still
+     squeezed into a box the size of the viewport, with its own scrollbar
+     nested inside the page's.
+
+     So below this breakpoint an OPEN view drops the cap entirely — the
+     section grows to whatever the content needs and the page scrolls,
+     like every other section on the site. The board keeps its exact
+     desktop behaviour whenever no view is open, which is the state the
+     composition was actually designed for.
+
+     display, not opacity, is what picks the visible view here: all five
+     are laid out at once (see .about-view — they have to be, to fade),
+     and in normal flow that would stack five full-height views down the
+     page. The crossfade is the cost, and it is the right one to pay:
+     display: none cannot transition, so the swap is instant on a phone
+     and animated everywhere else. */
+  .about-hero:has(.about-view:target) {
+    height: auto;
+    /* still at least a full screen, so a short view (Music, Trash) does
+       not leave the section shorter than the board it replaced */
+    min-height: var(--about-h);
+    /* the desktop clip is a safety net for a composition built to fit;
+       here the content is meant to exceed the old box */
+    overflow: visible;
   }
 
-  /* The other half of "lay out in flow and scroll", which was missing:
-     .about-view > :not(...) above gives every view's content block
-     flex: 1 / min-height: 0, sized to fit a sheet that is exactly one
-     screen tall. That is right while the sheet cannot scroll; with
-     overflow-y: auto it just squashes the block instead of letting it
-     grow, and nothing ever overflows far enough to produce a scrollbar.
+  /* opacity alone leaves it holding its full height in the flow, which
+     would push every open view a screen down the page */
+  .about-hero:has(.about-view:target) .about-hero__inner {
+    display: none;
+  }
 
-     Measured on a 430x932 phone: the biography's grid was pinned to
-     758px, giving its two rows 399.5px and 241.4px for a copy column
-     that needs 660px. The 260px that did not fit did not clip — grid
-     items overflow their row, and align-items: center below sent half of
-     it UP and half DOWN, so the title rose behind the Back link while the
-     paragraphs ran down through the photograph. That is the "scrambled"
-     state: nothing was hidden, everything was drawn on top of everything
-     else.
+  .about-view {
+    position: static;
+    display: none;
+    height: auto;
+    /* overrides the base sheet's clip — the page scrolls now, not this */
+    overflow: visible;
+  }
 
-     flex: 0 0 auto lets the block be as tall as its content, which is
-     what finally gives .about-view something to scroll. */
+  .about-view:target {
+    /* the base rule's column flex, restored: :target beats .about-view on
+       specificity and comes later here, so this is what actually renders */
+    display: flex;
+  }
+
+  /* .about-view > :not(...) above gives every content block flex: 1 with
+     min-height: 0, to divide up a sheet of known height. With the section
+     auto-height there is no free space to divide, and a flex-basis of 0
+     with min-height: 0 collapses the block to nothing instead. Content
+     sizing is what the flow layout needs. */
   .about-view > :not(.subpage__back):not(.subpage__shot) {
     flex: 0 0 auto;
   }
