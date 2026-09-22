@@ -1861,11 +1861,58 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
     overflow-y: auto;
   }
 
+  /* The other half of "lay out in flow and scroll", which was missing:
+     .about-view > :not(...) above gives every view's content block
+     flex: 1 / min-height: 0, sized to fit a sheet that is exactly one
+     screen tall. That is right while the sheet cannot scroll; with
+     overflow-y: auto it just squashes the block instead of letting it
+     grow, and nothing ever overflows far enough to produce a scrollbar.
+
+     Measured on a 430x932 phone: the biography's grid was pinned to
+     758px, giving its two rows 399.5px and 241.4px for a copy column
+     that needs 660px. The 260px that did not fit did not clip — grid
+     items overflow their row, and align-items: center below sent half of
+     it UP and half DOWN, so the title rose behind the Back link while the
+     paragraphs ran down through the photograph. That is the "scrambled"
+     state: nothing was hidden, everything was drawn on top of everything
+     else.
+
+     flex: 0 0 auto lets the block be as tall as its content, which is
+     what finally gives .about-view something to scroll. */
+  .about-view > :not(.subpage__back):not(.subpage__shot) {
+    flex: 0 0 auto;
+  }
+
   .bio__layout,
   .film-grid {
     grid-template-columns: 1fr;
     flex-direction: column;
     align-items: center;
+  }
+
+  .bio__layout {
+    /* start, not the inherited center: with natural row heights there is
+       nothing to centre, and centring is what turned an overflow into an
+       overlap in both directions when there was. */
+    align-items: start;
+    /* 10vh of optical centring belongs to a sheet holding one screen of
+       two-column content — stacked and scrolling, it is 93px of dead
+       space above the title on a 932px phone. */
+    padding-top: clamp(0.5rem, 2vh, 1.5rem);
+  }
+
+  .bio__title {
+    /* cancels the -0.195em that lifts the title's ink onto the top edge
+       of the photograph beside it. Stacked, the photograph is underneath
+       and there is nothing to align to — the lift only pulls the title up
+       into the Back link. */
+    margin-top: 0;
+  }
+
+  .bio__photo {
+    /* max-height: 100% was a share of the squashed box; the column is
+       content-sized now, so the image just takes its own aspect */
+    max-height: none;
   }
 
   .film-grid__poster {
