@@ -2874,6 +2874,123 @@ footer {
   background-image: none;
 }
 
+/* ---------- Play hero on a phone: normal flow, not a scaled canvas ----------
+   Everything above lays this hero out on a fixed 2540x1266 stage and
+   shrinks it with ONE transform: scale(), which is what keeps the
+   composition identical at every width instead of reflowing. That holds
+   until the scale gets small enough to stop being a zoom and start being
+   a thumbnail. On a 430px phone it lands at 430/2540 = 0.169, and two
+   things break at once:
+
+     - the section renders 1266 * 0.169 = 214px of canvas, so the whole
+       hero occupied 280px of a 932px screen with the page's next section
+       starting right under it;
+     - .dm-hero__desc's 900px canvas column becomes 152px of real width,
+       which wraps the paragraph to ~18 lines running 288px down from a
+       stage only 214px tall. .dm-hero's overflow: hidden then cut it off
+       entirely — the paragraph was not shortened or faded, it was never
+       on screen.
+
+   Neither is fixable by choosing a better scale: the canvas's 2.006
+   aspect ratio is landscape and a phone is not, so any scale that fits
+   the width leaves the height nearly empty. Below 769px the stage is
+   dismantled instead — static, unscaled, --stage-scale pinned to 1 so
+   every `/ var(--stage-scale)` type size resolves to the plain value the
+   rest of the site uses — and the pieces stack: title, paragraph, then
+   the character filling the bottom. main.js bails out at the same width
+   (see PLAY_HERO_STAGE_MIN) so no inline height pins the section back to
+   the canvas's aspect.
+
+   This is the documented exception to the no-@media-inside-the-stage
+   rule. It does not tune the composition at a breakpoint — it replaces
+   it wholesale, once, below the width where a uniform scale can work. */
+@media (max-width: 768px) {
+  .dm-hero {
+    /* the canvas aspect is what forced the 280px box; in flow the section
+       sizes to its own content, with a floor so it still owns the screen */
+    aspect-ratio: auto;
+    min-height: 88svh;
+  }
+
+  /* svh is recent enough to want a fallback — vh is the old behaviour
+     (it over-measures by the mobile browser's collapsing toolbar, which
+     is survivable for a MIN height) */
+  @supports not (height: 1svh) {
+    .dm-hero {
+      min-height: 88vh;
+    }
+  }
+
+  .dm-hero__stage {
+    position: static;
+    width: 100%;
+    height: auto;
+    transform: none;
+    /* 1 canvas px = 1 real px now, so the type inside dividing by this
+       lands on the site's ordinary scale with nothing to cancel out */
+    --stage-scale: 1;
+    --stage-fit: 1;
+    /* position: static drops the `top` offset that used to clear the nav,
+       and .dm-hero still reclaims the nav band with its negative margin,
+       so the padding has to do that job instead */
+    padding: calc(var(--nav-h, 70px) + 1.5rem) 0 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dm-hero__content {
+    /* the 200px page-edge indent and the -110px lift are canvas-unit
+       placements; .container--wide on the row already gives the real
+       gutter here */
+    margin: 0;
+    max-width: none;
+  }
+
+  .dm-hero__content .hero__title {
+    /* no stage scale left to divide back out */
+    font-size: calc(var(--text-title) * var(--font-hero-scale));
+    filter: drop-shadow(0 0 17px var(--hero-glow));
+  }
+
+  .dm-hero__desc {
+    font-size: var(--text-body);
+    /* was a 900px canvas column — the gutter sets the measure now */
+    max-width: none;
+    margin-top: 1rem;
+  }
+
+  /* The character takes the bottom band rather than the full box, so the
+     text above it keeps a clean background and he still reads as standing
+     in the section rather than behind the type. */
+  .dm-hero__media {
+    top: auto;
+    height: 58%;
+  }
+
+  .dm-hero__model {
+    /* drop the canvas-unit geometry wholesale: the 2540x1266 box, the
+       560px shove to the right that balanced him against left-aligned
+       text, and the counter-scale that undid the stage's own. He fills
+       this band and centres in it. */
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    transform: none;
+    --model-render-scale: 1;
+    /* background-size: 100% 100% assumed the poster's 2.006 aspect
+       matched its box; this band is nearer square, so stretching it would
+       distort the stand-in for the second before the model lands */
+    background-size: contain;
+    background-position: center bottom;
+  }
+
+  .dm-hero__track-zone {
+    /* head-track.js normalises the cursor against this box — it mirrored
+       the character's old right-hand placement, and he is centred now */
+    left: 0;
+  }
+}
+
 /* no longer position: absolute inside .dm-hero__stage's transformed
    canvas — see the HTML comment where this now sits, right after
    .dm-hero, for why. Plain flex row in normal document flow instead:

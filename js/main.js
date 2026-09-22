@@ -587,8 +587,27 @@
      display at exactly 1 and makes every shorter one match it. */
   const DM_HERO_FILL = 0.71;
 
+  /* Below this the Play hero is not a scaled canvas at all — see the
+     .dm-hero phone block in style.css. The 2540x1266 stage only works
+     while it is wide enough to stay legible after the scale-down; on a
+     phone it lands at ~0.17, which renders the whole hero 280px tall on a
+     932px screen and squeezes the paragraph into a 152px-wide column ~18
+     lines deep, past the bottom of the stage and into overflow: hidden.
+     CSS lays it out in normal flow there instead, so everything this
+     function solves for is the wrong question and the inline height it
+     writes would pin the section back to the canvas's aspect. */
+  const PLAY_HERO_STAGE_MIN = 769;
+
   const sizePlayHero = () => {
     if (!dmHero || !dmStage || !dmContent) return;
+
+    if (window.innerWidth < PLAY_HERO_STAGE_MIN) {
+      // hand the box back to CSS, and undo anything a wider layout left
+      dmHero.style.height = "";
+      dmStage.style.removeProperty("--stage-fit");
+      lastStageFit = -1;
+      return;
+    }
 
     /* --stage-scale is left entirely alone (pure CSS, width-driven). All
        this touches is --stage-fit, the second factor that multiplies the
