@@ -37,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../../css/style.css?v=122" />
+<link rel="stylesheet" href="../../css/style.css?v=136" />
 </head>
 <body class="case-study">
 
@@ -204,8 +204,7 @@
 
     <div class="cs-jump__links reveal">
       <a class="btn btn-outline" href="#team">See the team ↓</a>
-      <a class="btn btn-outline" href="#branding">See the branding ↓</a>
-      <a class="btn btn-outline" href="#promo">See the promo ↓</a>
+      <a class="btn btn-outline" href="#branding">See the marketing ↓</a>
     </div>
   </section>
 
@@ -414,10 +413,11 @@
               the projector and lighting on site.</p>
           </div>
           <div class="cs-split__media">
+            <!-- was the logo animation, which is branding rather than
+                 operations and has moved to that section. This is the test
+                 run itself. -->
             <div class="cs-wide-media">
-              <video src="../../assets/videos/gfx-testing-clip.mp4" poster="../../assets/videos/gfx-testing-clip-poster.jpg"
-                controls preload="metadata" playsinline
-                aria-label="Behind-the-scenes clip testing the projector and lighting before Ground FX"></video>
+              <img src="../../assets/images/gfx-test-run.webp" alt="Setting up a camera on a tripod in the SLC atrium during the test run, with blue streamers strung across the balcony, the UW Breakers backdrop against the far wall, and green tape marking out the battle floor" width="1220" height="815" loading="lazy" decoding="async" />
             </div>
           </div>
         </div>
@@ -468,72 +468,22 @@
         </div>
         <p class="cs-caption reveal">The logo system: the primary mark, its palette, and lockups for dark, light and purple
           grounds.</p>
-      </section>
 
-      <!-- ================= PROMOTIONAL MEDIA ================= -->
-      <section id="promo">
-        <h2 class="cs-heading reveal">Promotional media</h2>
-        <div class="cs-divider reveal"></div>
-
-        <p class="hero__desc cs-para reveal" style="margin-bottom: clamp(2.5rem, 7vw, 5.3125rem); max-width: none;">Alongside
-          the branding, I produced the promotional video series for Ground FX's Instagram: a full mixed-media
-          recap shot on a rented gimbal, a teaser, the official announcement post, and a second logo rendition
-          used as a closer.</p>
-
-        <div class="cs-marketing-grid reveal" style="grid-template-columns: repeat(4, 1fr);">
-          <div>
-            <!-- self-hosted, not a YouTube embed — same .cs-square--portrait
-                 tile shape as the other three (they're .cs-video-tile, which
-                 carries this same 711:1206 ratio), just a real <video> instead
-                 of a click-to-play thumbnail. object-fit: cover (from
-                 .cs-square video) center-crops the 9:16 source to fill it. -->
-            <div class="cs-square cs-square--portrait">
-              <video src="../../assets/videos/gfx-recap.mp4" controls preload="metadata" playsinline
-                aria-label="The Ground FX recap video"></video>
-            </div>
-            <p class="cs-caption"><strong>The recap</strong>A dynamic, mixed-media video shot on a rented gimbal,
-              showcasing Waterloo's breaking scene.</p>
-          </div>
-          <div>
-            <div class="cs-square cs-video-tile cs-video-tile--own-thumb" data-yt-id="Xm_MzOONDlM">
-              <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX teaser video">
-                <img src="../../assets/images/gfx-crowd-overhead.jpg" alt="Ground FX teaser video thumbnail: the crowd circled around a breaker, seen from the atrium balcony" loading="lazy" decoding="async" />
-                <span class="cs-video-tile__play" aria-hidden="true">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
-                </span>
-              </button>
-            </div>
-            <p class="cs-caption"><strong>The teaser</strong>A first taste of what was to come, released ahead of
-              the event.</p>
-          </div>
-          <div>
-            <div class="cs-square cs-video-tile cs-video-tile--own-thumb cs-video-tile--contain" style="--tile-fill: #161e36;" data-yt-id="Qx8zIcAz8n8">
-              <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX official announcement">
-                <img src="../../assets/images/gfx-official-post.png" alt="Ground FX official announcement post thumbnail" loading="lazy" decoding="async" />
-                <span class="cs-video-tile__play" aria-hidden="true">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
-                </span>
-              </button>
-            </div>
-            <p class="cs-caption"><strong>The announcement</strong>The official post with the full event details.</p>
-          </div>
-          <div>
-            <div class="cs-square cs-video-tile cs-video-tile--own-thumb" data-yt-id="C7CwaG9Y6kw">
-              <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX logo rendition">
-                <img src="../../assets/images/gfx-logo-thumb.jpg" alt="Second Ground FX logo rendition video thumbnail" loading="lazy" decoding="async" />
-                <span class="cs-video-tile__play" aria-hidden="true">
-                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
-                </span>
-              </button>
-            </div>
-            <p class="cs-caption"><strong>Logo rendition</strong>A second take on the GFX logo, used as a signature
-              closer across the video series.</p>
-          </div>
+        <!-- The mark in motion, sitting with the mark itself. It used to
+             illustrate "The test run" over in Process, where it was captioned
+             as a projector and lighting check - it is neither; it is the logo
+             assembling from its pieces. -->
+        <div class="cs-wide-media cs-wide-media--spaced reveal">
+          <video src="../../assets/videos/gfx-testing-clip.mp4" poster="../../assets/videos/gfx-testing-clip-poster.jpg"
+            controls preload="metadata" playsinline
+            aria-label="The Ground FX logo assembling from its pieces"></video>
         </div>
+        <p class="cs-caption reveal">The mark assembling from its pieces.</p>
 
-        <!-- Merch is promotion too, so it sits under this section as a
-             subsection rather than as its own. The id stays on the block so
-             any existing #merch link still lands here. -->
+        <!-- The merch is an expression of the identity, not a separate
+             campaign, so it sits under Branding rather than under the promo
+             videos. The id stays on the block so any existing #merch link
+             still lands here. -->
         <div class="cs-split cs-split--reverse reveal" id="merch">
           <div class="cs-split__body">
             <h3 class="cs-subheading">Creating GFX merch</h3>
@@ -552,9 +502,77 @@
               <div style="--ar: 0.5585;">
                 <img src="../../assets/images/gfx-shirt.jpg" alt="The back print of the Ground FX shirt, a graffiti-style breaker drawn in yellow and purple" loading="lazy" decoding="async" />
               </div>
+              <!-- The spot that sold the drop, so it belongs with the drop.
+                   data-yt-autoplay starts it muted and looping once the row is
+                   reached (see main.js) rather than waiting on a click; the
+                   ratio matches the other two so all three stand at one
+                   height. Under reduced motion it stays a click-to-play
+                   thumbnail. -->
+              <div style="--ar: 0.5895;">
+                <div class="cs-square cs-video-tile cs-video-tile--own-thumb" data-yt-id="C7CwaG9Y6kw" data-yt-autoplay>
+                  <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX merch promotion">
+                    <img src="../../assets/images/gfx-logo-thumb.jpg" alt="Ground FX merch promotion video thumbnail" loading="lazy" decoding="async" />
+                    <span class="cs-video-tile__play" aria-hidden="true">
+                      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- ================= PROMOTIONAL MEDIA ================= -->
+      <section id="promo">
+        <h2 class="cs-heading reveal">Promotional media</h2>
+        <div class="cs-divider reveal"></div>
+
+        <p class="hero__desc cs-para reveal" style="max-width: none;">Alongside the branding, I produced the
+          promotional video series for Ground FX’s Instagram: a full mixed-media promotion shot on a rented gimbal,
+          and a teaser released ahead of the event.</p>
+
+        <!-- One block per video rather than a single row of tiles. These are
+             9:16 phone clips: four of them across .container--wide stood a
+             thousand pixels tall each and still read as a contact sheet, with
+             the caption that explains each one stranded underneath it. Split
+             out, each clip sits at a believable phone size with its own
+             heading and copy beside it, and the blocks alternate sides down
+             the section. See .cs-split--reel in style.css for the cap. -->
+        <div class="cs-split cs-split--reverse cs-split--reel reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">The promotion</h3>
+            <p class="hero__desc cs-para">A dynamic, mixed-media video shot on a rented gimbal, showcasing
+              Waterloo’s breaking scene.</p>
+          </div>
+          <div class="cs-split__media">
+            <!-- self-hosted, not a YouTube embed. The poster matches the one
+                 the Play page already gives this clip, so the tile shows the
+                 opening frame instead of a black box while it waits. -->
+            <div class="cs-square cs-square--portrait">
+              <video src="../../assets/videos/gfx-recap.mp4" poster="../../assets/videos/gfx-recap-poster.jpg"
+                controls preload="metadata" playsinline aria-label="The Ground FX promotion video"></video>
+            </div>
+          </div>
+        </div>
+
+        <div class="cs-split cs-split--reel reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">The teaser</h3>
+            <p class="hero__desc cs-para">A first taste of what was to come, released ahead of the event.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-square cs-video-tile cs-video-tile--own-thumb" data-yt-id="Xm_MzOONDlM">
+              <button type="button" class="cs-video-tile__trigger" aria-label="Play the Ground FX teaser video">
+                <img src="../../assets/images/gfx-crowd-overhead.jpg" alt="Ground FX teaser video thumbnail: the crowd circled around a breaker, seen from the atrium balcony" loading="lazy" decoding="async" />
+                <span class="cs-video-tile__play" aria-hidden="true">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7z" fill="#fff"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+
       </section>
 
       <!-- ================= MY TAKEAWAYS ================= -->
@@ -612,7 +630,7 @@
   </div>
 </footer>
 
-<script src="../../js/main.js?v=68"></script>
+<script src="../../js/main.js?v=75"></script>
 <script src="../../js/scramble-text.js?v=59"></script>
 </body>
 </html>

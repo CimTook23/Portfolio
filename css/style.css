@@ -5577,6 +5577,22 @@ footer {
   grid-template-columns: calc((100% - var(--media-sizing-gap)) / 2) minmax(0, 1fr);
 }
 
+/* A 9:16 phone clip given half of .container--wide would stand over two
+   thousand pixels tall on a wide monitor, which is why these were a
+   cramped four-across row in the first place. The cap puts the tile back
+   at roughly a phone's own width, and align-items centres the copy
+   against the clip's height instead of leaving it at the top of a very
+   tall column of nothing. Declared after .cs-split's align-items: start
+   and at equal specificity, so it wins for these blocks only. */
+.cs-split--reel {
+  align-items: center;
+}
+
+.cs-split--reel .cs-split__media .cs-square {
+  max-width: 380px;
+  margin-inline: auto;
+}
+
 /* when several .cs-split blocks are stacked back-to-back in the same
    section (e.g. Aira's "The solution", one block per feature) they'd
    otherwise sit flush against each other — the previous block's media
@@ -5688,7 +5704,7 @@ footer {
    per frame. */
 .cs-marquee {
   --cs-marquee-gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
-  --cs-marquee-item: clamp(11rem, 26vw, 24rem);
+  --cs-marquee-item: clamp(15rem, 36vw, 34rem);
   /* the strip's only spacing is the gap down to the jump links it sits
      above — the section's own padding-block handles the hero side. Same
      clamp as .cs-jump__links' gap, so the strip, the row of buttons and
@@ -5768,13 +5784,13 @@ footer {
 /* The Play page's "My process" strip reuses the marquee above. Its
    margin-block-end exists to clear Ground FX's jump links; here the strip
    is the last thing in its section, so the section's own padding does
-   that job instead. */
+   that job instead.
+
+   The tile size used to be overridden here too, larger than Ground FX's.
+   Both strips now run at that larger size, so it has moved up to
+   .cs-marquee itself rather than being stated twice. */
 .dm-process .cs-marquee {
   margin-block-end: 0;
-  /* larger tiles than Ground FX's strip (clamp(11rem, 26vw, 24rem)):
-     here the strip is the section's whole content, not a band above a
-     row of buttons */
-  --cs-marquee-item: clamp(15rem, 36vw, 34rem);
 }
 
 /* heading and its Pause/Play pill on one line, the pill centred on the

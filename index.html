@@ -39,7 +39,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=135" />
+<link rel="stylesheet" href="css/style.css?v=136" />
 </head>
 <body>
 
@@ -199,6 +199,12 @@
        edge. The slots are real elements rather than a painted background
        so each one can hold something later; they are empty and purely
        decorative for now, hence aria-hidden on the board. -->
+  <!-- Inventory, concealed for now — not deleted. A <template> is parsed
+       and kept in the file but never rendered, and document.querySelector
+       does not reach into its contents, so main.js's inventory block finds
+       no grid and stays inert. Its CSS and JS are untouched.
+       To bring it back, delete this <template> tag and its closing tag. -->
+  <template id="inventory-concealed">
   <section id="inventory" class="inventory container container--wide">
     <div class="section-head reveal">
       <div>
@@ -328,6 +334,7 @@
     </div>
 
   </section>
+  </template>
 
 </main>
 

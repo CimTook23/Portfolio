@@ -1159,14 +1159,47 @@
     const trigger = tile.querySelector(".cs-video-tile__trigger");
     if (!trigger) return;
 
-    trigger.addEventListener("click", () => {
+    const id = tile.dataset.ytId;
+
+    /* loop needs playlist=<same id>: YouTube loops a PLAYLIST, and a bare
+       loop=1 on a single video does nothing. mute=1 is not a style choice
+       either — an unmuted autoplay is blocked outright by every browser. */
+    const embed = (auto) => {
+      const params = auto
+        ? `autoplay=1&mute=1&loop=1&playlist=${id}&playsinline=1&rel=0`
+        : "autoplay=1&rel=0";
       const iframe = document.createElement("iframe");
-      iframe.src = `https://www.youtube-nocookie.com/embed/${tile.dataset.ytId}?autoplay=1&rel=0`;
+      iframe.src = `https://www.youtube-nocookie.com/embed/${id}?${params}`;
       iframe.title = trigger.getAttribute("aria-label") || "YouTube video";
       iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
       iframe.allowFullscreen = true;
       tile.replaceChildren(iframe);
-    });
+    };
+
+    trigger.addEventListener("click", () => embed(false));
+
+    /* [data-yt-autoplay] builds its player when the tile is reached rather
+       than when it is clicked, and starts it muted and looping. The page
+       still pays nothing for YouTube up front, which is the point of the
+       thumbnail-first approach above — the trigger is just scroll instead
+       of a click. Reduced motion opts out and keeps the click-to-play
+       thumbnail: a video that starts itself is the exact thing that
+       preference is asking not to happen. */
+    if (
+      tile.hasAttribute("data-yt-autoplay") &&
+      !prefersReduced &&
+      "IntersectionObserver" in window
+    ) {
+      const watcher = new IntersectionObserver(
+        (entries) => {
+          if (!entries.some((entry) => entry.isIntersecting)) return;
+          watcher.disconnect();
+          embed(true);
+        },
+        { rootMargin: "200px" }
+      );
+      watcher.observe(tile);
+    }
   });
 
   /* ---------- toggle panel groups (e.g. Process: Final prototype / Rough draft, Design

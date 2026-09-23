@@ -37,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../../css/style.css?v=122" />
+<link rel="stylesheet" href="../../css/style.css?v=136" />
 </head>
 <body class="case-study">
 
@@ -211,19 +211,28 @@
             </div>
           </div>
         </div>
-      </section>
 
-      <!-- ================= WHO WE'RE BUILDING FOR ================= -->
-      <section id="persona" data-toc="Who it's for">
-        <h2 class="cs-heading reveal">Who we're building for</h2>
-        <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">Meet Alex, a 16-year-old student living with asthma
-          that's poorly managed because of inconsistent care, limited health literacy at home, and a healthcare
-          system that doesn't make things easy. Alex's family are newcomers to Canada, and both Alex and her parents
-          struggle to make sense of medical information, find the right services, and catch early warning signs
-          before they become emergencies. Those gaps are what send preventable cases to the ER.</p>
-        <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
-          <img src="../../assets/images/aira-persona.png" alt="Alex persona research document — a 16-year-old newcomer student with asthma, her challenges, goals, risks, and applicable paramedical benefits" loading="lazy" decoding="async" />
+        <!-- Persona sits under Problem as a subheading rather than as a
+             section of its own: it is who the problem happens to, not a
+             separate beat. Same construction as the eShop study's
+             storefront comparison - .cs-split--reverse orders the media
+             column first, so the board reads on the left with the copy
+             beside it. The board has no fixed aspect ratio worth
+             imposing, so .cs-wide-media lets it keep its own. -->
+        <div class="cs-split cs-split--reverse reveal">
+          <div class="cs-split__body">
+            <h3 class="cs-subheading">Persona</h3>
+            <p class="hero__desc cs-para">Meet Alex, a 16-year-old student living with asthma that's poorly managed
+              because of inconsistent care, limited health literacy at home, and a healthcare system that doesn't make
+              things easy. Alex's family are newcomers to Canada, and both Alex and her parents struggle to make sense
+              of medical information, find the right services, and catch early warning signs before they become
+              emergencies. Those gaps are what send preventable cases to the ER.</p>
+          </div>
+          <div class="cs-split__media">
+            <div class="cs-wide-media">
+              <img src="../../assets/images/aira-persona-alex.webp" alt="Alex persona board. Left: a photo of Alex wrapped in a blanket holding a mug, over a card reading Alex, age 16, female, high school student, lives with her single parent. Challenges: new family to Canada, parent has low literacy and struggles to navigate healthcare systems; attends walk-in clinics sporadically, leading to inconsistent asthma management. Goals: seek easy-to-understand health information, find better management tools for her asthma, support for her parent in understanding healthcare processes. Right: a quote reading &quot;I wish doctors explained things in a way we could actually understand, not just rush us out.&quot; Risks: poorly controlled asthma increases the risk of a potentially fatal attack, permanent airway damage from airway remodeling, and more frequent and severe infections like pneumonia. Systemic challenges: access and affordability, fragmented care, workforce strain, and resource shortage." width="1136" height="936" loading="lazy" decoding="async" />
+            </div>
+          </div>
         </div>
       </section>
 
@@ -482,7 +491,7 @@
   </div>
 </footer>
 
-<script src="../../js/main.js?v=68"></script>
+<script src="../../js/main.js?v=75"></script>
 <script src="../../js/scramble-text.js?v=59"></script>
 </body>
 </html>
