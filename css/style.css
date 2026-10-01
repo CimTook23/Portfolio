@@ -593,10 +593,12 @@ html {
 html {
   scrollbar-width: none;
   -ms-overflow-style: none;
-  /* body's overflow-x: hidden alone isn't always honoured by iOS
-     Safari, which can still let the whole page pan sideways when
-     something pokes past the edge. clip (unlike hidden) doesn't make
-     html a scroll container, so position: sticky keeps working. */
+  /* body's overflow-x alone isn't always honoured by iOS Safari, which
+     can still let the whole page pan sideways when something pokes past
+     the edge. clip (unlike hidden) doesn't make html a scroll container.
+     Note this stops body's own overflow being handed up to the viewport,
+     so body must use clip too (see body) — hidden there would turn body
+     into a scroll box and break every position: sticky (.cs-toc). */
   overflow-x: clip;
 }
 
@@ -619,7 +621,8 @@ body {
   background: linear-gradient(180deg, var(--bg-top) 0px, var(--bg-bottom) 1396px);
   color: var(--text-primary);
   min-height: 100vh;
-  overflow-x: hidden;
+  /* clip, not hidden: see the html rule above */
+  overflow-x: clip;
 }
 
 img {
@@ -4359,7 +4362,7 @@ footer {
   /* NOT overflow:hidden — the grid below breaks out to full viewport
      width via a negative-margin technique; overflow:hidden here would
      clip that breakout back down to the padded content width. Page-
-     level horizontal scroll is still guarded by body{overflow-x:hidden}. */
+     level horizontal scroll is still guarded by html/body{overflow-x:clip}. */
 }
 
 /* every case-study section sits flush against its neighbour by default
