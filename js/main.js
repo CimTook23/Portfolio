@@ -284,6 +284,15 @@
         // wheel-scroll natively instead of fighting this
         if (e.target.closest("[data-native-scroll]")) return;
 
+        // a trackpad pinch (and Ctrl + mouse wheel) arrives as a wheel
+        // event with ctrlKey set — that's the browser's zoom, so leave
+        // it alone instead of turning it into a vertical scroll. Same
+        // for a mostly-sideways swipe: there's nothing vertical to ease,
+        // and swallowing it would block horizontal scrolling and
+        // Chrome's two-finger swipe back/forward on a MacBook.
+        if (e.ctrlKey) return;
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+
         e.preventDefault();
 
         /* Adopt the real scroll position before adding to it, whenever
@@ -961,6 +970,30 @@
      image (see markup) fills the space in the meantime. Once loaded,
      the clip also pauses when scrolled out of view and resumes when
      scrolled back in, so only what's on screen is ever decoding. */
+  /* The homepage laptop is a VP9 WebM with an alpha channel, and Safari
+     (macOS and every iOS browser, since they're all WebKit underneath)
+     can't render WebM transparency — it shows a box behind the laptop or
+     doesn't play at all. Swap it for an animated WebP of the same clip
+     there, which WebKit does draw with real transparency. Runs before
+     the lazy loader below so that never picks the <video> up.
+     "Chrome/" also matches Edge and Opera on desktop; iOS Chrome
+     identifies itself as CriOS, so it correctly gets the WebP. */
+  const heroComputer = document.querySelector("video.hero__computer");
+  const isWebKitOnly =
+    /AppleWebKit/.test(navigator.userAgent) &&
+    !/Chrome\/|Chromium\//.test(navigator.userAgent);
+
+  if (heroComputer && isWebKitOnly) {
+    const img = document.createElement("img");
+    img.className = heroComputer.className;
+    img.src = heroComputer.dataset.src.replace(/\.webm$/, ".webp");
+    img.alt = heroComputer.getAttribute("aria-label") || "";
+    img.width = 1080;
+    img.height = 600;
+    img.decoding = "async";
+    heroComputer.replaceWith(img);
+  }
+
   const lazyVideos = document.querySelectorAll("video[data-src]");
 
   if (lazyVideos.length) {

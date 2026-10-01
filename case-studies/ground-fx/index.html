@@ -37,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../../css/style.css?v=136" />
+<link rel="stylesheet" href="../../css/style.css?v=140" />
 </head>
 <body class="case-study">
 
@@ -71,7 +71,7 @@
 
     <ul class="nav__links" id="navLinks">
       <li><a href="../../about/">About me</a></li>
-      <li><a href="../../assets/resume.pdf?v=2" target="_blank" rel="noopener">Resume</a></li>
+      <li><a href="../../assets/resume.pdf?v=3" target="_blank" rel="noopener">Resume</a></li>
       <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
     </ul>
 
@@ -453,6 +453,22 @@
             <p class="hero__desc cs-para">I remember sketching logo concepts while watching passing trains, each one layered
               in graffiti. From there the identity came together, grounded in street art but still cohesive and
               intentional across every touchpoint.</p>
+
+            <!-- The mark in motion, under the copy that describes arriving at
+                 it. It used to illustrate "The test run" over in Process,
+                 captioned as a projector and lighting check - it is neither.
+                 The file is 16:9 with the mark centred in frame, so a square
+                 tile crops to the middle of it and drops the dead air either
+                 side; the cap keeps it inside the column's text measure. The
+                 body column is a flex stack with its own gap and
+                 align-items: flex-start, so no margin or centring is needed
+                 here - it lines up with the paragraphs by itself. -->
+            <div class="cs-square cs-square--capped">
+              <video src="../../assets/videos/gfx-testing-clip.mp4" poster="../../assets/videos/gfx-testing-clip-poster.jpg"
+                controls preload="metadata" playsinline
+                aria-label="The Ground FX logo assembling from its pieces"></video>
+            </div>
+            <p class="cs-caption cs-caption--capped">The mark assembling from its pieces.</p>
           </div>
           <div class="cs-split__media">
             <div class="cs-square">
@@ -468,17 +484,6 @@
         </div>
         <p class="cs-caption reveal">The logo system: the primary mark, its palette, and lockups for dark, light and purple
           grounds.</p>
-
-        <!-- The mark in motion, sitting with the mark itself. It used to
-             illustrate "The test run" over in Process, where it was captioned
-             as a projector and lighting check - it is neither; it is the logo
-             assembling from its pieces. -->
-        <div class="cs-wide-media cs-wide-media--spaced reveal">
-          <video src="../../assets/videos/gfx-testing-clip.mp4" poster="../../assets/videos/gfx-testing-clip-poster.jpg"
-            controls preload="metadata" playsinline
-            aria-label="The Ground FX logo assembling from its pieces"></video>
-        </div>
-        <p class="cs-caption reveal">The mark assembling from its pieces.</p>
 
         <!-- The merch is an expression of the identity, not a separate
              campaign, so it sits under Branding rather than under the promo
@@ -630,7 +635,7 @@
   </div>
 </footer>
 
-<script src="../../js/main.js?v=75"></script>
+<script src="../../js/main.js?v=76"></script>
 <script src="../../js/scramble-text.js?v=59"></script>
 </body>
 </html>

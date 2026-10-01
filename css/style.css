@@ -593,6 +593,11 @@ html {
 html {
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* body's overflow-x: hidden alone isn't always honoured by iOS
+     Safari, which can still let the whole page pan sideways when
+     something pokes past the edge. clip (unlike hidden) doesn't make
+     html a scroll container, so position: sticky keeps working. */
+  overflow-x: clip;
 }
 
 ::-webkit-scrollbar {
@@ -4540,6 +4545,18 @@ footer {
   --cs-hero-card-w: min(clamp(12rem, 30vw, 42rem), 90vh);
 }
 
+/* Phones: the 12rem floor above made the Switch ~192px wide on a
+   ~390px screen, so it covered the tag pills and hung 3-8px past the
+   right edge. Here the meta band is a single stacked column whose text
+   only fills its left half, so the card drops down into that empty
+   right side (top: 59% lands it beside Role) at a plain 30vw. */
+@media (max-width: 560px) {
+  .cs-hero__card--eshop {
+    --cs-hero-card-w: 30vw;
+    top: 59%;
+  }
+}
+
 /* The turntable. Its own element rather than the <img>, because a
    full 360 has to show something on the way round: half of every
    revolution has the card's BACK toward the viewer, and an image on
@@ -5206,6 +5223,24 @@ footer {
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* A square tile that does not want the full width of its container.
+   Ground FX's logo sting is a 1280x720 file with the mark centred in it,
+   so as a full-width .cs-wide-media it rendered ~2450px across and
+   1378px tall: a near-black slab with a small logo adrift in the middle.
+   .cs-square's object-fit: cover takes the middle 720px of the frame
+   instead, which is the whole mark and none of the dead air (measured:
+   the mark spans x 432-848, the crop keeps 280-1000), and the cap keeps
+   the result at a size that sits under the logo sheet rather than
+   dominating the section. */
+.cs-square--capped,
+.cs-caption--capped {
+  /* One value, two elements, so the caption can never end up a different
+     width from the tile it describes. No margin-inline: these sit in a
+     .cs-split__body, which is a flex column with align-items: flex-start,
+     so they line up with the copy above them on their own. */
+  max-width: 520px;
 }
 
 /* full-width media block for source images that don't crop well to
