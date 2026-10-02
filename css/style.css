@@ -3237,19 +3237,17 @@ footer {
    horizontal videos, then Ground FX last) is still what makes the
    mobile fallback below work with zero extra rules.
 
-   Middle column is auto-sized (was a fixed 1.5fr, then briefly wider
-   still) rather than a wider fr share — Ground FX recap is capped by
-   HEIGHT (see .cs-square--fit-viewport's max-height), not by its
-   column's width, so a wider fr track didn't actually make the video
-   any bigger; it just left dead space between the video's real
-   (narrower) rendered width and the column's track width, which then
-   stacked with the grid's own gap to read as one oversized gap between
-   Ground FX and the right column. auto sizes the middle track to
-   exactly the video's own rendered width instead, so there's no leftover
-   space left to create that gap — Ground FX renders at whatever height
-   the max-height cap gives it, unrelated to any of this. */
+   Middle column is a fixed 0.9fr share and Ground FX recap fills it
+   (see .cs-square--fit-viewport), so the whole grid scales with WIDTH
+   alone. It used to be an auto track sized by a 78vh height cap, which
+   tied the middle video to the window's height while the side tiles
+   followed its width: on a tall window the recap grew taller than the
+   two stacked tiles beside it and pushed rows 1 and 2 apart (a 230px+
+   hole between them at ~1280x1270). 0.9 is measured, not picked: it
+   makes the recap + caption end level with the side stacks (within
+   ~0-45px) from 1100px to 2560px wide, without ever outgrowing them. */
 .dm-media-grid--motion {
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr 0.9fr 1fr;
 }
 
 .dm-media-grid--motion .dm-media-item:nth-child(1) {
@@ -3302,6 +3300,9 @@ footer {
   grid-column: 2;
   grid-row: 1 / span 2;
   align-self: start;
+  /* lets .cs-square--fit-viewport size itself off this column's width
+     (100cqw) — see that rule */
+  container-type: inline-size;
 }
 
 /* below this, 3 columns of video tiles — one a tall portrait clip —
@@ -3373,11 +3374,13 @@ footer {
 .cs-square.cs-square--fit-viewport {
   width: auto;
   max-width: 100%;
-  /* was 65vh — bumped up so Ground FX recap (the only tile using this
-     class) renders bigger, per its own explicit "make it larger"
-     request; still capped rather than unbounded so it can't grow taller
-     than the viewport itself on a short window */
-  max-height: 78vh;
+  /* Fill the column (100cqw, the item is a size container — see
+     .dm-media-grid--motion's nth-child(5)) converted to a height through
+     the 711:1206 ratio, so it scales with the grid's width like every
+     other tile. 78vh stays as the ceiling so it still can't outgrow a
+     short window; only then does it narrow below its column. Height,
+     not width, is what's set: aspect-ratio then derives the width. */
+  height: min(78vh, calc(100cqw * 1206 / 711));
   /* was margin-inline: auto, which centered this tile's video (it's
      narrower than its column — the only tile here that's ever narrower
      than 100%, since the max-height cap above wins over width) while
