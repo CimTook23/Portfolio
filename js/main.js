@@ -507,6 +507,18 @@
       // just a fill of 1, which shrinks only far enough to avoid cropping
       // rather than also reserving the trailing spacer's share
       solveFit(hero, measureStack, isLandscape() ? HERO_FILL : 1);
+
+      /* --hero-fit tops out at 1, so past the reference display the
+         content stops growing but the hero kept stretching to the full
+         window — on a tall window that was all extra empty space under
+         the paragraph before the case studies. Cap the hero at the
+         height that keeps the reference proportion (content = HERO_FILL
+         of the hero). Anywhere the content had to shrink to fit this
+         works out taller than the window, so min() leaves those alone. */
+      const capped = measureStack() / HERO_FILL;
+      if (capped < availableBelowNav()) {
+        hero.style.height = `${Math.round(capped)}px`;
+      }
     }
 
     if (homepageHeroGrid) {
