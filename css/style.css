@@ -3194,7 +3194,8 @@ footer {
 
 .dm-media-grid {
   display: grid;
-  gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  --dm-media-gap: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);
+  gap: var(--dm-media-gap);
   margin-top: clamp(1.5rem, 3vw, 2.25rem);
 }
 
@@ -3245,9 +3246,24 @@ footer {
    two stacked tiles beside it and pushed rows 1 and 2 apart (a 230px+
    hole between them at ~1280x1270). 0.9 is measured, not picked: it
    makes the recap + caption end level with the side stacks (within
-   ~0-45px) from 1100px to 2560px wide, without ever outgrowing them. */
+   ~0-45px) from 1100px to 2560px wide, without ever outgrowing them.
+
+   The middle track is that same 0.9fr share written as a percentage
+   ((100% - 2 gaps) * 0.9 / 2.9), capped at the width the recap's 78vh
+   height ceiling works out to. On a short, wide window the recap hits
+   78vh and comes out narrower than a 0.9fr column, which used to leave
+   an empty strip on its right, so it sat visibly off-center between
+   the side stacks. Shrinking the track to the video's own width instead
+   hands that leftover space to the two 1fr side columns, so the gaps
+   on both sides stay equal and the side videos grow to fill it. */
 .dm-media-grid--motion {
-  grid-template-columns: 1fr 0.9fr 1fr;
+  grid-template-columns:
+    1fr
+    min(
+      calc(78vh * 711 / 1206),
+      calc((100% - 2 * var(--dm-media-gap)) * 9 / 29)
+    )
+    1fr;
 }
 
 .dm-media-grid--motion .dm-media-item:nth-child(1) {
