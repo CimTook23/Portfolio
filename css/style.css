@@ -7115,3 +7115,122 @@ footer {
     grid-column: span 4;
   }
 }
+
+/* ---------- resume overlay ----------
+   Opened from the nav's Resume link on every page (js/main.js). The
+   dialog is the dimmed, blurred layer itself rather than ::backdrop,
+   because ::backdrop only inherits custom properties in recent browsers
+   and this needs the theme's --bg-bottom.
+
+   The sheet takes a project card's interactions: the same rotateY(-15deg)
+   -> 0 flip-in over 1.1s ease-in-out paired with an opacity fade, the
+   same +-10deg pointer tilt with a 0.25s ease-out, and the same shadow
+   lift on hover. Perspective is roughly double the cards' 900px because
+   the sheet is roughly double their size; at 900px the same angles throw
+   its far edge out much harder than they do on a thumbnail. */
+.resume-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0 16px 32px;
+  border: 0;
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--bg-bottom) 72%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.resume-overlay::backdrop {
+  background: transparent;
+}
+
+.resume-overlay.is-open {
+  opacity: 1;
+}
+
+/* the page underneath stays put; the reserved gutter stops it shifting
+   sideways when its scrollbar goes away */
+html.is-resume-open {
+  overflow: hidden;
+  scrollbar-gutter: stable;
+}
+
+.resume-overlay__bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 16px 0;
+}
+
+.resume-overlay__btn {
+  padding: 0.625rem 1.25rem;
+  text-decoration: none;
+}
+
+.resume-overlay__stage {
+  display: flex;
+  justify-content: center;
+  perspective: 1800px;
+}
+
+/* sized to fit the window's height on a desktop (A4 is 595 x 842), and
+   the gutter's width on a phone, where the overlay scrolls instead */
+.resume-overlay__sheet {
+  width: min(100%, calc((100dvh - 120px) * 595 / 842), 860px);
+  aspect-ratio: 595 / 842;
+  overflow: hidden;
+  border-radius: 16px;
+  /* paper while the image is still on its way */
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  transition: transform 0.25s ease-out, box-shadow 0.3s ease, opacity 0.7s ease;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.resume-overlay__sheet.is-shown {
+  opacity: 1;
+}
+
+.resume-overlay__sheet:hover {
+  box-shadow: 0 22px 48px rgba(0, 0, 0, 0.55);
+}
+
+.resume-overlay__sheet.is-flipping-in,
+.resume-overlay__sheet.is-flipped-in {
+  transition: transform 1.1s ease-in-out, box-shadow 0.3s ease, opacity 0.7s ease;
+}
+
+.resume-overlay__sheet.is-flipping-in {
+  transform: rotateY(-15deg);
+}
+
+.resume-overlay__sheet.is-flipped-in {
+  transform: rotateY(0deg);
+}
+
+.resume-overlay__sheet img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-overlay,
+  .resume-overlay__sheet {
+    transition: none;
+  }
+}

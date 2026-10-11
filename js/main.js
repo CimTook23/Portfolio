@@ -1113,35 +1113,180 @@
   const mapRange = (value, minA, maxA, minB, maxB) =>
     minB + ((value - minA) * (maxB - minB)) / (maxA - minA);
 
+  // a function rather than an inline loop so the resume overlay below can
+  // give its sheet the same tilt when it builds it
+  const attachTilt = (media) => {
+    const isFlipping = () =>
+      media.classList.contains("is-flipping-in") || media.classList.contains("is-flipped-in");
+
+    const applyTilt = (clientX, clientY) => {
+      const rect = media.getBoundingClientRect();
+      const rotateY = mapRange(clientX - rect.left, 0, rect.width, -10, 10);
+      const rotateX = mapRange(clientY - rect.top, 0, rect.height, 10, -10);
+
+      media.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    };
+
+    media.addEventListener("mouseenter", (event) => {
+      if (isFlipping()) return;
+      applyTilt(event.clientX, event.clientY);
+    });
+
+    media.addEventListener("mousemove", (event) => {
+      if (isFlipping()) return;
+      applyTilt(event.clientX, event.clientY);
+    });
+
+    media.addEventListener("mouseleave", () => {
+      media.style.transform = "";
+    });
+  };
+
   if (!prefersReduced) {
     // .about-tilt: the About page's posters and screenshots, which flip in
     // off a CSS animation instead (see that rule) and so never carry
     // these classes, making isFlipping() a no-op for them
-    document.querySelectorAll(".project-card__media, .about-tilt").forEach((media) => {
-      const isFlipping = () =>
-        media.classList.contains("is-flipping-in") || media.classList.contains("is-flipped-in");
+    document.querySelectorAll(".project-card__media, .about-tilt").forEach(attachTilt);
+  }
 
-      const applyTilt = (clientX, clientY) => {
-        const rect = media.getBoundingClientRect();
-        const rotateY = mapRange(clientX - rect.left, 0, rect.width, -10, 10);
-        const rotateX = mapRange(clientY - rect.top, 0, rect.height, 10, -10);
+  /* ---------- resume overlay ----------
+     The nav's Resume link opens the resume over the current page instead
+     of a PDF in a new tab. The sheet behaves like a project card's image:
+     it flips in from rotateY(-15deg) as it fades up (startCardFlip, the
+     same .is-flipping-in -> .is-flipped-in swap), then tilts toward the
+     pointer (attachTilt) and lifts its shadow on hover.
 
-        media.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-      };
+     The sheet is an image of the PDF (assets/images/resume.webp), not the
+     PDF in an iframe: mouse events stop reaching the page over an iframe,
+     so a tilted one would freeze at whatever angle the cursor left it,
+     and iOS draws PDFs in iframes poorly. "Open PDF" keeps the real file,
+     links and all, one click away. Re-export resume.webp whenever
+     resume.pdf changes.
 
-      media.addEventListener("mouseenter", (event) => {
-        if (isFlipping()) return;
-        applyTilt(event.clientX, event.clientY);
+     The link keeps its PDF href, so the overlay is only an enhancement:
+     without JS, and on a Ctrl/Cmd/middle click, it still opens the file.
+
+     A <dialog> opened with showModal() gets focus trapping, Escape and
+     focus return to the link for free. The catch is the top layer: it
+     paints above everything, including the custom cursor ring, so the
+     ring moves inside the dialog while it is open and back out after. */
+  const resumeLinks = Array.from(document.querySelectorAll('a[href*="resume.pdf"]'));
+
+  if (resumeLinks.length && typeof HTMLDialogElement === "function") {
+    const pdfHref = resumeLinks[0].getAttribute("href");
+    // the same relative depth as the PDF: assets/resume.pdf -> assets/images/resume.webp
+    const imageSrc = pdfHref.replace(/resume\.pdf.*$/, "images/resume.webp");
+
+    const dialog = document.createElement("dialog");
+    dialog.className = "resume-overlay";
+    dialog.setAttribute("aria-label", "Resume");
+    // the eased wheel scroll above leaves this alone, so a resume taller
+    // than the window scrolls natively inside the overlay
+    dialog.setAttribute("data-native-scroll", "");
+    dialog.innerHTML = `
+      <div class="resume-overlay__bar">
+        <a class="btn resume-overlay__btn" href="${pdfHref}" target="_blank" rel="noopener">
+          Open PDF <span aria-hidden="true">&#8599;</span>
+        </a>
+        <button class="btn resume-overlay__btn" type="button" data-resume-close>
+          Close <span aria-hidden="true">&#10005;</span>
+        </button>
+      </div>
+      <div class="resume-overlay__stage">
+        <div class="resume-overlay__sheet">
+          <img alt="Jaydon Wang's resume: education at the University of Waterloo, projects at UW CUBE and Socratica, experience at Discount Pool Supply and the UW Faculty of Environment, and skills." decoding="async" />
+        </div>
+      </div>`;
+    document.body.appendChild(dialog);
+
+    const sheet = dialog.querySelector(".resume-overlay__sheet");
+    const img = sheet.querySelector("img");
+    if (!prefersReduced) attachTilt(sheet);
+
+    // fetched on first intent (hover, focus or click), not on page load
+    const loadImage = () => {
+      if (!img.getAttribute("src")) img.src = imageSrc;
+    };
+
+    let ringHome = null;
+    let closeTimer = 0;
+
+    const open = () => {
+      loadImage();
+      clearTimeout(closeTimer);
+      dialog.classList.remove("is-open", "is-closing");
+
+      const ring = document.querySelector(".cursor-ring");
+      if (ring && !dialog.contains(ring)) {
+        ringHome = ring.parentNode;
+        dialog.appendChild(ring);
+      }
+
+      // back to the flip's starting angle, clearing any tilt left over
+      // from the last time it was open
+      sheet.style.transform = "";
+      sheet.classList.remove("is-flipped-in", "is-shown");
+      if (!prefersReduced) sheet.classList.add("is-flipping-in");
+
+      document.documentElement.classList.add("is-resume-open");
+      if (!dialog.open) dialog.showModal();
+
+      // commit the starting state before animating away from it
+      void sheet.offsetWidth;
+      dialog.classList.add("is-open");
+
+      // a fresh visit can still be fetching the image; flipping an empty
+      // sheet would spend the animation on nothing, so it waits for the
+      // decode, but never more than a second
+      const ready = img.decode ? img.decode().catch(() => {}) : Promise.resolve();
+      Promise.race([ready, new Promise((r) => setTimeout(r, 1000))]).then(() => {
+        if (!dialog.classList.contains("is-open")) return;
+        sheet.classList.add("is-shown");
+        startCardFlip(dialog);
       });
+    };
 
-      media.addEventListener("mousemove", (event) => {
-        if (isFlipping()) return;
-        applyTilt(event.clientX, event.clientY);
-      });
+    const finishClose = () => {
+      if (dialog.open) dialog.close();
+      dialog.classList.remove("is-closing");
+      document.documentElement.classList.remove("is-resume-open");
 
-      media.addEventListener("mouseleave", () => {
-        media.style.transform = "";
+      const ring = dialog.querySelector(".cursor-ring");
+      if (ring && ringHome) ringHome.appendChild(ring);
+    };
+
+    const close = () => {
+      if (!dialog.open || dialog.classList.contains("is-closing")) return;
+      dialog.classList.remove("is-open");
+      dialog.classList.add("is-closing");
+      // matches .resume-overlay's opacity transition
+      closeTimer = setTimeout(finishClose, prefersReduced ? 0 : 250);
+    };
+
+    resumeLinks.forEach((link) => {
+      link.addEventListener("pointerenter", loadImage);
+      link.addEventListener("focus", loadImage);
+      link.addEventListener("click", (event) => {
+        // a modified or middle click still means "open the file"
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        open();
       });
+    });
+
+    dialog.querySelector("[data-resume-close]").addEventListener("click", close);
+
+    // Escape: run the fade-out instead of the dialog's instant close
+    dialog.addEventListener("cancel", (event) => {
+      event.preventDefault();
+      close();
+    });
+
+    // a click anywhere that isn't the sheet or a button closes it, the
+    // way clicking off a lightbox does
+    dialog.addEventListener("click", (event) => {
+      if (event.target.closest(".resume-overlay__sheet, .resume-overlay__btn")) return;
+      close();
     });
   }
 
