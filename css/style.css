@@ -2221,8 +2221,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   max-width: none;
 }
 
-/* ---------- case studies layout: narrow card list + right-hand
-   heading/filters column ---------- */
+/* ---------- case studies layout: left-hand heading/filters column +
+   card list on the right ---------- */
 
 .case-studies__layout {
   display: flex;
@@ -2238,8 +2238,8 @@ html[data-theme="light"] .nav__theme-toggle .nav__theme-icon--moon {
   margin-top: 40px;
 }
 
-/* heading + filters, right of the card list — sticks in view while the
-   (now taller, 3-card) list scrolls past on the left, and is forced to
+/* heading + filters, left of the card list — sticks in view while the
+   (now taller, 3-card) list scrolls past on the right, and is forced to
    exactly one viewport tall (top: 0 + height: 100vh) with its content
    flex-centered inside that box, so once pinned the heading/filters land
    near the vertical middle of the screen rather than hugging the top
@@ -4095,11 +4095,12 @@ footer {
 /* ---------- responsive ---------- */
 
 @media (max-width: 900px) {
-  /* stacks the side column (heading + filters) above the card list —
+  /* stacks the side column (heading + filters) above the card list (it
+     comes first in the markup, so plain column order does it) —
      .project-card and .project-card__media need no override here
      anymore, they're already full-width/column at every size now */
   .case-studies__layout {
-    flex-direction: column-reverse;
+    flex-direction: column;
     gap: 32px;
   }
 
@@ -4112,15 +4113,14 @@ footer {
   }
 
   /* sticky only makes sense in the side-by-side desktop layout — on
-     mobile .case-studies__layout stacks into one column (column-reverse
+     mobile .case-studies__layout stacks into one column (see
      above), so this sits in normal flow above the cards instead */
   .case-studies__side {
     width: 100%;
     position: static;
     /* the forced 100vh height and the sticky-delay margin (see
        .case-studies__side) only make sense ahead of the desktop sticky
-       behavior; mobile stacks this column above the cards via
-       column-reverse, so it just needs its own natural content height
+       behavior; mobile stacks this column above the cards, so it just needs its own natural content height
        and the layout's own 32px gap like everything else here */
     height: auto;
     padding-bottom: 0;
