@@ -37,7 +37,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="../../css/style.css?v=144" />
+<link rel="stylesheet" href="../../css/style.css?v=145" />
 </head>
 <body class="case-study">
 
@@ -89,16 +89,16 @@
   <section class="cs-hero">
     <div class="hero__grid" aria-hidden="true"></div>
 
-    <!-- Decorative laptop showing a Toolbox issue page, spinning in 3D
-         behind the hero — the same component as the other case studies'
-         cards (see aira.html for the full notes). Square WebP with alpha,
-         already cut to the laptop's shape, so no corner radius. -->
+    <!-- Decorative card of the Toolbox characters spinning in 3D behind
+         the hero — the same component as the other case studies' cards
+         (see aira.html for the full notes). Portrait WebP with its rounded
+         corners already cut into the alpha, so no corner radius. -->
     <div class="cs-hero__card cs-hero__card--socratica" data-inview-anim aria-hidden="true">
       <div class="cs-hero__card-spin">
-        <img class="cs-hero__card-face" src="../../assets/images/socratica-hero-card.webp" alt=""
-             width="1094" height="1094" decoding="async" fetchpriority="low" />
-        <img class="cs-hero__card-face cs-hero__card-face--back" src="../../assets/images/socratica-hero-card.webp" alt=""
-             width="1094" height="1094" decoding="async" fetchpriority="low" />
+        <img class="cs-hero__card-face" src="../../assets/images/socratica-hero-critters.webp" alt=""
+             width="664" height="1080" decoding="async" fetchpriority="low" />
+        <img class="cs-hero__card-face cs-hero__card-face--back" src="../../assets/images/socratica-hero-critters.webp" alt=""
+             width="664" height="1080" decoding="async" fetchpriority="low" />
       </div>
     </div>
 
@@ -179,8 +179,14 @@
              preload="none", so nothing downloads until it nears the
              viewport. Re-encoded to 1280x720 with no audio track. -->
         <div class="cs-video reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
-          <video data-src="../../assets/videos/socratica-main-page.mp4" poster="../../assets/videos/socratica-main-page-poster.jpg" muted loop preload="none" playsinline
+          <video data-src="../../assets/videos/socratica-main-page.mp4?v=2" poster="../../assets/videos/socratica-main-page-poster.jpg?v=2" muted loop preload="none" playsinline
             aria-label="The Socratica Toolbox homepage — a grid of illustrated issue covers: The Basics, Getting Started, Growing People, Superboosting Ideas, Maintenance and Demo Days, with two Coming Soon slots"></video>
+        </div>
+
+        <!-- the shipped issue page, moved up from Check feasibility -->
+        <div class="cs-video reveal" style="margin-top: clamp(1rem, calc(0.818rem + 0.777vw), 1.75rem);">
+          <video data-src="../../assets/videos/socratica-content-page.mp4?v=2" poster="../../assets/videos/socratica-content-page-poster.jpg?v=2" muted loop preload="none" playsinline
+            aria-label="Scrolling through a Toolbox issue page — the Demo Days cover and table of contents on the left, and the article The Essence of Demo Days on the right, with its contributors credited at the top"></video>
         </div>
       </section>
 
@@ -214,7 +220,8 @@
       </section>
 
       <!-- ================= DESIGN CYCLES ================= -->
-      <!-- four alternating splits, one per stage. --reverse puts the
+      <!-- Plan and Design are splits; Check feasibility and Test
+           open with a lede and lay their pieces out underneath. --reverse puts the
            media first, so the image swaps sides each row like the mockup.
            TODO: each .cs-media-placeholder is a reserved slot; drop the
            class when its image goes in. -->
@@ -231,61 +238,111 @@
               they were.</p>
           </div>
           <div class="cs-split__media">
-            <div class="cs-square cs-square--wide cs-media-placeholder"></div>
+            <div class="cs-square cs-square--16x9">
+              <img src="../../assets/images/socratica-ia-map.png" alt="Page-level information architecture map for The Basics: four sections — What is Socratica?, What we do it for, What we believe in, and Your Turn — each listing its content blocks, diagrams and outbound links" loading="lazy" decoding="async" />
+            </div>
           </div>
         </div>
 
-        <div class="cs-split reveal">
+        <!-- Design: the Faculty of Environment's Process toggle, with the
+             copy on the left switching along with it like the eShop's Game
+             details page. [data-cs-toggle-scope] lets the pills in the media
+             column reach the copy blocks in the body column (see main.js).
+             TODO: write the why for each prototype. -->
+        <div class="cs-split reveal" data-cs-toggle-scope>
           <div class="cs-split__body">
             <h3 class="cs-subheading">Design</h3>
             <p class="hero__desc cs-para">Each issue got a coloured cover and its own hand-drawn character, so
               the homepage reads more like a shelf of zines than a wall of links. Inside, every page shares the
               same layout: the cover and a contents list down the side, and the article itself broken into
-              sections with their authors credited at the top.</p>
+              sections with their authors credited at the top. I took The Basics through two rough prototypes
+              before settling on it.</p>
+            <div class="cs-toggle-copy is-active" data-cs-toggle-panel="basics-a">
+              <p class="hero__desc cs-para">[Why the long-form reader: what it tried, and what you learned from it.]</p>
+            </div>
+            <div class="cs-toggle-copy" data-cs-toggle-panel="basics-b">
+              <p class="hero__desc cs-para">[Why the chunked cards: what changed from the first, and why.]</p>
+            </div>
+            <div class="cs-callout" style="width:100%; text-align:center;">Feel free to scroll through →</div>
           </div>
           <div class="cs-split__media">
-            <div class="cs-square cs-square--wide cs-media-placeholder"></div>
+            <div class="cs-validation-toggle" data-cs-toggle>
+              <button type="button" class="filter-pill is-active" data-cs-toggle-target="basics-a">Long-form reader</button>
+              <button type="button" class="filter-pill" data-cs-toggle-target="basics-b">Chunked cards</button>
+            </div>
+            <div class="cs-scroll-frame glass">
+              <div class="cs-scroll-panel is-active" data-cs-toggle-panel="basics-a" data-native-scroll>
+                <img src="../../assets/images/socratica-basics-a.png" alt="Rough prototype A of The Basics, a long-form reader: issue list on the left, one continuous article in the middle and a table of contents on the right, scrollable" loading="lazy" decoding="async" />
+              </div>
+              <div class="cs-scroll-panel" data-cs-toggle-panel="basics-b" data-native-scroll>
+                <img src="../../assets/images/socratica-basics-b.png" alt="Rough prototype B of The Basics, chunked cards: a blue header with the table of contents as cards, then each section broken into numbered belief cards, project category cards and three-up columns, scrollable" loading="lazy" decoding="async" />
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="cs-split cs-split--reverse reveal">
-          <div class="cs-split__body">
-            <h3 class="cs-subheading">Check feasibility</h3>
-            <p class="hero__desc cs-para">Before anything was built, I walked the designs through with the
-              engineers to find what would be expensive to maintain. Anything the content team couldn't update on
-              their own was simplified, so adding a new issue later would never need a developer.</p>
+        <!-- Check feasibility: the design-with-engineering step. Intro, then
+             three cards, one per conversation with the engineers and
+             whether the idea held up.
+             TODO: write the three interactions. -->
+        <div class="cs-lede reveal" style="margin-top: clamp(3rem, 6vw, 5rem);">
+          <h3 class="cs-subheading">Check feasibility</h3>
+          <p class="hero__desc cs-para">Before anything was built, I walked the designs through with the
+            engineers to see which interactions we could ship and keep accessible, and which ones we couldn't.
+            Anything the content team couldn't update on their own was simplified, so adding a new issue later
+            would never need a developer.</p>
+        </div>
+
+        <!-- one clip per interaction, three-up with its blurb under it
+             (same .cs-guidelines-grid as the eShop guidelines; two-up, then
+             one, on narrower screens). The clips are square captures, so
+             they take .cs-guideline-item's 1:1 tile as is. Lazy like the
+             other videos: data-src + preload="none".
+             TODO: write the three blurbs. -->
+        <div class="cs-guidelines-grid reveal">
+          <div class="cs-guideline-item">
+            <div class="cs-square">
+              <video data-src="../../assets/videos/socratica-search.mp4" poster="../../assets/videos/socratica-search-poster.jpg" muted loop preload="none" playsinline
+                aria-label="Typing into the Toolbox search bar: matching passages from The Basics drop down under it, and picking one jumps to that section of the page"></video>
+            </div>
+            <p class="cs-caption"><strong>Search bar</strong>[What I proposed, what engineering said, and whether
+              it made the cut.]</p>
           </div>
-          <div class="cs-split__media">
-            <div class="cs-square cs-square--wide cs-media-placeholder"></div>
+          <div class="cs-guideline-item">
+            <div class="cs-square">
+              <video data-src="../../assets/videos/socratica-toc.mp4" poster="../../assets/videos/socratica-toc-poster.jpg" muted loop preload="none" playsinline
+                aria-label="Clicking through the table of contents on the Superboosting Ideas issue: each link scrolls the article to its section while the contents list stays in place"></video>
+            </div>
+            <p class="cs-caption"><strong>Table of contents</strong>[What I proposed, what engineering said, and
+              whether it made the cut.]</p>
+          </div>
+          <div class="cs-guideline-item">
+            <div class="cs-square">
+              <video data-src="../../assets/videos/socratica-overlay.mp4" poster="../../assets/videos/socratica-overlay-poster.jpg" muted loop preload="none" playsinline
+                aria-label="Clicking a link inside the Demo Days article opens a preview overlay of the linked section from Getting Started, which then jumps across to that issue"></video>
+            </div>
+            <p class="cs-caption"><strong>Overlay jumping</strong>[What I proposed, what engineering said, and
+              whether it made the cut.]</p>
           </div>
         </div>
 
-        <div class="cs-split reveal">
-          <div class="cs-split__body">
-            <h3 class="cs-subheading">Test</h3>
-            <p class="hero__desc cs-para">I put the build in front of current and prospective hosts with a set
-              of tasks, like finding how to recruit co-hosts or how to plan a demo day, and watched where they went
-              looking first. Their paths fed straight back into the navigation and the contents list.</p>
-          </div>
-          <div class="cs-split__media">
-            <div class="cs-square cs-square--wide cs-media-placeholder"></div>
-          </div>
+        <!-- Test: lede across the row, then the feedback board at full
+             width so the sticky notes stay legible (half a split would
+             shrink them past reading). Its margin-top overrides the
+             bigger gap .cs-lede + * gives, since the board belongs to the
+             paragraph above it. -->
+        <div class="cs-lede reveal" style="margin-top: clamp(3rem, 6vw, 5rem);">
+          <h3 class="cs-subheading">Test</h3>
+          <p class="hero__desc cs-para">I put The Basics in front of five people, P1 to P5, and had the engineers
+            sit in. Basics A read like the site they already had, and the project list was a wall of text. Basics
+            B was much easier to skim, but people lost track of where they were, and turning the articles into
+            cards meant rewriting markdown our contributors wouldn't keep up. So I combined them: Basics C keeps
+            the reader with its contents list, and pulls the beliefs, projects and quotes out into cards. Testers
+            said they'd use it, and engineering signed off on shipping it.</p>
         </div>
-      </section>
 
-      <!-- ================= DESIGNING WITH ENGINEERING ================= -->
-      <section id="engineering">
-        <h2 class="cs-heading reveal">Designing with engineering</h2>
-        <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">I built the site alongside the engineering
-          team, which meant designing in terms of what we could ship and keep accessible. Every page meets WCAG
-          contrast and keyboard guidelines, headings follow a real hierarchy so the contents list and screen readers
-          both work from it, and the long articles stay readable with a sticky contents panel that tracks where you
-          are.</p>
-
-        <div class="cs-video reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
-          <video data-src="../../assets/videos/socratica-content-page.mp4" poster="../../assets/videos/socratica-content-page-poster.jpg" muted loop preload="none" playsinline
-            aria-label="Scrolling through a Toolbox issue page — the Demo Days cover and table of contents on the left, and the article The Essence of Demo Days on the right, with its contributors credited at the top"></video>
+        <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
+          <img src="../../assets/images/socratica-test-stickies.png" alt="Feedback board from testing three versions of The Basics, with participants' sticky notes and engineers' comments. Basics A, Long-form reader: &quot;isn't this basically the current site?&quot;, &quot;the project list is a wall of text&quot;. Basics B, Chunked cards: &quot;way easier to skim&quot;, &quot;the belief cards are nice but i lost where i was&quot;, and an engineer noting it means rewriting the markdown. Basics C, Reader + cards: &quot;ok i'd use this one&quot;, &quot;the TLDR box at the top is all i read lol&quot;, and an engineer saying &quot;ok this one we can ship&quot;." loading="lazy" decoding="async" width="1760" height="753" />
         </div>
       </section>
 
@@ -297,13 +354,19 @@
           guide asked readers to dig through one long document; the Toolbox splits it into issues they can browse,
           search and come back to.</p>
 
+        <!-- .cs-wide-media rather than a fixed-ratio tile: both captures
+             are 1440x1177, so each keeps its own shape uncropped -->
         <div class="cs-highlights-grid reveal">
           <div>
-            <div class="cs-square cs-square--16x9 cs-media-placeholder"></div>
+            <div class="cs-wide-media">
+              <img src="../../assets/images/socratica-before.webp" alt="Before: The Basics as a plain long-form page on white, with an issues list on the left, the article and a grey TLDR box in the middle, and a table of contents on the right" loading="lazy" decoding="async" width="1440" height="1177" />
+            </div>
             <p class="cs-caption cs-caption--italic">Before.</p>
           </div>
           <div>
-            <div class="cs-square cs-square--16x9 cs-media-placeholder"></div>
+            <div class="cs-wide-media">
+              <img src="../../assets/images/socratica-after.webp" alt="After: The Basics on the Toolbox's grid-paper background, with the blue issue cover, search, table of contents and issues list down the left, and the article opening with a blue What is Socratica? header card" loading="lazy" decoding="async" width="1440" height="1177" />
+            </div>
             <p class="cs-caption cs-caption--italic">After.</p>
           </div>
         </div>

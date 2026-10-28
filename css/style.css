@@ -640,7 +640,7 @@ ul {
 }
 
 ::selection {
-  background: var(--accent);
+  background: rgba(var(--overlay-rgb), 0.22);
   color: var(--ink);
 }
 
@@ -4591,10 +4591,11 @@ footer {
   --cs-hero-card-w: min(clamp(12rem, 30vw, 42rem), 90vh);
 }
 
-/* the Socratica laptop: square, pre-cut art, so it takes the ENVoices
-   card's size with no corner radius of its own */
+/* the Socratica critters card: portrait (664:1080) with its rounded
+   corners pre-cut, so no radius of its own. Sized like Aira's portrait
+   card: the vh cap keeps it to about half the window's height */
 .cs-hero__card--socratica {
-  --cs-hero-card-w: min(clamp(9rem, 20vw, 27rem), 40vh);
+  --cs-hero-card-w: min(clamp(8rem, 18vw, 24rem), 30vh);
 }
 
 /* Phones: the 12rem floor above made the Switch ~192px wide on a
@@ -5984,6 +5985,7 @@ footer {
 
 .cs-validation-toggle {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.625rem;
   margin-bottom: clamp(1.5rem, calc(1.318rem + 0.777vw), 2.25rem);
 }
