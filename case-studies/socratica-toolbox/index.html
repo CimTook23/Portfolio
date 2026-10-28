@@ -148,29 +148,28 @@
     <div class="cs-layout__body">
       <!-- ================= AT A GLANCE ================= -->
       <!-- the numbers first, then the finished homepage. Three cards, so
-           .cs-takeaways-grid lays them out three-up on its own.
-           TODO: swap each "—" for the real figure. -->
+           .cs-takeaways-grid lays them out three-up on its own. -->
       <section id="overview" data-toc="At a glance">
         <h2 class="cs-heading reveal">At a glance</h2>
         <div class="cs-divider reveal"></div>
 
         <div class="cs-takeaways-grid reveal">
           <div class="cs-takeaway-card">
-            <span class="cs-takeaway-card__stat">—</span>
+            <span class="cs-takeaway-card__stat">10,000+</span>
             <div class="cs-takeaway-card__text">
-              <h3>Page visits</h3>
+              <h3>Monthly visitors</h3>
             </div>
           </div>
           <div class="cs-takeaway-card">
-            <span class="cs-takeaway-card__stat">—</span>
+            <span class="cs-takeaway-card__stat">1,600+</span>
             <div class="cs-takeaway-card__text">
               <h3>Attendees worldwide</h3>
             </div>
           </div>
           <div class="cs-takeaway-card">
-            <span class="cs-takeaway-card__stat">—</span>
+            <span class="cs-takeaway-card__stat">5</span>
             <div class="cs-takeaway-card__text">
-              <h3>Task completion</h3>
+              <h3>User paths</h3>
             </div>
           </div>
         </div>
@@ -208,12 +207,11 @@
         <div class="cs-lede reveal" style="margin-top: clamp(2rem, 4vw, 3rem);">
           <h3 class="cs-subheading">The challenge</h3>
           <div>
-            <p class="hero__desc cs-para">Before the Toolbox, most of that knowledge lived in scattered docs,
-              chat threads and the heads of a few experienced hosts. Someone thinking about starting a node had no
-              single place to learn what it takes, and the guides that did exist were long, dense and hard to
-              navigate. The content was already worth reading. The problem was getting people to it, and keeping
-              them there long enough to act on it.</p>
-            <div class="cs-callout" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">How might we turn a pile of
+            <p class="hero__desc cs-para">The Toolbox already existed, but every issue was a plain page of
+              long-form text. The advice was worth reading, and people weren't reading it: lists of projects ran
+              together into walls of text, and sections like Your Turn sat at the bottom where most readers never
+              reached them. The content didn't need rewriting. It needed a page that pulled people through it.</p>
+            <div class="cs-callout" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">How might we turn a wall of
               hard-won advice into a guide that a brand new host actually wants to read?</div>
           </div>
         </div>
@@ -232,10 +230,10 @@
         <div class="cs-split cs-split--reverse reveal">
           <div class="cs-split__body">
             <h3 class="cs-subheading">Plan</h3>
-            <p class="hero__desc cs-para">I started by gathering everything the community had already written
-              and sorting it by the question it answered. Grouping it that way gave the guide its shape: a handful
-              of issues, each one covering a stage of running a node, so a host could jump straight to wherever
-              they were.</p>
+            <p class="hero__desc cs-para">I started with The Basics, the first issue every new host reads, and
+              mapped it block by block. Each of its four sections got a column listing what it actually contains:
+              text, diagrams, quotes and links out to other pages. The map showed where the reading slowed down
+              and what could be pulled out of the paragraphs, and it became the template for the other issues.</p>
           </div>
           <div class="cs-split__media">
             <div class="cs-square cs-square--16x9">
@@ -247,21 +245,23 @@
         <!-- Design: the Faculty of Environment's Process toggle, with the
              copy on the left switching along with it like the eShop's Game
              details page. [data-cs-toggle-scope] lets the pills in the media
-             column reach the copy blocks in the body column (see main.js).
-             TODO: write the why for each prototype. -->
+             column reach the copy blocks in the body column (see main.js). -->
         <div class="cs-split reveal" data-cs-toggle-scope>
           <div class="cs-split__body">
             <h3 class="cs-subheading">Design</h3>
             <p class="hero__desc cs-para">Each issue got a coloured cover and its own hand-drawn character, so
-              the homepage reads more like a shelf of zines than a wall of links. Inside, every page shares the
-              same layout: the cover and a contents list down the side, and the article itself broken into
-              sections with their authors credited at the top. I took The Basics through two rough prototypes
-              before settling on it.</p>
+              the homepage reads more like a shelf of zines than a wall of links. For the pages themselves, I
+              prototyped The Basics in two opposite directions to see how far the layout could move from the
+              original.</p>
             <div class="cs-toggle-copy is-active" data-cs-toggle-panel="basics-a">
-              <p class="hero__desc cs-para">[Why the long-form reader: what it tried, and what you learned from it.]</p>
+              <p class="hero__desc cs-para">The long-form reader keeps the article as one continuous page and
+                improves what's around it: issues on the left, a contents list on the right that tracks where you
+                are, and a TLDR box up top. It's the safe option, and the closest to what was already there.</p>
             </div>
             <div class="cs-toggle-copy" data-cs-toggle-panel="basics-b">
-              <p class="hero__desc cs-para">[Why the chunked cards: what changed from the first, and why.]</p>
+              <p class="hero__desc cs-para">The chunked cards go the other way, breaking every section into
+                pieces you can take in at a glance: numbered belief cards, project categories as tag groups, and
+                three columns side by side. It's built for skimming, at the cost of reading like an article.</p>
             </div>
             <div class="cs-callout" style="width:100%; text-align:center;">Feel free to scroll through →</div>
           </div>
@@ -287,42 +287,44 @@
              TODO: write the three interactions. -->
         <div class="cs-lede reveal" style="margin-top: clamp(3rem, 6vw, 5rem);">
           <h3 class="cs-subheading">Check feasibility</h3>
-          <p class="hero__desc cs-para">Before anything was built, I walked the designs through with the
-            engineers to see which interactions we could ship and keep accessible, and which ones we couldn't.
-            Anything the content team couldn't update on their own was simplified, so adding a new issue later
-            would never need a developer.</p>
+          <p class="hero__desc cs-para">Before anything was built, I walked the interactions through with the
+            engineers to see which ones we could ship and keep accessible. The rule we kept coming back to: the
+            issues are written in markdown by contributors, so anything they couldn't keep up on their own was
+            simplified or cut, and adding a new issue would never need a developer.</p>
         </div>
 
         <!-- one clip per interaction, three-up with its blurb under it
              (same .cs-guidelines-grid as the eShop guidelines; two-up, then
              one, on narrower screens). The clips are square captures, so
              they take .cs-guideline-item's 1:1 tile as is. Lazy like the
-             other videos: data-src + preload="none".
-             TODO: write the three blurbs. -->
+             other videos: data-src + preload="none". -->
         <div class="cs-guidelines-grid reveal">
           <div class="cs-guideline-item">
             <div class="cs-square">
               <video data-src="../../assets/videos/socratica-search.mp4" poster="../../assets/videos/socratica-search-poster.jpg" muted loop preload="none" playsinline
                 aria-label="Typing into the Toolbox search bar: matching passages from The Basics drop down under it, and picking one jumps to that section of the page"></video>
             </div>
-            <p class="cs-caption"><strong>Search bar</strong>[What I proposed, what engineering said, and whether
-              it made the cut.]</p>
+            <p class="cs-caption"><strong>Search bar</strong>Typing pulls up matching passages from across the
+              issues, and picking one jumps straight to that spot, so a host looking for one answer doesn't have to
+              read a whole issue to find it.</p>
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
               <video data-src="../../assets/videos/socratica-toc.mp4" poster="../../assets/videos/socratica-toc-poster.jpg" muted loop preload="none" playsinline
                 aria-label="Clicking through the table of contents on the Superboosting Ideas issue: each link scrolls the article to its section while the contents list stays in place"></video>
             </div>
-            <p class="cs-caption"><strong>Table of contents</strong>[What I proposed, what engineering said, and
-              whether it made the cut.]</p>
+            <p class="cs-caption"><strong>Table of contents</strong>The contents list stays in view and highlights
+              the section you're reading. Engineering confirmed the highlight was a small script that works off the
+              headings contributors already write, so it shipped as designed.</p>
           </div>
           <div class="cs-guideline-item">
             <div class="cs-square">
               <video data-src="../../assets/videos/socratica-overlay.mp4" poster="../../assets/videos/socratica-overlay-poster.jpg" muted loop preload="none" playsinline
                 aria-label="Clicking a link inside the Demo Days article opens a preview overlay of the linked section from Getting Started, which then jumps across to that issue"></video>
             </div>
-            <p class="cs-caption"><strong>Overlay jumping</strong>[What I proposed, what engineering said, and
-              whether it made the cut.]</p>
+            <p class="cs-caption"><strong>Overlay jumping</strong>Links between issues open a preview of the
+              section they point to before taking you there, so readers can check a reference without losing their
+              place in the article they're reading.</p>
           </div>
         </div>
 
@@ -333,12 +335,13 @@
              paragraph above it. -->
         <div class="cs-lede reveal" style="margin-top: clamp(3rem, 6vw, 5rem);">
           <h3 class="cs-subheading">Test</h3>
-          <p class="hero__desc cs-para">I put The Basics in front of five people, P1 to P5, and had the engineers
-            sit in. Basics A read like the site they already had, and the project list was a wall of text. Basics
-            B was much easier to skim, but people lost track of where they were, and turning the articles into
-            cards meant rewriting markdown our contributors wouldn't keep up. So I combined them: Basics C keeps
-            the reader with its contents list, and pulls the beliefs, projects and quotes out into cards. Testers
-            said they'd use it, and engineering signed off on shipping it.</p>
+          <p class="hero__desc cs-para">I put both prototypes in front of five people, with the engineers
+            commenting alongside. Basics A felt like the site they already had, and the project list was still a
+            wall of text. Basics B was much easier to skim, but people lost track of where they were, and
+            engineering pointed out it meant rewriting the markdown, which contributors wouldn't keep up. So I
+            combined them into Basics C: the long-form reader and its contents list, with the TLDR, beliefs and
+            key quote pulled out as callouts the markdown already supports. Testers said they'd use it, and
+            engineering signed off on shipping it.</p>
         </div>
 
         <div class="cs-wide-media reveal" style="margin-top: clamp(1.5rem, 3vw, 2.25rem);">
@@ -350,9 +353,10 @@
       <section id="before-after" data-toc="Before and after">
         <h2 class="cs-heading reveal">Before and after</h2>
         <div class="cs-divider reveal"></div>
-        <p class="hero__desc cs-para reveal" style="max-width: none;">The same advice, before and after. The old
-          guide asked readers to dig through one long document; the Toolbox splits it into issues they can browse,
-          search and come back to.</p>
+        <p class="hero__desc cs-para reveal" style="max-width: none;">The same advice in The Basics, before and
+          after. Before, every issue was the same plain page of text. After, each one has its own cover and
+          character, the navigation is gathered down the left, and section headers and callouts break the reading
+          into pieces people actually get through.</p>
 
         <!-- .cs-wide-media rather than a fixed-ratio tile: both captures
              are 1440x1177, so each keeps its own shape uncropped -->
@@ -381,9 +385,9 @@
           <div class="cs-takeaway-card">
             <span class="cs-takeaway-card__index" aria-hidden="true">01</span>
             <div class="cs-takeaway-card__text">
-              <h3>Test with hosts earlier</h3>
-              <p>The most useful feedback came once there was something to click through. Rougher prototypes in
-                front of hosts sooner would have caught the navigation issues a cycle earlier.</p>
+              <h3>Test earlier</h3>
+              <p>One round of testing settled A versus B and produced Basics C. Putting rougher prototypes in
+                front of people sooner would have got there a cycle earlier.</p>
             </div>
           </div>
           <div class="cs-takeaway-card">
@@ -398,8 +402,8 @@
             <span class="cs-takeaway-card__index" aria-hidden="true">03</span>
             <div class="cs-takeaway-card__text">
               <h3>Measure what gets used</h3>
-              <p>Page visits say people arrive. Tracking which sections they actually read would show which issues
-                to expand next.</p>
+              <p>Monthly visitors say people arrive. Tracking which sections they actually read would show which
+                issues to expand next.</p>
             </div>
           </div>
         </div>
