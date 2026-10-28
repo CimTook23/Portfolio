@@ -39,7 +39,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="css/style.css?v=143" />
+<link rel="stylesheet" href="css/style.css?v=144" />
 </head>
 <body>
 
@@ -53,37 +53,36 @@
 
 <div class="nav-wrap">
   <header class="nav container container--wide" id="top">
-    <!-- logo + theme switch share the grid's first column so the bar
-         stays a single row; see .nav__brand in style.css -->
     <div class="nav__brand">
       <a class="nav__logo" href="./" aria-label="Jaydon — home">
         <span class="nav__logo-badge"><img src="assets/images/nav-avatar.png" alt="" /></span>
       </a>
-      <!-- light/dark switch. The CSS for this (.nav__theme-toggle and the
-           sun/moon icon swap) already existed but no page ever rendered the
-           button, so the theme could only be reached by hand-editing
-           localStorage. -->
-      <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="true">
-        <svg class="nav__theme-icon nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.2"/>
-          <path d="M12 2.4v2.3M12 19.3v2.3M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.3M19.3 12h2.3M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
-        </svg>
-        <svg class="nav__theme-icon nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1Z"/>
-        </svg>
-      </button>
     </div>
 
-    <div class="nav__switch">
-      <a class="nav__switch-opt is-active" href="./" aria-current="page">Work</a>
-      <a class="nav__switch-opt" href="digital-media/">Play</a>
+    <!-- links on top, Play + theme switch on a second row under them -->
+    <div class="nav__right">
+      <ul class="nav__links" id="navLinks">
+        <li><a href="about/">About me</a></li>
+        <li><a href="assets/resume.pdf?v=3" target="_blank" rel="noopener">Resume</a></li>
+        <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
+      </ul>
+      <div class="nav__tools">
+        <a class="nav__play" href="digital-media/" aria-label="Play — digital media">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M15.39 4.39a1 1 0 0 0 1.68-.474 2.5 2.5 0 1 1 3.014 3.015 1 1 0 0 0-.474 1.68l1.683 1.682a2.414 2.414 0 0 1 0 3.414L19.61 15.39a1 1 0 0 1-1.68-.474 2.5 2.5 0 1 0-3.014 3.015 1 1 0 0 1 .474 1.68l-1.683 1.682a2.414 2.414 0 0 1-3.414 0L8.61 19.61a1 1 0 0 0-1.68.474 2.5 2.5 0 1 1-3.014-3.015 1 1 0 0 0 .474-1.68l-1.683-1.682a2.414 2.414 0 0 1 0-3.414L4.39 8.61a1 1 0 0 1 1.68.474 2.5 2.5 0 1 0 3.014-3.015 1 1 0 0 1-.474-1.68l1.683-1.682a2.414 2.414 0 0 1 3.414 0z"/>
+          </svg>
+        </a>
+        <button class="nav__theme-toggle" id="themeToggle" aria-label="Switch colour theme" aria-pressed="true">
+          <svg class="nav__theme-icon nav__theme-icon--sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4.2"/>
+            <path d="M12 2.4v2.3M12 19.3v2.3M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2.4 12h2.3M19.3 12h2.3M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"/>
+          </svg>
+          <svg class="nav__theme-icon nav__theme-icon--moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.5 14.6A8.6 8.6 0 0 1 9.4 3.5a8.6 8.6 0 1 0 11.1 11.1Z"/>
+          </svg>
+        </button>
+      </div>
     </div>
-
-    <ul class="nav__links" id="navLinks">
-      <li><a href="about/">About me</a></li>
-      <li><a href="assets/resume.pdf?v=3" target="_blank" rel="noopener">Resume</a></li>
-      <li><a href="mailto:wang.jaydon1@gmail.com">Contact</a></li>
-    </ul>
 
 
     <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
@@ -142,6 +141,20 @@
             </div>
             <h3>Revamping the Nintendo eShop</h3>
             <p>A five-day sprint rethinking game discovery on the Nintendo eShop, from AI disclosure and asset-flip screening to reviews and a Recent page worth browsing.</p>
+          </div>
+        </a>
+
+        <a class="project-card reveal" href="case-studies/socratica-toolbox/" data-category="product-design">
+          <div class="project-card__media is-flipping-in">
+            <img src="assets/images/socratica-thumb.png" alt="Laptop showing the Socratica Toolbox Getting Started page, with the guide's hand-drawn characters floating around it" loading="lazy" decoding="async" />
+          </div>
+          <div class="project-card__body">
+            <div class="tag-row">
+              <span class="tag">Product Design</span>
+              <span class="tag">2026</span>
+            </div>
+            <h3>Socratica Toolbox</h3>
+            <p>Designing and building an open guide that helps people around the world start and run their own Socratica node.</p>
           </div>
         </a>
 
